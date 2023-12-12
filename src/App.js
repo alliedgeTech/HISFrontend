@@ -1,25 +1,32 @@
-import logo from './logo.svg';
 import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import Home from './Pages/Home';
+import NavigationScroll from './Components/Layouts/MinimalLayout';
+import MainLayout from './Components/Layouts/MainLayout';
+import RoleMaster from './Pages/RoleMaster/RoleMaster';
+import UserMaster from './Pages/UserMaster/UserMaster';
+import BranchMaster from './Pages/BranchMaster/BranchMaster';
+// import * as RegularIcons from '@fortawesome/free-regular-svg-icons';
+
+// const iconList = Object.keys(Icons)
+//   .filter((key) => key !== 'fas' && key !== 'prefix')
+//   .map((icon) => Icons[icon]);
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <NavigationScroll>
+      <Routes>
+        <Route path='/' element={<MainLayout/>} >
+          <Route path='/rolemaster' element={<RoleMaster/>} />
+          <Route path='/usermaster' element={<UserMaster/>} />
+          <Route path='/locationmaster' element={<BranchMaster/>} />
+          <Route path='*' element={<Home/>} />
+        </Route>  
+      </Routes>   
+    </NavigationScroll>
   );
 }
 
 export default App;
+  

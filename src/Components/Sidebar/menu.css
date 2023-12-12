@@ -1,0 +1,26 @@
+.menu-text{
+    font-weight: 500;
+    color:#25396f;
+    font-size: 16px;
+    line-height: 23px;
+    margin: 8px 0;
+    letter-spacing: 0.3px;
+}   
+
+.menu-text a {
+    gap: 5px;
+    padding: 10px 15px !important;
+    border-radius: 8px;
+}
+    
+.sidebar-height{
+    height:calc(100vh - 76.7px) ;
+    width: fit-content;
+    padding-top: 0.7rem;
+}
+
+@media (max-width: 1024px) {
+    .menu-text.op a{
+        border-radius: 0px!important;
+    }
+}

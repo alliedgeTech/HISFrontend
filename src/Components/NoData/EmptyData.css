@@ -1,0 +1,9 @@
+.withPagination__img {
+    margin: auto;
+    display: block;
+    width: 100%;
+  }
+  
+  .empty-image-css {
+    max-height: calc(100vh - 220.81px);
+  }
