@@ -296,7 +296,7 @@ const handleCheck = (checked, roleInfo) => {
         Array.isArray(UserData) &&
         UserData.find((data) => data._id === editData);
         const dataNew = [{value:'yes',shaw:true},{value:'no',shaw:false}].find((item)=>item.shaw == tempData?.virtualConsultation)
-        tempData = {...tempData,primarylocation:tempData?.primarylocationId,gender:{gender:tempData.gender},virtualConsultation:dataNew}
+        tempData = {...tempData,primarylocation:tempData?.primarylocationId,gender:{gender:tempData.gender},virtualConsultation:dataNew,isActive:tempData?.isActive?.toString()}
       reset(tempData);
       setPreviewUrl(tempData?.image);
     }

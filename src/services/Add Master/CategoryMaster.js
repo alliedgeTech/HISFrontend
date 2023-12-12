@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useSelector,useDispatch } from 'react-redux';
 import APIManager from "../../utils/ApiManager";
-import { setActionLoading, setCategoryData, setListLoading } from "../../slices/category.slice";
+import { setActionLoading, setCategoryCount, setCategoryData, setListLoading } from "../../slices/category.slice";
 import toast from "react-hot-toast";
 
 const ApiManaget = new APIManager();
@@ -11,7 +11,7 @@ export const useCategoryMaster = () => {
     const { categoryData } = useSelector(state => state.category);
     const dispatch = useDispatch();
     
-    const getCategoryData = async(withLoading=false) => {
+    const getCategoryData = async(withLoading=false,page,pageSize) => {
         if(withLoading)
         {
             dispatch(setListLoading(true));
@@ -21,16 +21,21 @@ export const useCategoryMaster = () => {
 
         if(!resData?.error)
         {
-            dispatch(setCategoryData(resData?.data));
+            dispatch(setCategoryData(resData?.data?.data));
+            dispatch(setCategoryCount(resData?.data?.count));
+            withLoading && dispatch(setListLoading(false));
+            return true;
         }
 
         if(withLoading)
         {
             dispatch(setListLoading(false));
         }
+
+        return false;
     }
 
-    const createCategoryData = async(data) => {
+    const createCategoryData = async(data,page,pageSize) => {
         dispatch(setActionLoading(true));
 
         const resData = await ApiManaget.post("admin/addMaster/category",data);
@@ -38,7 +43,7 @@ export const useCategoryMaster = () => {
         if(!resData?.error)
         {
             toast.success("Category Created Successfully");
-            getCategoryData();
+            getCategoryData(false,page,pageSize);
             dispatch(setActionLoading(false));
             return true;
         }
@@ -48,7 +53,7 @@ export const useCategoryMaster = () => {
         return false;
     }
 
-    const updateCategoryData = async(data) => {
+    const updateCategoryData = async(data,page,pageSize) => {
         dispatch(setActionLoading(true));
 
         const resData = await ApiManaget.patch(`admin/addMaster/category`,data);
@@ -56,7 +61,7 @@ export const useCategoryMaster = () => {
         if(!resData?.error)
         {
             toast.success("Category Updated Successfully");
-            getCategoryData();
+            getCategoryData(false,page,pageSize);
             dispatch(setActionLoading(false));
             return true;
         }
@@ -71,12 +76,13 @@ export const useCategoryMaster = () => {
     useEffect(()=>{
         if(!categoryData)
         {
-            getCategoryData(true);
+            getCategoryData(true,0,10);
         }
     },[]);
 
     return {
         createCategoryData,
-        updateCategoryData
+        updateCategoryData,
+        getCategoryData
     }
 }

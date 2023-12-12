@@ -7,7 +7,6 @@ import AddEditModal from '../../Components/AddEditModal/AddEditModal';
 import TableMainBox from '../../Components/TableMainBox/TableMainBox';
 import EmptyData from '../../Components/NoData/EmptyData';
 import LinearProgress from '@mui/material/LinearProgress';
-import CustomEditIcons from '../../Components/CustomeIcons/CustomEditIcons';
 import TableSkeleton from '../../Skeleton/TableSkeleton';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -16,6 +15,7 @@ import { CustomTextInputField } from '../../Components/InputsFilelds/CustomTextI
 import CustomAutoCompelete from '../../Components/CustomAutoCompelete/CustomAutoCompelete';
 import Switch from '@mui/material/Switch';
 import { styled } from '@mui/material/styles';
+import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 
 const RoleMaster =() => {
   var { register, handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
@@ -190,9 +190,9 @@ const columns = [
     renderCell: (params) => (
       <>
         <div
-          onClick={() => { setModalOpen(true);clearErrors(); reset({...params.row});setEditData(true)}}
+          onClick={() => { setModalOpen(true);clearErrors(); reset({...params.row,isActive:params?.row?.isActive?.toString()});setEditData(true)}}
         >
-          <CustomEditIcons />
+          <CustomIconButton />
         </div>
         
       </>

@@ -83,12 +83,6 @@ export default function () {
     {
       Loading ? <SidebarSkeleton/> : SidebarData && Array.isArray(SidebarData) && <SidebarMenuItems data={SidebarData} />
     }
-    {/* <SubMenu label="Charts" className='menu-text' icon={<Person2OutlinedIcon />}>
-      <MenuItem component={<NavLink to={"/"}></NavLink>} icon={<VerifiedUserIcon/>} className='menu-text op'> Pie charts </MenuItem>
-      <MenuItem className='menu-text op' component={<NavLink to={"/3"} ></NavLink>} icon={<BarChartIcon/>} > Line charts </MenuItem>
-    </SubMenu>
-    <MenuItem component={<NavLink to={"/1"}></NavLink>} className='menu-text' icon={<ArticleOutlinedIcon/>}> Documentation </MenuItem>
-    <MenuItem component={<NavLink to={"/2"}></NavLink>} className='menu-text' icon={<CalendarMonthOutlinedIcon/>}> Calendar </MenuItem> */}
   </Menu>
 </Sidebar>
 </div>

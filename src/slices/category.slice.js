@@ -5,6 +5,7 @@ const initialState = {
     listLoading: true,
     categoryEditData: null,
     actionLoading: false,
+    categoryCount: null,
 }
 
 
@@ -23,11 +24,14 @@ const categorySlice = createSlice({
         },
         setActionLoading: (state, action) => {
             state.actionLoading = action.payload
-        }
+        },
+        setCategoryCount: (state, action) => {
+            state.categoryCount = action.payload
+        },
     }
 
 })
 
-export const { setCategoryData,setListLoading,setCategoryEditData,setActionLoading } = categorySlice.actions;
+export const { setCategoryData,setListLoading,setCategoryEditData,setActionLoading,setCategoryCount } = categorySlice.actions;
 
 export default categorySlice.reducer;

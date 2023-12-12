@@ -245,7 +245,7 @@ function BranchMaster() {
       useEffect(()=>{
         if(editData)
         {
-          reset(LocationData[editData-1]);
+          reset({...LocationData[editData-1],isActive:LocationData[editData-1]?.isActive?.toString()});
         }
       },[editData])
     
