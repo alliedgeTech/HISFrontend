@@ -17,7 +17,7 @@ export const useCategoryMaster = () => {
             dispatch(setListLoading(true));
         
         }
-        const resData = await ApiManaget.get("admin/addMaster/category");
+        const resData = await ApiManaget.get(`admin/addMaster/category?page=${page}&pageSize=${pageSize}`);
 
         if(!resData?.error)
         {
@@ -31,7 +31,6 @@ export const useCategoryMaster = () => {
         {
             dispatch(setListLoading(false));
         }
-
         return false;
     }
 
@@ -49,7 +48,6 @@ export const useCategoryMaster = () => {
         }
 
         dispatch(setActionLoading(false));
-        toast.error(resData?.message);
         return false;
     }
 
@@ -67,7 +65,6 @@ export const useCategoryMaster = () => {
         }
 
         dispatch(setActionLoading(false));
-        toast.error(resData?.message);
         return false;
     }
 

@@ -129,23 +129,24 @@ function BranchMaster() {
 
         if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
         {
-          // setPaginationModel({page,pageSize});
+          const recentState = structuredClone(paginationModel);
+          setPaginationModel({page,pageSize});
           if(page!==paginationModel.page)
           {
               // change the page
                 const resData = await getBranchData(true,page,pageSize);
-                if(resData)
+                if(!resData)
                 {
-                  setPaginationModel({page,pageSize});
+                  setPaginationModel(recentState);
                 }
     
           } else {
               // change the pageSize
               const resData = await getBranchData(true,0,pageSize);
               
-              if(resData)
+              if(!resData)
               {
-                setPaginationModel({page:0,pageSize})
+                setPaginationModel(recentState)
               }
               
           }

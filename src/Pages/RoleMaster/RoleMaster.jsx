@@ -109,28 +109,27 @@ const IOSSwitch = styled((props) => (
 }));
 
 const onPaginationChange = async({page,pageSize}) => {
-
     if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
     {
-      // setPaginationModel({page,pageSize});
+      const recentData = structuredClone(paginationModel);
+      setPaginationModel({page,pageSize});
       if(page!==paginationModel.page)
       {
           // change the page
             const resData = await getRoleData(true,page,pageSize);
-            if(resData)
+            if(!resData)
             {
-              setPaginationModel({page,pageSize});
+              setPaginationModel(recentData);
             }
 
       } else {
           // change the pageSize
           const resData = await getRoleData(true,0,pageSize);
           
-          if(resData)
-          {
-            setPaginationModel({page:0,pageSize})
-          }
-          
+          if(!resData)
+            {
+              setPaginationModel(recentData);
+            }
       }
     }
 } 

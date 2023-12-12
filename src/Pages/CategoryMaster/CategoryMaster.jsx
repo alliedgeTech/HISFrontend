@@ -67,6 +67,7 @@ function CategoryMaster() {
       }
 
       const setRows = (data) => {
+        console.log("paginationModel",paginationModel);
         var id = paginationModel.page*paginationModel.pageSize;
         var array = [];
         data?.forEach((element) => {
@@ -89,7 +90,8 @@ function CategoryMaster() {
       useEffect(()=>{
         if(categoryEditData)
         {
-            reset(categoryData[categoryEditData-1]);
+            const temp = categoryData[categoryEditData-1];
+            reset({...temp,isActive:temp?.isActive?.toString()});
         }
       },[categoryEditData]);
 
@@ -144,26 +146,30 @@ function CategoryMaster() {
         }
       }));
 
+
       const onPaginationChange = async({page,pageSize}) => {
 
         if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
         {
+            const recentData = structuredClone(paginationModel);
+            setPaginationModel({page,pageSize});
           if(page!==paginationModel.page)
           {
               // change the page
                 const resData = await getCategoryData(true,page,pageSize);
-                if(resData)
+
+                if(!resData)
                 {
-                  setPaginationModel({page,pageSize});
+                  setPaginationModel(recentData);
                 }
     
           } else {
               // change the pageSize
               const resData = await getCategoryData(true,0,pageSize);
               
-              if(resData)
+              if(!resData)
               {
-                setPaginationModel({page:0,pageSize})
+                setPaginationModel(recentData);
               }
               
           }

@@ -304,17 +304,17 @@ const handleCheck = (checked, roleInfo) => {
 
 
 const onPaginationChange = async({page,pageSize}) => {
-
     if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
     {
+      const recentData = structuredClone(paginationModel);
       setPaginationModel({page,pageSize});
       if(page!==paginationModel.page)
       {
           // change the page
             const resData = await getUserData(true,page,pageSize);
-            if(resData)
+            if(!resData)
             {
-              setPaginationModel({page,pageSize});
+              setPaginationModel(recentData);
             }
 
       } else {
@@ -323,7 +323,7 @@ const onPaginationChange = async({page,pageSize}) => {
           
           if(resData)
           {
-            setPaginationModel({page:0,pageSize})
+            setPaginationModel(recentData);
           }
           
       }
