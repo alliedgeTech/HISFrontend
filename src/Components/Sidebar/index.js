@@ -81,7 +81,7 @@ export default function () {
       }}
   >
     {
-      Loading ? <SidebarSkeleton/> : <SidebarMenuItems data={SidebarData} />
+      Loading ? <SidebarSkeleton/> : SidebarData && Array.isArray(SidebarData) && <SidebarMenuItems data={SidebarData} />
     }
     {/* <SubMenu label="Charts" className='menu-text' icon={<Person2OutlinedIcon />}>
       <MenuItem component={<NavLink to={"/"}></NavLink>} icon={<VerifiedUserIcon/>} className='menu-text op'> Pie charts </MenuItem>
