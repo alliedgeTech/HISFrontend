@@ -10,7 +10,7 @@ const ApiManager = new APIManager();
 
 export const useUserData = () => {
     const dispatch = useDispatch();
-    const { userLoading : Loading,userData:UserData,userCount } = useSelector(state => state.user);
+    const { userLoading : Loading,userData:UserData,userCount,userPaginaiton:paginationModel } = useSelector(state => state.user);
     const [ListLoading, setListLoading] = useState(false);
 
     const getUserData = async (withLoading=false,page=0,pageSize=10) => {
@@ -158,7 +158,8 @@ export const useUserData = () => {
         Loading,
         assignRoleToUser,
         ListLoading,
-        userCount
+        userCount,
+        paginationModel
     }
 }
 

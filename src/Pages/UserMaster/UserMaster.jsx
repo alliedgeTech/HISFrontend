@@ -25,6 +25,7 @@ import CustomDatePickerField from '../../Components/InputsFilelds/CustomDatePick
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 import Switch from '@mui/material/Switch';
+import { setUserPagination } from '../../slices/user.slice';
 
 function UserMaster() {
     const UserData = useSelector((state) => state.user?.userData);
@@ -73,7 +74,6 @@ function UserMaster() {
   });
 
   const watchCity = watch("city");
-  const watchAddress = watch("address");
 
   useEffect(() =>{ 
     if(watchCity)
@@ -87,16 +87,10 @@ function UserMaster() {
     }
   },[watchCity])
 
-  useEffect(() => {
-    const tempData = getValues("permanentAddress");
-    if(tempData==="")
-    {
-      setValue("permanentAddress",watchAddress)
-    }
-  },[watchAddress])
 
 
-  const { updateUSer, addUser, Loading, assignRoleToUser, ListLoading,getUserData,userCount } =
+
+  const { updateUSer, addUser, Loading, assignRoleToUser, ListLoading,getUserData,userCount,paginationModel } =
   useUserData();
 const dispatch = useDispatch();
 const RoleHook = useRoleData(); // check we need it or what 
@@ -108,10 +102,7 @@ const [previewUrl, setPreviewUrl] = useState(null);
 const [File, setFile] = useState(null);
 const [fileError, setFileError] = useState(null);
 const [RoleAssignModel, setRoleAssignModel] = useState(false);
-const [paginationModel, setPaginationModel] = useState({
-    pageSize: 10,
-    page: 0,
-  });
+
 
 const handleCheck = (checked, roleInfo) => {
     assignRoleToUser({ value: checked, roleId: roleInfo._id, userId: RoleId });
@@ -307,14 +298,14 @@ const onPaginationChange = async({page,pageSize}) => {
     if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
     {
       const recentData = structuredClone(paginationModel);
-      setPaginationModel({page,pageSize});
+      dispatch(setUserPagination({page,pageSize}));
       if(page!==paginationModel.page)
       {
           // change the page
             const resData = await getUserData(true,page,pageSize);
             if(!resData)
             {
-              setPaginationModel(recentData);
+              dispatch(setUserPagination(recentData));
             }
 
       } else {
@@ -323,7 +314,7 @@ const onPaginationChange = async({page,pageSize}) => {
           
           if(resData)
           {
-            setPaginationModel(recentData);
+            dispatch(setUserPagination(recentData))
           }
           
       }
@@ -361,7 +352,7 @@ const onPaginationChange = async({page,pageSize}) => {
     { field: "pincode", headerName: "Code", flex:1, },
     { field: "isActive", headerName: "Is Active", flex:1 , sortable:false,
     renderCell : (params)=>(
-       <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateUSer({ _id: UserData[params?.row?.id-1]?._id,isActive:e.target.checked})}></IOSSwitch> 
+       <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateUSer({ _id: params?.row?._id,isActive:e.target.checked})}></IOSSwitch> 
       
     )
   },
@@ -386,7 +377,7 @@ const onPaginationChange = async({page,pageSize}) => {
           <div
           style={{marginLeft:"0.7rem"}}
             onClick={() => {
-              setRoleId(params.row.id);
+              setRoleId(params.row.id-(paginationModel.page*paginationModel.pageSize));
               setRoleAssignModel(true);
             }}
           >
@@ -959,6 +950,9 @@ const onPaginationChange = async({page,pageSize}) => {
                             Upload Image
                             </Button>
                         </label>
+                        {
+                          fileError && <Typography variant="caption" color="error">Please select the image</Typography>
+                        }
                     </Grid>
 
                       <Grid xs={12} md={3}>

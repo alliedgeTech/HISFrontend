@@ -1,8 +1,8 @@
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { memo, useMemo, useState } from 'react'
 import { useForm,Controller } from 'react-hook-form';
 import { useRoleData } from '../../services/Adminastrator/RoleMaster';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AddEditModal from '../../Components/AddEditModal/AddEditModal';
 import TableMainBox from '../../Components/TableMainBox/TableMainBox';
 import EmptyData from '../../Components/NoData/EmptyData';
@@ -16,6 +16,7 @@ import CustomAutoCompelete from '../../Components/CustomAutoCompelete/CustomAuto
 import Switch from '@mui/material/Switch';
 import { styled } from '@mui/material/styles';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
+import { setRolePagination } from '../../slices/role.slice';
 
 const RoleMaster =() => {
   var { register, handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
@@ -27,13 +28,10 @@ const RoleMaster =() => {
   });
 
   const { Loading,addRole,updateRole,ListLoading,getRoleData } = useRoleData();
-  const { roleData:RoleData,roleCount} = useSelector(state => state.role);
+  const { roleData:RoleData,roleCount,rolePagination:paginationModel } = useSelector(state => state.role);
   const [editData, setEditData] = useState('');
   const [ModalOpen, setModalOpen] = useState(false);
-  const [paginationModel, setPaginationModel] = useState({
-    pageSize: 10,
-    page: 0,
-  });
+  const dispatch = useDispatch();
   
  
   var submitData = async(data) => {
@@ -112,14 +110,14 @@ const onPaginationChange = async({page,pageSize}) => {
     if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
     {
       const recentData = structuredClone(paginationModel);
-      setPaginationModel({page,pageSize});
+      dispatch(setRolePagination({page,pageSize}))
       if(page!==paginationModel.page)
       {
           // change the page
             const resData = await getRoleData(true,page,pageSize);
             if(!resData)
             {
-              setPaginationModel(recentData);
+              dispatch(setRolePagination(recentData));
             }
 
       } else {
@@ -128,7 +126,7 @@ const onPaginationChange = async({page,pageSize}) => {
           
           if(!resData)
             {
-              setPaginationModel(recentData);
+              dispatch(setRolePagination(recentData));
             }
       }
     }
@@ -176,9 +174,9 @@ const columns = [
     headerName: "ID",
   },
   { field: "role", headerName: "Role", flex:1 },
-  { field: "isActive", headerName: "Is Active", flex:1,sortable:false, 
+  { field: "isActive", headerName: "Is Active", flex:1, 
    renderCell: (params) => (
-    <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateRole({ _id:params.row._id,isActive:e.target.checked,id:params.row.id},paginationModel.page,paginationModel.pageSize)} />
+    <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateRole({ _id:params.row._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)},paginationModel.page,paginationModel.pageSize)} />
   ) 
   },
   {

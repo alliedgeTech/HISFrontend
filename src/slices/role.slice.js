@@ -5,6 +5,7 @@ const initialState = {
     roleLoading: false,
     editRoleData: null,
     roleCount:null,
+    rolePagination : {page:0,pageSize:10},
 }
 
 const roleSlice = createSlice({
@@ -23,10 +24,14 @@ const roleSlice = createSlice({
         setRoleCount : (state,action) => {
             state.roleCount = action.payload
         },
+        setRolePagination : (state,action) => {
+            state.rolePagination.page = action.payload.page;
+            state.rolePagination.pageSize = action.payload.pageSize
+        }
     }
 
 })
 
-export const { setRoleData,setRoleLoading,setroleEditData,setRoleCount} = roleSlice.actions;
+export const { setRoleData,setRoleLoading,setroleEditData,setRoleCount,setRolePagination } = roleSlice.actions;
 
 export default roleSlice.reducer;

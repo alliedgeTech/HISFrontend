@@ -5,6 +5,7 @@ const initialState = {
     branchLoading: false,
     branchEditData: null,
     branchCount:null,
+    branchPagination:{page:0,pageSize:10},
 }
 
 const branchSlice = createSlice({
@@ -23,10 +24,14 @@ const branchSlice = createSlice({
         setBranchCount : (state,action) => {
             state.branchCount = action.payload
         },
+        setBranchPagination : (state,action) => {
+            state.branchPagination.page = action.payload.page;
+            state.branchPagination.pageSize = action.payload.pageSize
+        }
     }
 
 })
 
-export const { setBranchData,setBranchLoading,setBranchEditData,setBranchCount } = branchSlice.actions;
+export const { setBranchData,setBranchLoading,setBranchEditData,setBranchCount,setBranchPagination } = branchSlice.actions;
 
 export default branchSlice.reducer;

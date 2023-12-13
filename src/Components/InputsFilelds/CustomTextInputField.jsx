@@ -12,16 +12,6 @@ export const CustomTextInputField = ({ name, control, label, required,rules,disa
         fieldState: { error }
       }) => (
         <TextField
-        // sx={{
-        //   "& label.Mui-focused": {
-        //     color: ` ${error} ? "#d32f2f" : #25396f`
-        //   },
-        //   "& .MuiOutlinedInput-root": {
-        //     "&.Mui-focused fieldset": {
-        //       borderColor: `${error} ? "" : "#25396f"`
-        //     }
-        //   }
-        // }}
         sx={{  "& label.Mui-focused": {
           color: error ? "" : "#25396f"
         }, "& .MuiOutlinedInput-root": {

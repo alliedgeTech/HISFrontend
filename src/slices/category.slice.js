@@ -6,6 +6,7 @@ const initialState = {
     categoryEditData: null,
     actionLoading: false,
     categoryCount: null,
+    categoryPagination: { page: 0, pageSize: 10 },
 }
 
 
@@ -28,10 +29,14 @@ const categorySlice = createSlice({
         setCategoryCount: (state, action) => {
             state.categoryCount = action.payload
         },
+        setCategoryPagination: (state, action) => {
+            state.categoryPagination.page = action.payload.page;
+            state.categoryPagination.pageSize = action.payload.pageSize
+        }
     }
 
 })
 
-export const { setCategoryData,setListLoading,setCategoryEditData,setActionLoading,setCategoryCount } = categorySlice.actions;
+export const { setCategoryData,setListLoading,setCategoryEditData,setActionLoading,setCategoryCount,setCategoryPagination } = categorySlice.actions;
 
 export default categorySlice.reducer;

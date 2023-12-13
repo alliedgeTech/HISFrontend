@@ -4,7 +4,8 @@ const initialState = {
     userData: null,
     userLoading: false,
     editUserData: null,
-    userCount:null
+    userCount:null,
+    userPaginaiton:{page:0,pageSize:10},
 }
 
 const userSlice = createSlice({
@@ -22,11 +23,15 @@ const userSlice = createSlice({
         },
         setUserCount: (state, action) => {  
             state.userCount = action.payload
+        },
+        setUserPagination : (state,action) => {
+            state.userPaginaiton.page = action.payload.page;
+            state.userPaginaiton.pageSize = action.payload.pageSize
         }
     }
 
 })
 
-export const { setUserData,setUserLoading,setUserEditData,setUserCount } = userSlice.actions;
+export const { setUserData,setUserLoading,setUserEditData,setUserCount,setUserPagination } = userSlice.actions;
 
 export default userSlice.reducer;

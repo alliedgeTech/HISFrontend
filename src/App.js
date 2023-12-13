@@ -7,6 +7,7 @@ import RoleMaster from './Pages/RoleMaster/RoleMaster';
 import UserMaster from './Pages/UserMaster/UserMaster';
 import BranchMaster from './Pages/BranchMaster/BranchMaster';
 import CategoryMaster from './Pages/CategoryMaster/CategoryMaster';
+import CountryMaster from './Pages/CountryMaster/CountryMaster';
 // import * as RegularIcons from '@fortawesome/free-regular-svg-icons';
 
 // const iconList = Object.keys(Icons)
@@ -23,6 +24,7 @@ function App() {
           <Route path='/usermaster' element={<UserMaster/>} />
           <Route path='/locationmaster' element={<BranchMaster/>} />
           <Route path='/categorymaster' element={<CategoryMaster/>} />
+          <Route path='/regionmaster' element={<CountryMaster/>} />
           <Route path='*' element={<Home/>} />
         </Route>  
       </Routes>   

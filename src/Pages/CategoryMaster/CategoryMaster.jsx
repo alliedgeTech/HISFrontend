@@ -8,7 +8,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { Box,Switch,Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useCategoryMaster } from '../../services/Add Master/CategoryMaster';
-import { setCategoryEditData } from '../../slices/category.slice';
+import { setCategoryEditData, setCategoryPagination } from '../../slices/category.slice';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 import TableSkeleton from '../../Skeleton/TableSkeleton';
 import EmptyData from '../../Components/NoData/EmptyData';
@@ -28,12 +28,12 @@ function CategoryMaster() {
       });
 
       const [ModalOpen, setModalOpen] = useState(false);
-      const [paginationModel, setPaginationModel] = useState({
-        pageSize: 10,
-        page: 0,
-      });
+    //   const [paginationModel, setPaginationModel] = useState({
+    //     pageSize: 10,
+    //     page: 0,
+    //   });
 
-      const { categoryData,listLoading,categoryEditData,actionLoading,categoryCount } = useSelector(state => state.category);
+      const { categoryData,listLoading,categoryEditData,actionLoading,categoryCount,categoryPagination:paginationModel } = useSelector(state => state.category);
 
       const dispatch = useDispatch();
 
@@ -152,7 +152,7 @@ function CategoryMaster() {
         if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
         {
             const recentData = structuredClone(paginationModel);
-            setPaginationModel({page,pageSize});
+            dispatch(setCategoryPagination({page,pageSize}));
           if(page!==paginationModel.page)
           {
               // change the page
@@ -160,7 +160,7 @@ function CategoryMaster() {
 
                 if(!resData)
                 {
-                  setPaginationModel(recentData);
+                    dispatch(setCategoryPagination(recentData));
                 }
     
           } else {
@@ -169,7 +169,7 @@ function CategoryMaster() {
               
               if(!resData)
               {
-                setPaginationModel(recentData);
+                dispatch(setCategoryEditData(recentData))
               }
               
           }
@@ -182,9 +182,9 @@ function CategoryMaster() {
           headerName: "ID",
         },
         { field: "category", headerName: "Category", flex:1 },
-        { field: "isActive", headerName: "Is Active",sortable:false,flex:1
+        { field: "isActive", headerName: "Is Active",flex:1
         , renderCell: (params) => (
-          <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateCategoryData({ categoryId: categoryData[params.row.id-1]?._id,isActive:e.target.checked},paginationModel.page,paginationModel.pageSize)}></IOSSwitch> 
+          <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateCategoryData({ categoryId: categoryData[params.row.id-(paginationModel.page*paginationModel.pageSize)-1]?._id,isActive:e.target.checked},paginationModel.page,paginationModel.pageSize)}></IOSSwitch> 
         )
       },
         {
@@ -194,7 +194,7 @@ function CategoryMaster() {
           renderCell: (params) => (
             <>
               <div
-                onClick={() => { setModalOpen(true); dispatch(setCategoryEditData(params.row.id));}}
+                onClick={() => { setModalOpen(true); dispatch(setCategoryEditData(params.row.id-(paginationModel.page*paginationModel.pageSize)));}}
               >
                 <CustomIconButton />
               </div>

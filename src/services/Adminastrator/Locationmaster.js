@@ -9,7 +9,7 @@ const ApiManager = new APIManager();
 
 export const useBranchData = () => {
     const dispatch = useDispatch();
-    const {branchLoading:Loading,branchData,branchCount} = useSelector(state => state.branch);
+    const {branchLoading:Loading,branchData,branchCount,branchPagination:paginationModel} = useSelector(state => state.branch);
     const [ListLoading, setListLoading] = useState(false);
     const getBranchData = async (withLoading=false,page,pageSize) => {
         if(withLoading)
@@ -83,7 +83,8 @@ export const useBranchData = () => {
         addBranchData,
         Loading,
         ListLoading,
-        branchCount
+        branchCount,
+        paginationModel
     }
 
 }

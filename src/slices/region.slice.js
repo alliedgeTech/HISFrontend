@@ -4,14 +4,18 @@ const initialState = {
    countryData: null,
    countryLoading: false,
    countryEditData: null,
-   countryDropDownData: null,
+   countryPagination : {page:0,pageSize:10},
+   countryCount: null,
    stateData: null,
    stateLoading: false,
    stateEditData: null,
-   stateDropDownData: null,
+   statePagintion: {page:0,pageSize:10},
+   stateCount: null,
    cityData: null,
    cityLoading: false,
    cityEditData: null,
+   cityPagination: {page:0,pageSize:10},
+   cityCount: null
 }
 
 const RegionSlice = createSlice({
@@ -27,8 +31,12 @@ const RegionSlice = createSlice({
         setCountryEditData: (state, action) => {
             state.countryEditData = action.payload
         },
-        setCountryDropDownData: (state, action) => {
-            state.countryDropDownData = action.payload
+        setCountryPagination: (state, action) => {
+            state.countryPagination.page = action.payload.page;
+            state.countryPagination.pageSize = action.payload.pageSize
+        },
+        setCountryCount : (state,action) => {
+            state.countryCount = action.payload
         },
         setStateData: (state, action) => {
             state.stateData = action.payload
@@ -39,8 +47,12 @@ const RegionSlice = createSlice({
         setStateEditData: (state, action) => {
             state.stateEditData = action.payload
         },
-        setStateDropDownData: (state, action) => {
-            state.stateDropDownData = action.payload
+        setStatePagination: (state, action) => {
+            state.statePagintion.page = action.payload.page;
+            state.statePagintion.pageSize = action.payload.pageSize
+        },
+        setStateCount : (state,action) => {
+            state.stateCount = action.payload
         },
         setCityData: (state, action) => {
             state.cityData = action.payload
@@ -50,11 +62,18 @@ const RegionSlice = createSlice({
         },
         setCityEditData: (state, action) => {
             state.cityEditData = action.payload
+        },
+        setCityPagination : (state,action) => {
+            state.cityPagination.page = action.payload.page;
+            state.cityPagination.pageSize = action.payload.pageSize
+        },
+        setCityCount : (state,action) => {
+            state.cityCount = action.payload
         }
     }
 
 })
 
-export const { setCountryData,setCountryLoading,setCountryEditData,setCountryDropDownData,setStateData,setStateLoading,setStateEditData,setStateDropDownData,setCityData,setCityLoading,setCityEditData } = RegionSlice.actions;
+export const { setCountryData,setCountryLoading,setCountryEditData,setCountryPagination,setCountryCount,setStateData,setStateLoading,setStateEditData,setStatePagination,setStateCount,setCityData,setCityLoading,setCityEditData,setCityPagination,setCityCount } = RegionSlice.actions;
 
 export default RegionSlice.reducer;

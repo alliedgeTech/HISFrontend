@@ -2,7 +2,7 @@ import React from 'react'
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useForm,Controller } from 'react-hook-form';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import LinearProgress from '@mui/material/LinearProgress';
 import { Box,Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -17,6 +17,7 @@ import TableSkeleton from '../../Skeleton/TableSkeleton';
 import EmptyData from '../../Components/NoData/EmptyData';
 import Switch from '@mui/material/Switch';
 import { styled } from '@mui/material/styles';
+import { setBranchPagination } from '../../slices/branch.slice';
 
 function BranchMaster() {
     var { handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
@@ -32,13 +33,10 @@ function BranchMaster() {
         mode:'onTouched'
       });
 
-      const { addBranchData,updateBranchData,Loading,ListLoading,branchCount,getBranchData } = useBranchData();
+      const { addBranchData,updateBranchData,Loading,ListLoading,branchCount,getBranchData,paginationModel } = useBranchData();
       const [editData,setEditData] = useState('');
       const [OpenModal, setOpenModal] = useState(false);
-      const [paginationModel, setPaginationModel] = useState({
-        pageSize: 10,
-        page: 0,
-      });
+      const dispatch = useDispatch();
 
       const IOSSwitch = styled((props) => (
         <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -130,14 +128,14 @@ function BranchMaster() {
         if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
         {
           const recentState = structuredClone(paginationModel);
-          setPaginationModel({page,pageSize});
+          dispatch(setBranchPagination({page,pageSize}))
           if(page!==paginationModel.page)
           {
               // change the page
                 const resData = await getBranchData(true,page,pageSize);
                 if(!resData)
                 {
-                  setPaginationModel(recentState);
+                  dispatch(setBranchPagination(recentState))
                 }
     
           } else {
@@ -146,9 +144,8 @@ function BranchMaster() {
               
               if(!resData)
               {
-                setPaginationModel(recentState)
+                dispatch(setBranchPagination(recentState))
               }
-              
           }
         }
     } 
@@ -191,9 +188,9 @@ function BranchMaster() {
         { field: "_id", headerName: "", width: "0" },
         { field: "location", headerName: "Branch", flex:1 },
         { field: "locationcode", headerName: "Code", flex:1 },
-        { field: "IsActive", headerName: "Is Active", flex:1 ,sortable:false,
+        { field: "IsActive", headerName: "Is Active", flex:1 ,
         renderCell : (params) => {
-        return  <IOSSwitch checked={params.row.IsActive} onChange={(e)=>updateBranchData({ _id: LocationData[params.row.id-1]?._id,isActive:e.target.checked},paginationModel.page,paginationModel.pageSize)}></IOSSwitch>  
+        return  <IOSSwitch checked={params.row.IsActive} onChange={(e)=>updateBranchData({ _id: LocationData[params.row.id-(paginationModel.page*paginationModel.pageSize)-1]?._id,isActive:e.target.checked},paginationModel.page,paginationModel.pageSize)}></IOSSwitch>  
         }
         },
         { field: "AddIpAddress", headerName: "IP Address",flex:1 },
@@ -208,7 +205,7 @@ function BranchMaster() {
             <>
                 <div
                 className="btn btn-sm"
-                onClick={() => {setEditData(params.row.id);setOpenModal(true)}} 
+                onClick={() => {setEditData(params.row.id-(paginationModel.page*paginationModel.pageSize));setOpenModal(true)}} 
                 >
                      <CustomIconButton />
                 </div>

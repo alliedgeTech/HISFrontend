@@ -4,6 +4,7 @@ const initialState = {
     registrationData: null,
     registrationLoading: false,
     registrationEditData: null,
+    registrationPagination:{page:0,pageSize:10},
 }
 
 const registrationSlice = createSlice({
@@ -18,11 +19,15 @@ const registrationSlice = createSlice({
         },
         setRegistrationEditData: (state, action) => {
             state.registrationEditData = action.payload
+        },
+        setRegistrationPagination : (state,action) => {
+            state.registrationPagination.page = action.payload.page;
+            state.registrationPagination.pageSize = action.payload.pageSize
         }
     }
 
 });
 
-export const { setRegistrationData,setRegistrationLoading,setRegistrationEditData } = registrationSlice.actions;   
+export const { setRegistrationData,setRegistrationLoading,setRegistrationEditData,setRegistrationPagination } = registrationSlice.actions;   
 
 export default registrationSlice.reducer;

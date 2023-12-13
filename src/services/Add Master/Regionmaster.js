@@ -1,23 +1,23 @@
 // import { Toast } from "react-toastify/dist/components";
 import APIManager from "../../utils/ApiManager"
-import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { setCityData, setCityLoading, setCountryData, setCountryDropDownData, setCountryLoading, setStateData, setStateDropDownData, setStateLoading } from "../../slices/region.slice";
+import { setCityCount, setCityData, setCityLoading, setCountryCount, setCountryData, setCountryLoading, setStateCount, setStateData, setStateLoading } from "../../slices/region.slice";
 import { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
-
+import toast from "react-hot-toast";
 
 const ApiManager = new APIManager();
 
 export const useRegionData = () => {
     const dispatch = useDispatch();
-    const { countryLoading,countryData,countryEditData,countryDropDownData,stateData,stateLoading,stateEditData,stateDropDownData,cityData,cityLoading,cityEditData, } = useSelector((state) => state.region);
+    const { countryLoading,countryData,countryEditData,countryPagination,countryCount,stateData,stateLoading,stateEditData,statePagintion,stateCount,cityData,cityLoading,cityEditData,cityPagination,cityCount } = useSelector((state) => state.region);
+
     const [ListLoadingCountry, setListLoadingCountry] = useState(false);
     const [ListLoadingState, setListLoadingState] = useState(false);
     const [ListLoadingCity, setListLoadingCity] = useState(false);
+
     const createCountry = async (data) => {
         dispatch(setCountryLoading(true));
-        const resData = await ApiManager.post("admin/regionMaster/country",data);
+        const resData = await ApiManager.post(`admin/regionMaster/country`,data);
         if(!resData?.error)
         {
             toast.success("country created successfully")
@@ -30,31 +30,29 @@ export const useRegionData = () => {
         return false;
     }
 
-    const getAllCountry = async (withLoading=false) => {
+    const getAllCountry = async (withLoading=false,page=countryPagination?.page,pageSize=countryPagination?.pageSize) => {
         if(withLoading) 
         {
             setListLoadingCountry(true);
-            dispatch(setCountryLoading(true));
         }
-        const resData = await ApiManager.get("admin/regionMaster/country");
+        const resData = await ApiManager.get(`admin/regionMaster/country?page=${page}&pageSize=${pageSize}`);
         if(!resData?.error)
         {
-            dispatch(setCountryData(resData?.data));
-            dispatch(setCountryDropDownData(resData?.data.filter((tempData)=>{ return tempData?.isActive})));
-            if(withLoading) {setListLoadingCountry(false);dispatch(setCountryLoading(false))};
-            return true;
+            console.log('this is count : resData',resData)
+            dispatch(setCountryData(resData?.data?.data));
+            dispatch(setCountryCount(resData?.data?.count));
+            if(withLoading) {setListLoadingCountry(false)};
+            return true;    
         }
         if(withLoading){
             setListLoadingCountry(false);
-            dispatch(setCountryLoading(false));
         }
         return false;
     }
 
     const updateCountry = async (data) => {
         dispatch(setCountryLoading(true));
-        let temp = countryData[countryEditData-1];
-        const resData = await ApiManager.patch(`admin/regionMaster/country/${temp._id}`,data);
+        const resData = await ApiManager.patch(`admin/regionMaster/country/${data._id}`,data);
         if(!resData?.error)
         {
             toast.success("country updated successfully")
@@ -133,19 +131,18 @@ export const useRegionData = () => {
         return false;
     }
 
-    const getAllState = async (withLoading=false) => {
+    const getAllState = async (withLoading=false,page=statePagintion?.page,pageSize=statePagintion?.pageSize) => {
         if(withLoading) 
         {
             setListLoadingState(true);
             dispatch(setStateLoading(true));
         }
-        const resData = await ApiManager.get("admin/regionMaster/state");
+        const resData = await ApiManager.get(`admin/regionMaster/state?page=${page}&pageSize=${pageSize}`);
 
         if(!resData?.error)
         {
-            let filterData = resData?.data.filter((tempData)=>(tempData?.countryId?.isActive));
-            dispatch(setStateData(filterData));
-            dispatch(setStateDropDownData(filterData.filter((tempData)=>{ return tempData?.isActive})));
+            dispatch(setStateData(resData?.data?.data));
+            dispatch(setStateCount(resData?.data?.count));
             if(withLoading) {
                 setListLoadingState(false);
                 dispatch(setStateLoading(false))};
@@ -159,19 +156,18 @@ export const useRegionData = () => {
         return false;
     }
 
-    const getAllCity = async (withLoading=false) => {
+    const getAllCity = async (withLoading=false,page=cityPagination?.page,pageSize=cityPagination?.pageSize) => {
         if(withLoading) 
         {
             dispatch(setCityLoading(true));
             setListLoadingCity(true);
         }
-        const resData = await ApiManager.get("admin/regionMaster/city");
+        const resData = await ApiManager.get(`admin/regionMaster/city?page=${page}&pageSize=${pageSize}`);
+
         if(!resData?.error)
         {
-            console.log("this si data jdjsklfjsk -2",resData?.data)
-            let filterData = resData?.data.filter((tempData)=>{ return (tempData?.stateId?.isActive && tempData?.stateId?.countryId?.isActive)});
-            console.log('this si data jdjsklfjsk -1',filterData);
-            dispatch(setCityData(filterData));
+            dispatch(setCityData(resData?.data?.data));
+            dispatch(setCityCount(resData?.data?.count));
             if(withLoading) {
                 dispatch(setCityLoading(false));
                 setListLoadingCity(false);
@@ -246,14 +242,13 @@ export const useRegionData = () => {
         return false;
     }
 
-    const handleSwitch = async (index,value,type) => {
+    const handleSwitch = async (id,value,type) => {
         const toastId = toast.loading("Loading...");
         
         switch(type) {
             case 'country' : 
-                dispatch(setCountryData(true));
-                let tempData = countryData[index];
-                const resData = await ApiManager.patch(`admin/regionMaster/country`,{isActive:value,countryId:tempData._id});
+                dispatch(setCountryLoading(true));
+                const resData = await ApiManager.patch(`admin/regionMaster/country`,{isActive:value,countryId:id});
                 if(!resData?.error)
                 {
                     toast.success("country updated successfully")
@@ -262,7 +257,7 @@ export const useRegionData = () => {
                     getAllCity(true);
                     toast.dismiss(toastId);
                     dispatch(setCountryLoading(false));
-                    return;
+                    return true;
                     
                 }
                 toast.dismiss(toastId);
@@ -270,9 +265,8 @@ export const useRegionData = () => {
                 dispatch(setCountryLoading(false));
                 break;
             case 'state' :
-                dispatch(setCountryData(true));
-                let tempData1 = stateData[index];
-                const resData1 = await ApiManager.patch(`admin/regionMaster/state`,{isActive:value,stateId:tempData1._id});
+                dispatch(setStateLoading(true));
+                const resData1 = await ApiManager.patch(`admin/regionMaster/state`,{isActive:value,stateId:id});
                 if(!resData1?.error)
                 {
                     toast.success("state updated successfully")
@@ -288,8 +282,7 @@ export const useRegionData = () => {
                 break;
             case 'city' :
                 dispatch(setCityLoading(true));
-                let tempData2 = cityData[index];
-                const resData2 = await ApiManager.patch(`admin/regionMaster/city`,{isActive:value,cityId:tempData2._id});
+                const resData2 = await ApiManager.patch(`admin/regionMaster/city`,{isActive:value,cityId:id});
                 if(!resData2?.error)
                 {
                     toast.success("city updated successfully")
@@ -320,28 +313,35 @@ export const useRegionData = () => {
 
 
     return {
+        getAllCountry,
         createCountry,
         countryData,
         countryLoading,
         countryEditData,
-        countryDropDownData,
         updateCountry,
         ListLoadingCountry,
+        countryPagination,
+        countryCount,
 
+        getAllState,
         stateData,
         stateLoading,
         stateEditData,
         ListLoadingState,
-        stateDropDownData,
         createState,
         updateState,
+        statePagintion,
+        stateCount,
 
+        getAllCity,
         cityData,
         ListLoadingCity,
         cityLoading,
         cityEditData,
         createCity,
         updateCity,
+        cityPagination,
+        cityCount,
 
         handleSwitch
     }
