@@ -19,7 +19,7 @@ function CommonMaster({MainValue,Loading,ListLoading,add,update,get,tableData,pa
       value: "",
       isActive: "true",
     },
-    mode:'onTouched'
+    mode:'onBlur'
   });
   const [ModalOpen, setModalOpen] = useState(false);
 

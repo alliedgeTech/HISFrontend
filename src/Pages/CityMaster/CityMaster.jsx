@@ -28,7 +28,7 @@ function CityMaster() {
             stateName:null,
             cityName:""
         },
-        mode:"onTouched"
+        mode:"onBlur"
     });
 
     const dispatch = useDispatch();

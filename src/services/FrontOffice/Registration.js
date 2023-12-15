@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setRegistrationData, setRegistrationLoading } from "../../slices/registration.slice";
+import { setRegistrationCount, setRegistrationData, setRegistrationLoading } from "../../slices/registration.slice";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import APIManager from "../../utils/ApiManager";
@@ -10,22 +10,27 @@ export const  useFrontOfficeRegistration = () => {
     const [ListLoading, setListLoading] = useState(false);
 
     const dispatch = useDispatch();
-  const { registrationData,registrationLoading,registrationEditData} = useSelector(State => State.registration);
+  const { registrationData,registrationPagination} = useSelector(State => State.registration);
 
-  const getRegistrationData = async (withLoading=false) => {
+  const getRegistrationData = async (withLoading=false,page=registrationPagination.page,pageSize=registrationPagination.pageSize) => {
         if(withLoading)
         {
             setListLoading(true);
         }
-        const data = await ApiManager.get("admin/frontOffice/registration");
+        const data = await ApiManager.get(`admin/frontOffice/registration?page=${page}&pageSize=${pageSize}`);
         if(!data.error)
         {
-            dispatch(setRegistrationData(data.data));   
+            console.log("this is count data : ",data);
+            dispatch(setRegistrationCount(data?.data?.count));
+            dispatch(setRegistrationData(data?.data?.data));  
+            withLoading && setListLoading(false);
+            return true; 
         }
         if(withLoading)
         {
             setListLoading(false);
         }
+        return false;
     }
 
     const createRegistration = async (data) => {

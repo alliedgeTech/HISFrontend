@@ -8,10 +8,8 @@ import UserMaster from './Pages/UserMaster/UserMaster';
 import BranchMaster from './Pages/BranchMaster/BranchMaster';
 import CategoryMaster from './Pages/CategoryMaster/CategoryMaster';
 import RegionMaster from './Pages/RegionMaster/RegionMaster';
-import DepartmentMaster from './Pages/DepartmentMaster/DepartmentMaster';
-import DesignationMaster from './Pages/DesignationMaster/DesignationMaster';
-import SpecialityMaster from './Pages/SpecialityMaster/SpecialityMaster';
 import HrMaster from './Pages/HrMaster/HrMaster';
+import RegistrationMaster from './Pages/RegistrationMaster/RegistrationMaster';
 
 function App() {
   return (
@@ -24,6 +22,7 @@ function App() {
           <Route path='/categorymaster' element={<CategoryMaster/>} />
           <Route path='/regionmaster' element={<RegionMaster/>} />
           <Route path='/hrmaster' element={<HrMaster/>} />
+          <Route path='/front-office/registration' element={<RegistrationMaster/>} />
           <Route path='*' element={<Home/>} />
         </Route>  
       </Routes>   

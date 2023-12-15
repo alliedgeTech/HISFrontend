@@ -55,16 +55,35 @@ function CustomAutoCompelete({url,disable=false,onChange,lable,value,getOptionLa
     renderInput={(params) => (
       <TextField
         {...params}
-        sx={{  "& label.Mui-focused": {
-          color: hasError ? '' : "#25396f"
-        }, "& .MuiOutlinedInput-root": {
-          "&.Mui-focused fieldset": {
-            borderColor: hasError ? '' : "#25396f"
-          }
-        }}}
+        // sx={{  "& label.Mui-focused": {
+        //   color: hasError ? '#fff' : "#25396f"
+        // }, "& .MuiOutlinedInput-root": {
+        //   "&.Mui-focused fieldset": {
+        //     borderColor: hasError ? '#fff' : "#25396f"
+        //   }
+        // }}}
+
+        // sx={{  "& label.Mui-focused": {
+        //   color: hasError ? "" : "#25396f"
+        // }, "& .MuiOutlinedInput-root": {
+        //   "&.Mui-focused fieldset": {
+        //     borderColor: hasError ? "" : "#25396f"
+        //   }
+        // }}}
+
+        sx={{
+          "& label.Mui-focused": {
+            color: hasError ? "" : "#25396f",
+          },
+          "& .MuiOutlinedInput-root": {
+            "&.Mui-focused fieldset": {
+              borderColor: hasError ? "red" : "#25396f",
+            },
+          },
+        }}
         label={lable}
         inputRef={inputRef}
-        error={hasError}
+        error={!!hasError}
         InputProps={{ 
           ...params.InputProps,
           endAdornment: (

@@ -70,7 +70,7 @@ function UserMaster() {
       virtualConsultation:null,
       languageSpoken:"",
     },
-    mode: "onTouched",
+    mode: "onBlur",
   });
 
   const watchCity = watch("city");
@@ -340,8 +340,8 @@ const onPaginationChange = async({page,pageSize}) => {
     },
     { field: "_id", headerName: "", width: "0",flex:1, },
     {
-      filed: "image",headerName:"Profile",rowHeight:300,renderCell:(params)=>(
-        <img src={params.row.image} style={{width:"50%"}} />
+      filed: "image",headerName:"Profile",rowHeight:200,renderCell:(params)=>(
+        <img src={params.row.image} style={{width:"50%",maxWidth:"50px"}} />
       ),flex:1,sortable:false,
     },
     { field: "userName", headerName: "user Name", flex:1, },
