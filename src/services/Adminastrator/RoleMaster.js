@@ -11,10 +11,10 @@ export const useRoleData = () => {
     const [ListLoading, setListLoading] = useState(false);
 
     const dispatch = useDispatch();
-    const {roleLoading:Loading,roleData} = useSelector(state => state.role); 
-    const getRoleData = async (withLoading=false,page=0,pageSize=10) => {
+    const {roleLoading:Loading,roleData,rolePagination} = useSelector(state => state.role); 
 
-        if(withLoading)
+    const getRoleData = async (withLoading=false,page=rolePagination.page,pageSize=rolePagination.pageSize) => {
+    if(withLoading)
         {
             setListLoading(true);
         }
@@ -33,14 +33,15 @@ export const useRoleData = () => {
         return false;
     }
 
-    const updateRole = async (data,page,pageSize) => {
+    const updateRole = async (data,resetAll) => {
         dispatch(setRoleLoading(true));
         const resData = await ApiManager.put(`admin/RoleMaster/updaterole/${data._id}`,data);
         
         if(!resData.error)
         {
-            let temp = structuredClone(roleData);
-            temp[(data?.id - (page*pageSize)) - 1 ] = {...resData.data.data};
+            resetAll();
+            const temp = structuredClone(roleData); 
+            temp[data?.id] = resData.data.data;
             dispatch(setRoleData(temp));
             toast.success(resData.message);
             dispatch(setRoleLoading(false));
@@ -52,20 +53,19 @@ export const useRoleData = () => {
     }
 
 
-    const addRole = async (data,page,pageSize) => {
+    const addRole = async (data,resetAll) => {
         // setLoading(true);
         dispatch(setRoleLoading(true));
         const resData = await ApiManager.post("admin/RoleMaster/addrole",data);
 
         if(!resData.error)
         {
-            getRoleData(false,page,pageSize);
+            getRoleData();
+            resetAll();
             toast.success(resData.message);
-            // setLoading(false);
             dispatch(setRoleLoading(false))
             return true;
         }
-        // setLoading(false);
         dispatch(setRoleLoading(false));
         return false;
     }

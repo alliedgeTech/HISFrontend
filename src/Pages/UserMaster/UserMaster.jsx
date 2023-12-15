@@ -978,7 +978,7 @@ const onPaginationChange = async({page,pageSize}) => {
         >
             {
                 ListLoading ? <><LinearProgress /><TableSkeleton /></> : Array.isArray(rowData) && rowData.length !== 0 ? ( <DataGrid
-                    style={{maxHeight:"calc(100vh - 179px)"}}
+                    style={{maxHeight:"calc(100vh - 173px)"}}
                     initialState={{ pagination: { paginationModel: { pageSize: paginationModel.pageSize,page:paginationModel.page } } , 
                     columns: {
                       columnVisibilityModel: {

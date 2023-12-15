@@ -140,13 +140,14 @@ export const useRegionData = () => {
         const resData = await ApiManager.get(`admin/regionMaster/state?page=${page}&pageSize=${pageSize}`);
 
         if(!resData?.error)
-        {
+        {   
             dispatch(setStateData(resData?.data?.data));
             dispatch(setStateCount(resData?.data?.count));
             if(withLoading) {
                 setListLoadingState(false);
-                dispatch(setStateLoading(false))};
-            return true;
+                dispatch(setStateLoading(false))
+            };
+                return true;
         }
 
         if(withLoading){
@@ -192,7 +193,6 @@ export const useRegionData = () => {
             return true;
         }
         dispatch(setCityLoading(false));
-        toast.error(resData?.message)
         return false;
     }
 
@@ -238,7 +238,6 @@ export const useRegionData = () => {
         }
 
         dispatch(setCityLoading(false));
-        toast.error(resData?.message);
         return false;
     }
 
@@ -261,7 +260,6 @@ export const useRegionData = () => {
                     
                 }
                 toast.dismiss(toastId);
-                toast.error(resData?.message);
                 dispatch(setCountryLoading(false));
                 break;
             case 'state' :
@@ -277,11 +275,11 @@ export const useRegionData = () => {
                     return;
                 }
                 toast.dismiss(toastId);
-                toast.error(resData1?.message);
                 dispatch(setStateLoading(false));
                 break;
             case 'city' :
                 dispatch(setCityLoading(true));
+                console.log('this is city id:',id);
                 const resData2 = await ApiManager.patch(`admin/regionMaster/city`,{isActive:value,cityId:id});
                 if(!resData2?.error)
                 {
@@ -292,7 +290,6 @@ export const useRegionData = () => {
                     return;
                 }
                 toast.dismiss(toastId);
-                toast.error(resData2?.message);
                 dispatch(setCityLoading(false));
                 break;
             default:

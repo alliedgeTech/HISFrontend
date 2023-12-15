@@ -1,7 +1,7 @@
 import React, { useState,useMemo, useEffect } from 'react'
 import { useRegionData } from '../../services/Add Master/Regionmaster'
 import { useDispatch, useSelector } from "react-redux";
-import { setCountryEditData, setCountryPagination } from '../../slices/region.slice';
+import { setCountryEditData, setCountryPagination, setStateEditData, setStatePagination } from '../../slices/region.slice';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 import AddEditModal from '../../Components/AddEditModal/AddEditModal';
 import { useForm,Controller } from 'react-hook-form';
@@ -18,63 +18,66 @@ import EmptyData from '../../Components/NoData/EmptyData';
 
 
 
-function CountryMaster() {
-    const { countryData,countryEditData,countryLoading,countryPagination,createCountry,updateCountry,ListLoadingCountry,getAllCountry,handleSwitch,countryCount } = useRegionData();
+function StateMaster() {
+    const { stateData,stateEditData,stateLoading,statePagintion,createState,updateState,ListLoadingState,getAllState,handleSwitch,stateCount } = useRegionData();
      
     var { handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
         defaultValues:{
             isActive:"true",
-            countryName:null
+            stateName:null,
+            countryName:null,
         },
         mode:"onTouched"
     });
 
     const dispatch = useDispatch();
 
-    const [CountryModal, setCountryModal] = useState(false);
+    const [StateModal, setStateModal] = useState(false);
 
     const resetAllFields = () => {
         reset({
+            stateName:null,
             countryName:null,
             isActive: "true",
         })
     }
 
-    function closeCountryModal(){
+    function closeStateModal(){
         // do reset thing and edit things
         resetAllFields();
-        setCountryModal(false);
-        dispatch(setCountryEditData(null));
+        setStateModal(false);
+        dispatch(setStateEditData(null));
     }
     
-    async function submitCountryData(data){
+    async function submitStateData(data){
 
-        if(countryEditData)
+        if(stateEditData)
         {
             // update country
-            let temp = await updateCountry(data);
+            let temp = await updateState(data,stateEditData);
             if(temp){
-                closeCountryModal();
+                closeStateModal();
             }
         }
         else {
             delete data?._id;
-            let temp = await createCountry(data);
+            let temp = await createState({...data,countryId:data?.countryName?._id});
             if(temp){
-            closeCountryModal();
+            closeStateModal();
           }
         }
     }
 
-    function funcSetCountryData(data){
-        var id = countryPagination?.page * countryPagination?.pageSize;
+    function funcSetStateData(data){
+        var id = statePagintion?.page * statePagintion?.pageSize;
         var array = [];
         data?.forEach((element) => {
                 let thisData = {
                     id: ++id,
                     _id: element?._id,
-                    countryName: element?.countryName,
-                    isActive: element?.isActive ,
+                    stateName: element?.stateName,
+                    countryName: element?.countryId?.countryName,
+                    isActive: element?.isActive,
                 };
                 array.push(thisData);
         });
@@ -82,11 +85,11 @@ function CountryMaster() {
         return array;
     }
 
-    const CountryRowData = useMemo(() => { 
-        if(countryData && Array.isArray(countryData) && countryLoading === false){
-          return funcSetCountryData(countryData);
+    const StateRowData = useMemo(() => { 
+        if(stateData && Array.isArray(stateData) && ListLoadingState  === false){
+          return funcSetStateData(stateData);
         }
-    },[countryData,ListLoadingCountry]);
+    },[stateData,ListLoadingState]);
 
     const columns = [
         {
@@ -96,10 +99,11 @@ function CountryMaster() {
         {
             field:'_id',headerName:'_id',width:0
         },
+        { field: "stateName", headerName: "State Name",flex:1 },
         { field: "countryName", headerName: "Country Name", flex:1 },
         { field: "isActive", headerName: "Is Active", flex:1,
         renderCell: (params) => {
-          return <IOSSwitch checked={params.row.isActive} onChange={(e)=>handleSwitch(params.row._id,e.target.checked,"country")}></IOSSwitch> 
+          return <IOSSwitch checked={params.row.isActive} onChange={(e)=>handleSwitch(params?.row?._id,e.target.checked,"state")}></IOSSwitch> 
         }
       },
         {
@@ -109,9 +113,7 @@ function CountryMaster() {
           renderCell: (params) => (
             <>
               <div
-                onClick={() => { setCountryModal(true); dispatch(setCountryEditData((true)));  
-                    reset({ _id:params.row._id,countryName:params.row.countryName,isActive:params?.row?.isActive?.toString()  
-                })}}
+                onClick={() => { setStateModal(true); dispatch(setStateEditData((params.row.id-(statePagintion.page * statePagintion.pageSize))))}}
               >
                 <CustomIconButton />
               </div>
@@ -121,35 +123,42 @@ function CountryMaster() {
         },
       ];
 
-      const onPaginationChange = async({page,pageSize}) => {
-        if(page!==countryPagination.page || pageSize !== countryPagination.pageSize )
-        {
-          const recentData = structuredClone(countryPagination);
-          dispatch(setCountryPagination({page,pageSize}))
+      useEffect(()=>{
+            if(stateEditData)
+            {
+                let temp = stateData[stateEditData-1];
+                reset({
+                  stateName:temp?.stateName,
+                  countryName:temp?.countryId,
+                  isActive:temp?.isActive?.toString()
+                })
+            }
+      },[stateEditData])
 
-          if(page!==countryPagination.page)
+      const onPaginationChange = async({page,pageSize}) => {
+        if(page!==statePagintion.page || pageSize !== statePagintion.pageSize )
+        {
+          const recentData = structuredClone(statePagintion);
+          dispatch(setStatePagination({page,pageSize}))
+
+          if(page!==statePagintion.page)
           {
-              // change the page
-                const resData = await getAllCountry(true,page,pageSize);
+                const resData = await getAllState(true,page,pageSize);
                 if(!resData)
                 {
-                  dispatch(setCountryPagination(recentData));
+                  dispatch(setStatePagination(recentData));
                 }
-    
           } else {
-              // change the pageSize
-              const resData = await getAllCountry(true,0,pageSize);
+              const resData = await getAllState(true,0,pageSize);
               
               if(!resData)
                 {
-                  dispatch(setCountryPagination(recentData));
+                  dispatch(setStatePagination(recentData));
                 }
           }
         }
-    } 
+      } 
 
-    console.log("this is count : ",countryCount);
-       
       
     const IOSSwitch = styled((props) => (
         <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -206,16 +215,16 @@ function CountryMaster() {
     <>
         <AddEditModal
             maxWidth="lg"
-            handleClose={closeCountryModal}
-            handleSubmit={handleSubmit(submitCountryData)}
-            open={CountryModal}
-            modalTitle={countryEditData ? "Update Country" : "Add Country"}
-            isEdit={!!countryEditData}
-            Loading={countryLoading}
+            handleClose={closeStateModal}
+            handleSubmit={handleSubmit(submitStateData)}
+            open={StateModal}
+            modalTitle={stateEditData ? "Update State" : "Add State"}
+            isEdit={!!stateEditData}
+            Loading={stateLoading}
         >
             <Box
             component="form"
-            onSubmit={handleSubmit(submitCountryData)}
+            onSubmit={handleSubmit(submitStateData)}
             p={1}
             >   
                  <Grid 
@@ -225,20 +234,48 @@ function CountryMaster() {
                     justifyContent="space-between"
                     alignItems="center" 
                     > 
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <CustomTextInputField
-                            name="countryName"
-                            label="Country Name"
+                            name="stateName"
+                            label="State Name"
                             control={control}
                             focused={true}
                             rules={{
-                                required:{value:true,message:"Country Name is required"}
+                                required:{value:true,message:"State Name is required"}
                             }}
-                            error={errors?.countryName?.message}
+                            error={errors?.stateName?.message}
                         />
                     </Grid>
 
-                    <Grid xs={12} sm={6}>
+                    <Grid item xs={12} md={4}>
+                        <Controller
+                            name="countryName"
+                            rules={{ required: {value:true,message:"Country is required"} }}
+                            control={control}
+                            render={({ field }) => {
+                            const {onChange,value,ref,onBlur} = field; 
+                            return <CustomAutoCompelete 
+                            onChange={onChange}
+                            lable={"Country Name"}
+                            onBlur={onBlur}
+                            value={value}
+                            getOptionLabel={(option)=>option?.countryName}
+                            url={"admin/regionMaster/country"}
+                            inputRef={ref}
+                            filterOnActive={true}
+                            hasError={!!errors?.countryName?.message}
+                            /> 
+                          }}
+                            > 
+                        </Controller>
+                          
+                            {
+                              errors?.countryName && <Typography variant="caption" color="error">{errors?.countryName?.message}</Typography>
+                            }
+
+                    </Grid>
+
+                    <Grid xs={12} sm={4}>
                         <Controller
                             name="isActive"
                             control={control}
@@ -267,18 +304,17 @@ function CountryMaster() {
         </AddEditModal>
 
         <TableMainBox
-           title={"Country Master"}
-            buttonText={"Add Country"}
-            onClick={() => {setCountryModal(true);clearErrors();}}
+           title={"State Master"}
+            buttonText={"Add State"}
+            onClick={() => {setStateModal(true);clearErrors();}}
         >
             {
-                ListLoadingCountry ? <><LinearProgress /><TableSkeleton/></>: Array.isArray(CountryRowData) && CountryRowData.length > 0 ? (
+                ListLoadingState ? <><LinearProgress /><TableSkeleton/></>: Array.isArray(StateRowData) && StateRowData.length > 0 ? (
                     <DataGrid
                     style={{maxHeight:"calc(100vh - 248px)"}}
-                    initialState={{ pagination: { paginationModel: { pageSize: countryPagination.pageSize,page:countryPagination.page } } , 
+                    initialState={{ pagination: { paginationModel: { pageSize: statePagintion.pageSize,page:statePagintion.page } } , 
                     columns: {
                       columnVisibilityModel: {
-                        // Hide columns status and traderName, the other columns will remain visible
                         _id: false,
                       },
                     },
@@ -294,14 +330,14 @@ function CountryMaster() {
                     }}
                       disableRowSelectionOnClick={true}
                       columns={columns}
-                      rows={CountryRowData}
+                      rows={StateRowData}
                       slots={{ toolbar: GridToolbar }}
                       getRowHeight={(_data) => 'auto'}  
                       getRowClassName={(params) => !params?.row?.isActive && "inactive-row"}
                       classes={{cellContent:"cellContent"}}
-                      paginationModel={countryPagination}
+                      paginationModel={statePagintion}
                       onPaginationModelChange={(data) => onPaginationChange(data)}
-                      rowCount={countryCount}
+                      rowCount={stateCount}
                       pagination
                       pageSizeOptions={[10,30,50,100]}
                       paginationMode="server"
@@ -315,4 +351,4 @@ function CountryMaster() {
   )
 }
 
-export default CountryMaster
+export default StateMaster

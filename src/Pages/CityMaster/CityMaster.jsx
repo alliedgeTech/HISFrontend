@@ -1,7 +1,7 @@
 import React, { useState,useMemo, useEffect } from 'react'
 import { useRegionData } from '../../services/Add Master/Regionmaster'
 import { useDispatch, useSelector } from "react-redux";
-import { setCountryEditData, setCountryPagination } from '../../slices/region.slice';
+import { setCityEditData, setCityPagination, setCountryEditData, setCountryPagination } from '../../slices/region.slice';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 import AddEditModal from '../../Components/AddEditModal/AddEditModal';
 import { useForm,Controller } from 'react-hook-form';
@@ -18,63 +18,69 @@ import EmptyData from '../../Components/NoData/EmptyData';
 
 
 
-function CountryMaster() {
-    const { countryData,countryEditData,countryLoading,countryPagination,createCountry,updateCountry,ListLoadingCountry,getAllCountry,handleSwitch,countryCount } = useRegionData();
+function CityMaster() {
+    const { cityData,cityEditData,cityLoading,cityPagination,createCity,updateCity,ListLoadingCity,getAllCity,handleSwitch,cityCount } = useRegionData();
      
     var { handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
         defaultValues:{
             isActive:"true",
-            countryName:null
+            countryName:null,
+            stateName:null,
+            cityName:""
         },
         mode:"onTouched"
     });
 
     const dispatch = useDispatch();
 
-    const [CountryModal, setCountryModal] = useState(false);
+    const [CityModal, setCityModal] = useState(false);
 
     const resetAllFields = () => {
         reset({
+            isActive:"true",
             countryName:null,
-            isActive: "true",
+            stateName:null,
+            cityName:""
         })
     }
 
-    function closeCountryModal(){
+    function closeCityModal(){
         // do reset thing and edit things
         resetAllFields();
-        setCountryModal(false);
-        dispatch(setCountryEditData(null));
+        setCityModal(false);
+        dispatch(setCityEditData(null));
     }
     
-    async function submitCountryData(data){
+    async function submitCityData(data){
 
-        if(countryEditData)
+        if(cityEditData)
         {
             // update country
-            let temp = await updateCountry(data);
+            let temp = await updateCity(data);
             if(temp){
-                closeCountryModal();
+                closeCityModal();
             }
         }
         else {
             delete data?._id;
-            let temp = await createCountry(data);
+            let temp = await createCity({...data,stateId:data?.stateName?._id});
             if(temp){
-            closeCountryModal();
+            closeCityModal();
           }
         }
     }
 
-    function funcSetCountryData(data){
-        var id = countryPagination?.page * countryPagination?.pageSize;
+    function funcSetCityData(data){
+        var id = cityPagination?.page * cityPagination?.pageSize;
         var array = [];
         data?.forEach((element) => {
                 let thisData = {
                     id: ++id,
                     _id: element?._id,
-                    countryName: element?.countryName,
-                    isActive: element?.isActive ,
+                    cityName: element?.cityName,
+                    stateName: element?.stateId?.stateName,
+                    countryName: element?.stateId?.countryId?.countryName,
+                    isActive: element?.isActive
                 };
                 array.push(thisData);
         });
@@ -82,74 +88,84 @@ function CountryMaster() {
         return array;
     }
 
-    const CountryRowData = useMemo(() => { 
-        if(countryData && Array.isArray(countryData) && countryLoading === false){
-          return funcSetCountryData(countryData);
+    const CityRowData = useMemo(() => { 
+        if(cityData && Array.isArray(cityData) && cityLoading === false){
+          return funcSetCityData(cityData);
         }
-    },[countryData,ListLoadingCountry]);
+    },[cityData,ListLoadingCity]);
 
     const columns = [
-        {
-          field: "id",
-          headerName: "ID",
-        },
-        {
-            field:'_id',headerName:'_id',width:0
-        },
-        { field: "countryName", headerName: "Country Name", flex:1 },
-        { field: "isActive", headerName: "Is Active", flex:1,
-        renderCell: (params) => {
-          return <IOSSwitch checked={params.row.isActive} onChange={(e)=>handleSwitch(params.row._id,e.target.checked,"country")}></IOSSwitch> 
-        }
-      },
-        {
-          field: "actions",
-          headerName: "Actions",
-          shortable: false,
-          renderCell: (params) => (
-            <>
-              <div
-                onClick={() => { setCountryModal(true); dispatch(setCountryEditData((true)));  
-                    reset({ _id:params.row._id,countryName:params.row.countryName,isActive:params?.row?.isActive?.toString()  
-                })}}
-              >
-                <CustomIconButton />
-              </div>
-              
-            </>
-          ),
-        },
+          {
+            field: "id",
+            headerName: "ID",
+          },
+          {
+            field:"_id",headerName:"_id",hide:true
+          },
+          { field: "cityName", headerName: "City Name", flex:1},
+          { field: "stateName", headerName: "State Name", flex:1 },
+          { field: "countryName", headerName: "Country Name", flex:1 },
+          { field: "isActive", headerName: "Is Active",flex:1,
+          renderCell: (params) => {
+            return <IOSSwitch checked={params.row.isActive}  onChange={(e)=>handleSwitch(params.row._id,e.target.checked,"city")}></IOSSwitch> 
+          }
+      
+          },
+          {
+            field: "actions",
+            headerName: "Actions",
+            shortable: false,
+            renderCell: (params) => (
+              <>
+                <div
+                  onClick={() => { setCityModal(true); dispatch(setCityEditData((params.row.id-(cityPagination?.page*cityPagination?.pageSize))));}}
+                >
+                    <CustomIconButton />
+                </div>
+                
+              </>
+            ),
+          },
       ];
 
-      const onPaginationChange = async({page,pageSize}) => {
-        if(page!==countryPagination.page || pageSize !== countryPagination.pageSize )
+      useEffect(()=>{
+        if(cityEditData)
         {
-          const recentData = structuredClone(countryPagination);
-          dispatch(setCountryPagination({page,pageSize}))
+          let temp = cityData[cityEditData-1];
+          reset({
+            cityName:temp?.cityName,
+            stateName:temp?.stateId,
+            isActive: temp?.isActive.toString()
+          })
+        }
+      },[cityEditData])
 
-          if(page!==countryPagination.page)
+      const onPaginationChange = async({page,pageSize}) => {
+        if(page!==cityPagination.page || pageSize !== cityPagination.pageSize )
+        {
+          const recentData = structuredClone(cityPagination);
+          dispatch(setCityPagination({page,pageSize}))
+
+          if(page!==cityPagination.page)
           {
               // change the page
-                const resData = await getAllCountry(true,page,pageSize);
+                const resData = await getAllCity(true,page,pageSize);
                 if(!resData)
                 {
-                  dispatch(setCountryPagination(recentData));
+                  dispatch(setCityPagination(recentData));
                 }
     
           } else {
               // change the pageSize
-              const resData = await getAllCountry(true,0,pageSize);
+              const resData = await getAllCity(true,0,pageSize);
               
               if(!resData)
                 {
-                  dispatch(setCountryPagination(recentData));
+                  dispatch(setCityPagination(recentData));
                 }
           }
         }
     } 
-
-    console.log("this is count : ",countryCount);
-       
       
     const IOSSwitch = styled((props) => (
         <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -206,36 +222,61 @@ function CountryMaster() {
     <>
         <AddEditModal
             maxWidth="lg"
-            handleClose={closeCountryModal}
-            handleSubmit={handleSubmit(submitCountryData)}
-            open={CountryModal}
-            modalTitle={countryEditData ? "Update Country" : "Add Country"}
-            isEdit={!!countryEditData}
-            Loading={countryLoading}
+            handleClose={closeCityModal}
+            handleSubmit={handleSubmit(submitCityData)}
+            open={CityModal}
+            modalTitle={cityEditData ? "Update City" : "Add City"}
+            isEdit={!!cityEditData}
+            Loading={cityLoading}
         >
             <Box
             component="form"
-            onSubmit={handleSubmit(submitCountryData)}
+            onSubmit={handleSubmit(submitCityData)}
             p={1}
             >   
                  <Grid 
                     container
                     spacing={{ md:3 ,xs:2  }}
-                    // columns={{ xs: 4, sm: 8, md: 12 }}
                     justifyContent="space-between"
                     alignItems="center" 
                     > 
                     <Grid item xs={12} md={6}>
                         <CustomTextInputField
-                            name="countryName"
-                            label="Country Name"
+                            name="cityName"
+                            label="City Name"
                             control={control}
                             focused={true}
                             rules={{
-                                required:{value:true,message:"Country Name is required"}
+                                required:{value:true,message:"City Name is required"}
                             }}
-                            error={errors?.countryName?.message}
+                            error={errors?.cityName?.message}
                         />
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                        <Controller
+                            name="stateName"
+                            rules={{required:{value:true,message:"State is required"}}}
+                            control={control}
+                            render={({ field }) => {
+                            const {onChange,value,ref,onBlur} = field; 
+                            return <CustomAutoCompelete 
+                            onChange={onChange}
+                            lable={"State Name"}
+                            value={value}
+                            onBlur={onBlur}
+                            getOptionLabel={(option)=>option?.stateName}
+                            url={"admin/regionMaster/state"}
+                            filterOnActive={true}
+                            inputRef={ref}
+                            hasError={!!errors?.stateName?.message}
+                            /> 
+                                }}
+                            > 
+                        </Controller>
+                        {
+                            errors?.stateName && <Typography variant="caption" color="error">{errors?.stateName?.message}</Typography>
+                        }
                     </Grid>
 
                     <Grid xs={12} sm={6}>
@@ -267,18 +308,17 @@ function CountryMaster() {
         </AddEditModal>
 
         <TableMainBox
-           title={"Country Master"}
-            buttonText={"Add Country"}
-            onClick={() => {setCountryModal(true);clearErrors();}}
+           title={"City Master"}
+            buttonText={"Add City"}
+            onClick={() => {setCityModal(true);clearErrors();}}
         >
             {
-                ListLoadingCountry ? <><LinearProgress /><TableSkeleton/></>: Array.isArray(CountryRowData) && CountryRowData.length > 0 ? (
+                ListLoadingCity ? <><LinearProgress /><TableSkeleton/></>: Array.isArray(CityRowData) && CityRowData.length > 0 ? (
                     <DataGrid
                     style={{maxHeight:"calc(100vh - 248px)"}}
-                    initialState={{ pagination: { paginationModel: { pageSize: countryPagination.pageSize,page:countryPagination.page } } , 
+                    initialState={{ pagination: { paginationModel: { pageSize: CityRowData.pageSize,page:CityRowData.page } } , 
                     columns: {
                       columnVisibilityModel: {
-                        // Hide columns status and traderName, the other columns will remain visible
                         _id: false,
                       },
                     },
@@ -294,14 +334,14 @@ function CountryMaster() {
                     }}
                       disableRowSelectionOnClick={true}
                       columns={columns}
-                      rows={CountryRowData}
+                      rows={CityRowData}
                       slots={{ toolbar: GridToolbar }}
                       getRowHeight={(_data) => 'auto'}  
                       getRowClassName={(params) => !params?.row?.isActive && "inactive-row"}
                       classes={{cellContent:"cellContent"}}
-                      paginationModel={countryPagination}
+                      paginationModel={cityPagination}
                       onPaginationModelChange={(data) => onPaginationChange(data)}
-                      rowCount={countryCount}
+                      rowCount={cityCount}
                       pagination
                       pageSizeOptions={[10,30,50,100]}
                       paginationMode="server"
@@ -315,4 +355,4 @@ function CountryMaster() {
   )
 }
 
-export default CountryMaster
+export default CityMaster
