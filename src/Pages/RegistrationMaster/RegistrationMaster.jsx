@@ -61,7 +61,7 @@ function RegistrationMaster() {
         isActive:"true",
         spouseName:"",
         dob:"",
-        mobilenumber:"",
+        mobileNo:"",
         panno:"",
         city:null,
         bloodGroup:null,
@@ -69,9 +69,9 @@ function RegistrationMaster() {
         rfid:null,  
       },
       mode:"onBlur"
-    });
+    }); 
 
-    const  { getRegistrationData,createRegistration,updateRegistration,updateState,ListLoading } = useFrontOfficeRegistration();
+    const  { getRegistrationData,createRegistration,updateRegistration,updateState,ListLoading,getRegistrationFindById } = useFrontOfficeRegistration();
 
     function setRowDataRegistration(data){
         var id = paginationModel.page * paginationModel.pageSize;
@@ -168,7 +168,7 @@ function RegistrationMaster() {
         isActive:"true",
         spouseName:"",
         dob:"",
-        mobilenumber:"",
+        mobileNo:"",
         panno:"",
         city:null,
         bloodGroup:null,
@@ -182,10 +182,9 @@ function RegistrationMaster() {
       async function submitData(data) {
         let newData = { ...data,bloodGroup:data?.bloodGroup?.value,city:data?.city?._id,gender:data?.gender?.gender,pationType:data?.pationType?.value,rfid:data?.rfid?.show,title:data?.title?._id,doctor:data?.doctor?._id,refDoctore:data?.refDoctore?._id}
 
-        delete newData._id;
         if(registrationEditData || registrationEditData===0)
         {
-          newData={...newData,registrationId:registrationData[registrationEditData]?._id}
+          newData={...newData,registrationId:data?._id}
             const temp = await updateRegistration(newData,DFile);
     
             if(temp) {
@@ -193,6 +192,7 @@ function RegistrationMaster() {
             } 
     
         } else {
+          delete newData._id;
           newData = {...newData,image:DFile};
           const temp = await createRegistration(newData);
     
@@ -222,12 +222,28 @@ function RegistrationMaster() {
       },[registrationData,ListLoading]);
 
       useEffect(() => {
+          async function GetdataById()
+          {
+            const data = await getRegistrationFindById(registrationEditData);
+
+            if(data)
+            {
+              setPreviewUrl(data?.image);
+              let newData = { ...data,bloodGroup:{value:data?.bloodGroup?.value},gender:{gender:data?.gender},pationType:{value:data?.pationType},rfid:{...[{value:null,show:"NA"},{show:"Duplicate",value:"123"}].find((data)=>data.rfid===data?.rfid)},dob:new Date(data?.dob).toISOString().split('T')[0],isActive:data?.isActive?.toString()}
+                reset(newData);
+                setModalOpen(true);
+            } else { 
+              toast.error("Something went wrong");
+            }
+          }
         if(registrationEditData==0 || registrationEditData )
         {
-          let data = registrationData[registrationEditData];
-          setPreviewUrl(data?.image);
-          let newData = { ...data,bloodGroup:{value:data?.bloodGroup?.value},gender:{gender:data?.gender},pationType:{value:data?.pationType},rfid:{...[{value:null,show:"NA"},{show:"Duplicate",value:"123"}].find((data)=>data.rfid===data?.rfid)},dob:new Date(data?.dob).toISOString().split('T')[0],isActive:data?.isActive?.toString()}
-            reset(newData);
+          // let data = registrationData[registrationEditData];
+          // setPreviewUrl(data?.image);
+          // let newData = { ...data,bloodGroup:{value:data?.bloodGroup?.value},gender:{gender:data?.gender},pationType:{value:data?.pationType},rfid:{...[{value:null,show:"NA"},{show:"Duplicate",value:"123"}].find((data)=>data.rfid===data?.rfid)},dob:new Date(data?.dob).toISOString().split('T')[0],isActive:data?.isActive?.toString()}
+          //   reset(newData);
+
+          GetdataById();
         }
     },[registrationEditData]);
 
@@ -293,17 +309,17 @@ function RegistrationMaster() {
           width:"20"
         },
         { field: "_id", headerName: "", width: "0" },
-        { field: "title", headerName: "userName",width:"180",renderCell:(params)=>`${params?.row?.title} ${params?.row?.pationName}` ,headerAlign: 'center'},
-        {field:"doctor",headerName:"Doctor",width:"150",headerAlign: 'center',align: 'center'},
+        { field: "title", headerName: "userName",width:"130",renderCell:(params)=>`${params?.row?.title} ${params?.row?.pationName}` ,headerAlign: 'center'},
+        {field:"doctor",headerName:"Doctor",width:"130",headerAlign: 'center',align: 'center'},
         {field:"age",headerName:"Age",flex:1,headerAlign: 'center',}, 
-        {field:"gender",headerName:"Gender",width:100,headerAlign: 'center',},
-        { field: "mobileNo", headerName: "Phone Number", width: 150,headerAlign: 'center', },
-        { field: "email", headerName: "Email", width: 250,headerAlign: 'center',align:'center'},
-        {field:"city",headerName:"City",width:150,headerAlign: 'center',},
+        {field:"gender",headerName:"Gender",width:100,headerAlign: 'center',align: 'center'},
+        { field: "mobileNo", headerName: "Phone Number", width: 150,headerAlign: 'center',align:'center' },
+        { field: "email", headerName: "Email", width: 180,headerAlign: 'center',align:'center'},
+        {field:"city",headerName:"City",width:150,headerAlign:'center',align:"center"},
         {field:"state",headerName:"State",width:150,headerAlign: 'center',align:"center"},
         {field:"bloodGroup",headerName:"Blood Group",width:"100"},
-        { field: "regDateTime", headerName: "Registration Date", width: 200 ,renderCell:(params)=>new Date(params?.row?.regDateTime).toLocaleString(),headerAlign:'center'},
-        { field: "address", headerName: "Address", width: 200,headerAlign:'center' },
+        { field: "regDateTime", headerName: "Registration Date", width: 200 ,renderCell:(params)=>new Date(params?.row?.regDateTime).toLocaleString(),headerAlign:'center',align:"center"},
+        { field: "address", headerName: "Address", width: 200,headerAlign:'center',align:"center" },
         { field: "pincode", headerName: "Code", width: 100 },
         { field: "isActive", headerName: "Is Active", width: 80, 
         renderCell : (params)=>(
@@ -321,9 +337,7 @@ function RegistrationMaster() {
             <>
               <div
                 onClick={() => {
-                  console.log('set kiya bhai ',params.row.id-(paginationModel.page*paginationModel.pageSize)-1);
-                  dispatch(setRegistrationEditData(params.row.id-(paginationModel.page*paginationModel.pageSize)-1));
-                  setModalOpen(true);
+                  dispatch(setRegistrationEditData(params.row._id));
                 }}
               >
                <CustomIconButton/>

@@ -33,6 +33,21 @@ export const useUserData = () => {
         return false;
     }
 
+    const getUserFindById = async (id) => {
+        const toastId = toast.loading("Loading...");
+        dispatch(setUserLoading(true))
+        const data = await ApiManager.get(`admin/userMaster/getuser/${id}`);
+        if(!data.error)
+        {
+            toast.dismiss(toastId);
+            dispatch(setUserLoading(false))
+            return data.data.data;
+        }
+        toast.dismiss(toastId);
+        dispatch(setUserLoading(false))
+        return false;
+    }
+
     const updateUSer = async (data,page,pageSize,image) => {
         dispatch(setUserLoading(true));
         const tosatId = toast.loading("Loading...");
@@ -153,6 +168,8 @@ export const useUserData = () => {
 
     return {
         getUserData,
+        setListLoading,
+        getUserFindById,
         updateUSer,
         addUser,
         Loading,

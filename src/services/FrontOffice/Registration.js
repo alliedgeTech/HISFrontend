@@ -33,6 +33,19 @@ export const  useFrontOfficeRegistration = () => {
         return false;
     }
 
+    const getRegistrationFindById = async (id) => {
+        const toastId = toast.loading("Loading...");    
+        const data = await ApiManager.get(`admin/frontOffice/registration/${id}`);
+
+        if(!data.error)
+        {
+            toast.dismiss(toastId);
+            return data.data.data;
+        }
+        toast.dismiss(toastId);
+        return false;   
+    }
+
     const createRegistration = async (data) => {
 
         dispatch(setRegistrationLoading(true));
@@ -160,6 +173,7 @@ export const  useFrontOfficeRegistration = () => {
 
     return {
         getRegistrationData,
+        getRegistrationFindById,
         createRegistration,
         updateRegistration,
         updateState,

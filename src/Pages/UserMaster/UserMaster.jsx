@@ -26,6 +26,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 import Switch from '@mui/material/Switch';
 import { setUserPagination } from '../../slices/user.slice';
+import toast from 'react-hot-toast';
 
 function UserMaster() {
     const UserData = useSelector((state) => state.user?.userData);
@@ -90,7 +91,7 @@ function UserMaster() {
 
 
 
-  const { updateUSer, addUser, Loading, assignRoleToUser, ListLoading,getUserData,userCount,paginationModel } =
+  const { updateUSer, addUser, Loading, assignRoleToUser, ListLoading,getUserData,userCount,paginationModel,getUserFindById } =
   useUserData();
 const dispatch = useDispatch();
 const RoleHook = useRoleData(); // check we need it or what 
@@ -282,14 +283,24 @@ const handleCheck = (checked, roleInfo) => {
   };
 
   useEffect(() => {
-    if (editData) {
-      let tempData =
-        Array.isArray(UserData) &&
-        UserData.find((data) => data._id === editData);
-        const dataNew = [{value:'yes',shaw:true},{value:'no',shaw:false}].find((item)=>item.shaw == tempData?.virtualConsultation)
-        tempData = {...tempData,primarylocation:tempData?.primarylocationId,gender:{gender:tempData.gender},virtualConsultation:dataNew,isActive:tempData?.isActive?.toString()}
-      reset(tempData);
-      setPreviewUrl(tempData?.image);
+
+    async function setTheEditData() {
+        let tempData = await getUserFindById(editData);
+        if(tempData) {
+          const dataNew = [{value:'yes',shaw:true},{value:'no',shaw:false}].find((item)=>item.shaw == tempData?.virtualConsultation);
+
+          tempData = {...tempData,primarylocation:tempData?.primarylocationId,gender:{gender:tempData.gender},virtualConsultation:dataNew,isActive:tempData?.isActive?.toString()}
+  
+        reset(tempData);
+        setPreviewUrl(tempData?.image); 
+        setModalOpen(true);
+        } else {
+          toast.error("something went wrong");
+        }
+    }
+    if(editData)
+    {
+      setTheEditData();
     }
   }, [editData]);
 
@@ -368,7 +379,6 @@ const onPaginationChange = async({page,pageSize}) => {
           <div
             className="btn btn-sm"
             onClick={() => {
-              setModalOpen(true);
               setEditData(params.row._id);
             }}
           >
