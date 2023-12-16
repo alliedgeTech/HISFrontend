@@ -1,4 +1,4 @@
-.menu-text{
+.menu_text{
     font-weight: 500;
     color:#25396f;
     font-size: 16px;
@@ -7,13 +7,13 @@
     letter-spacing: 0.3px;
 }   
 
-.menu-text a {
+.menu_text > a {
     gap: 5px;
     padding: 10px 15px !important;
     border-radius: 8px;
 }
     
-.sidebar-height{
+.sidebar_height{
     height:calc(100vh - 76.7px) ;
     width: fit-content;
     padding-top: 0.7rem;

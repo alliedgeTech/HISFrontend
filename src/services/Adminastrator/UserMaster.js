@@ -3,7 +3,6 @@ import APIManager from "../../utils/ApiManager";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserCount, setUserData, setUserLoading } from "../../slices/user.slice";
-import axios from "axios";
 
 const ApiManager = new APIManager();
 
@@ -63,7 +62,9 @@ export const useUserData = () => {
                 const resData = await ApiManager.patchForm(`admin/userMaster/updateuser/${data._id}?image=true`,formData);
                 if(!resData.error)
                 {
-                    getUserData(false,page,pageSize);
+                    const tempData = structuredClone(UserData);
+                    tempData[data?.id] = resData.data.data;
+                    dispatch(setUserData(tempData));
                     toast.success(resData?.message);
                     dispatch(setUserLoading(false));
                     toast.dismiss(tosatId);
@@ -88,7 +89,10 @@ export const useUserData = () => {
 
             if(!resData.error)
             {
-                getUserData();
+
+                const tempData = structuredClone(UserData);
+                tempData[data?.id] = resData.data.data;
+                dispatch(setUserData(tempData));
                 dispatch(setUserLoading(false));
                 toast.dismiss(tosatId);
                 toast.success("user updated successfully");

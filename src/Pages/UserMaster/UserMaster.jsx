@@ -285,11 +285,11 @@ const handleCheck = (checked, roleInfo) => {
   useEffect(() => {
 
     async function setTheEditData() {
-        let tempData = await getUserFindById(editData);
+        let tempData = await getUserFindById(editData?._id);
         if(tempData) {
           const dataNew = [{value:'yes',shaw:true},{value:'no',shaw:false}].find((item)=>item.shaw == tempData?.virtualConsultation);
 
-          tempData = {...tempData,primarylocation:tempData?.primarylocationId,gender:{gender:tempData.gender},virtualConsultation:dataNew,isActive:tempData?.isActive?.toString()}
+          tempData = {...tempData,primarylocation:tempData?.primarylocationId,gender:{gender:tempData.gender},virtualConsultation:dataNew,isActive:tempData?.isActive?.toString(),id:editData?.id}
   
         reset(tempData);
         setPreviewUrl(tempData?.image); 
@@ -363,7 +363,7 @@ const onPaginationChange = async({page,pageSize}) => {
     { field: "pincode", headerName: "Code", flex:1, },
     { field: "isActive", headerName: "Is Active", flex:1 , sortable:false,
     renderCell : (params)=>(
-       <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateUSer({ _id: params?.row?._id,isActive:e.target.checked})}></IOSSwitch> 
+       <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateUSer({ _id: params?.row?._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1})}></IOSSwitch> 
       
     )
   },
@@ -379,7 +379,7 @@ const onPaginationChange = async({page,pageSize}) => {
           <div
             className="btn btn-sm"
             onClick={() => {
-              setEditData(params.row._id);
+              setEditData({_id:params.row._id,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1});
             }}
           >
             <CustomIconButton />

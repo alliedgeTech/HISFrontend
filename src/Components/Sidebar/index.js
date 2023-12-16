@@ -2,7 +2,7 @@ import React, { createElement, useEffect } from 'react'
 import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses,SidebarContext } from 'react-pro-sidebar';
 import { NavLink } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux';
-import './menu.css'
+import menuItemClasses from './menu.module.css'
 import { setCollapsed } from '../../slices/sidebar.slice';
 import { useSiderbarData } from '../../services/Adminastrator/Sidebar';
 import SidebarSkeleton from '../../Skeleton/SidebarSkeleton';
@@ -15,12 +15,13 @@ import * as MuiIcons from "@material-ui/icons";
 function SidebarMenuItems({data}){
   return (
     <>
+    <MenuItem style={{background:"#25396f",color:"white",borderRadius:"10px"}} component={<NavLink to={`/`}></NavLink>} icon={createElement(MuiIcons["HomeOutlined"])} className={`op`} > Dashboard </MenuItem>
       {
         data.map((navData,index) =>
-        <SubMenu key={index} label={navData?.moduleName} className='menu-text' icon={createElement(MuiIcons["PersonOutline"])}>
+        <SubMenu key={index} label={navData?.moduleName} className={menuItemClasses.menu_text} icon={createElement(MuiIcons["PersonOutline"])}>
           {
             navData.menuItems.map((menuData,i) =>
-            <MenuItem key={i} style={{marginLeft:"0.5rem"}} component={<NavLink to={`${menuData.link}`}></NavLink>} icon={createElement(MuiIcons["LocalHospitalOutlined"])} className='menu-text op'>{menuData?.menuName} </MenuItem>
+            <MenuItem key={i} style={{marginLeft:"0.5rem",height:"45px"}} component={<NavLink to={`${menuData.link}`}></NavLink>} icon={createElement(MuiIcons["LocalHospitalOutlined"])} className={`op`} >{menuData?.menuName} </MenuItem>
             )
           }
       </SubMenu>
@@ -49,7 +50,7 @@ export default function () {
     }
   },[])
   return (
-    <div className='sidebar-height'>
+    <div className={`${menuItemClasses.sidebar_height}`}>
 
     <Sidebar
     collapsed={collapsed}
@@ -62,7 +63,6 @@ export default function () {
           height:"100%",
         },
         [`.${menuClasses.container}`]:{
-           
         }
       }}
     >
@@ -75,7 +75,6 @@ export default function () {
           [`&.active`]: {
             backgroundColor: 'rgba(19,57,94,0.1)',
             // color: '#b6c8d9',
-            // 
           },
         },
       }}
