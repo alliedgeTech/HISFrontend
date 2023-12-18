@@ -10,12 +10,14 @@ import CategoryMaster from './Pages/CategoryMaster/CategoryMaster';
 import RegionMaster from './Pages/RegionMaster/RegionMaster';
 import HrMaster from './Pages/HrMaster/HrMaster';
 import RegistrationMaster from './Pages/RegistrationMaster/RegistrationMaster';
+import Appointment from './Pages/Appointment/Appointment';
 
 function App() {
   return (
     <NavigationScroll>
       <Routes>
         <Route path='/' element={<MainLayout/>} >
+          <Route path='/' element={<Appointment/>} />
           <Route path='/rolemaster' element={<RoleMaster/>} />
           <Route path='/usermaster' element={<UserMaster/>} />
           <Route path='/locationmaster' element={<BranchMaster/>} />

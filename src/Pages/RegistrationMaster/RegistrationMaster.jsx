@@ -42,7 +42,7 @@ function RegistrationMaster() {
 
     const { registrationData,registrationLoading,registrationEditData,registrationPagination:paginationModel,registrationCount} = useSelector(State => State.registration);
     const dispatch = useDispatch();
-    const { handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
+    const { handleSubmit, formState: { errors },reset,control,clearErrors,getValues} = useForm({
       defaultValues:{
         title:null,
         doctor:null,
@@ -68,7 +68,7 @@ function RegistrationMaster() {
         pationType:null,
         rfid:null,  
       },
-      mode:"onBlur"
+      mode:"onTouched"
     }); 
 
     const  { getRegistrationData,createRegistration,updateRegistration,updateState,ListLoading,getRegistrationFindById } = useFrontOfficeRegistration();
@@ -215,6 +215,10 @@ function RegistrationMaster() {
         return new File([u8arr], filename, {type:mime});
     }
 
+    useEffect(() => {
+      console.log("this is getVAlues : ",getValues())
+    },[getValues])
+
     const rowData = useMemo(()=> {
         if( Array.isArray(registrationData) && !ListLoading ){
             return setRowDataRegistration(registrationData);
@@ -229,7 +233,8 @@ function RegistrationMaster() {
             if(data)
             {
               setPreviewUrl(data?.image);
-              let newData = { ...data,bloodGroup:{value:data?.bloodGroup?.value},gender:{gender:data?.gender},pationType:{value:data?.pationType},rfid:{...[{value:null,show:"NA"},{show:"Duplicate",value:"123"}].find((data)=>data.rfid===data?.rfid)},dob:new Date(data?.dob).toISOString().split('T')[0],isActive:data?.isActive?.toString()}
+              console.log('this is blood group : ',data?.bloodGroup);
+              let newData = { ...data,bloodGroup:data?.bloodGroup ? {value:data?.bloodGroup } : null,gender:{gender:data?.gender},pationType:{value:data?.pationType},rfid:{...[{value:null,show:"NA"},{show:"Duplicate",value:"123"}].find((data)=>data.rfid===data?.rfid)},dob:new Date(data?.dob).toISOString().split('T')[0],isActive:data?.isActive?.toString()}
                 reset(newData);
                 setModalOpen(true);
             } else { 
@@ -507,7 +512,7 @@ function RegistrationMaster() {
                             type={"number"}
                             control={control}
                             label={"Pincode"}
-                            rules={{pattern:{value:/^[1-9][0-9]{5}$/,message:"Please enter valid pincode"}}}
+                            rules={{pattern:{value:/^[1-9][0-9]{5}$/,messablge:"Please enter valid pincode"}}}
                         /> 
                     </Grid>
 

@@ -71,7 +71,7 @@ function UserMaster() {
       virtualConsultation:null,
       languageSpoken:"",
     },
-    mode: "onBlur",
+    mode: "onTouched",
   });
 
   const watchCity = watch("city");

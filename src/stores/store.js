@@ -7,6 +7,7 @@ import hrSlice from "../slices/hr.slice";
 import categorySlice from "../slices/category.slice";
 import registrationSlice from "../slices/registration.slice";
 import sidebarSlice from "../slices/sidebar.slice";
+import appointmentSlice from "../slices/appointment.slice";
 
 export const store = configureStore({
     reducer:{
@@ -17,6 +18,7 @@ export const store = configureStore({
         hr:hrSlice,
         category:categorySlice,
         registration:registrationSlice,
-        sidebar:sidebarSlice
+        sidebar:sidebarSlice,
+        appointment:appointmentSlice
     }
 });

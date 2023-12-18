@@ -19,19 +19,19 @@ function CommonMaster({MainValue,Loading,ListLoading,add,update,get,tableData,pa
       value: "",
       isActive: "true",
     },
-    mode:'onBlur'
+    mode:'onTouched'
   });
   const [ModalOpen, setModalOpen] = useState(false);
 
-  const resetAll = () => {
-    setModalOpen(false);
-    setEditData("");
-    reset({
-      value: "",
-      isActive: "true",
-    });
-    clearErrors();
-  }
+    const resetAll = () => {
+      setModalOpen(false);
+      setEditData("");
+      reset({
+        value: "",
+        isActive: "true",
+      });
+      clearErrors();
+    }
 
   const submitData = (data) => {
     const tempData = {};
@@ -159,10 +159,7 @@ const onPaginationChange = async({page,pageSize}) => {
        return setRows(tableData);                                 
     }
   },[tableData,ListLoading]);
-                                      
-  useEffect(( )=>{
-    console.log('this is real',paginationModel);
-  },[paginationModel])
+                                    
 
   const columns =[  
         {

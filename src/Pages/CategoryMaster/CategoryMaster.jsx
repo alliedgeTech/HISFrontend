@@ -24,7 +24,7 @@ function CategoryMaster() {
           categoryName: "",
           isActive: "true",
         },
-        mode:"onBlur"
+        mode:"onTouched"
       });
 
       const [ModalOpen, setModalOpen] = useState(false);

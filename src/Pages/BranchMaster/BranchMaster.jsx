@@ -30,7 +30,7 @@ function BranchMaster() {
           AdDomainName:"",
           AdDomainType:""
         },
-        mode:'onBlur'
+        mode:'onTouched'
       });
 
       const { addBranchData,updateBranchData,Loading,ListLoading,branchCount,getBranchData,paginationModel } = useBranchData();

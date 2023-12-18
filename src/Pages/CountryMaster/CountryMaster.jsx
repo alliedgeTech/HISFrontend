@@ -26,7 +26,7 @@ function CountryMaster() {
             isActive:"true",
             countryName:null
         },
-        mode:"onBlur"
+        mode:"onTouched"
     });
 
     const dispatch = useDispatch();
