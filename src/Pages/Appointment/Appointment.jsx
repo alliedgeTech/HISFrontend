@@ -11,44 +11,46 @@ import TableMainBox from '../../Components/TableMainBox/TableMainBox';
 import TableSkeleton from '../../Skeleton/TableSkeleton';
 import EmptyData from '../../Components/NoData/EmptyData';
 import { useForm,Controller } from 'react-hook-form';
-import Switch from '@mui/material/Switch';
-import { styled } from '@mui/material/styles';
 import { Box, LinearProgress, Typography } from '@mui/material';
 import CustomDatePickerField from '../../Components/InputsFilelds/CustomDatePickerField';
 import { DataGrid,GridToolbar } from '@mui/x-data-grid';
 import Grid from '@mui/material/Unstable_Grid2';
 import APIManager from '../../utils/ApiManager';
-import toast from "react-hot-toast"
-
+import { useFrontOfficeRegistration } from '../../services/FrontOffice/Registration';
+import SearchIcon from '@mui/icons-material/Search';
+import CustomButton from '../../Components/Button/Button';
+import SearchRegistration from './components/SearchRegistration';
 
 function Appointment() {
-    const dispatch = useDispatch();
-    const { appointmentData,appointmentLoading,appointmentEditData,appointmentCount,appointmentPagination:paginationModel }  = useSelector(state => state.appointment)
-    var { handleSubmit, formState: { errors },reset,control,clearErrors,watch,setValue } = useForm({
-        defaultValues: {
-          doctor: null,
-          appointmentType: 'walkin',
-          appointmentDateTime:"",
-          registration:null,
-          mobileNo:"",
-          visitType:null,
-          title:null,
-          pationName:"",
-          dob:'',
-          age:"",
-          gender:null,
-          address:"",
-          city:null,
-          otherRemarks:''
-        },
-        mode:'onTouched'
-      });
+
+  const dispatch = useDispatch();
+  const { appointmentData,appointmentLoading,appointmentEditData,appointmentCount,appointmentPagination:paginationModel }  = useSelector(state => state.appointment)
+  var { handleSubmit, formState: { errors },reset,control,clearErrors,watch,setValue,getValues } = useForm({
+      defaultValues: {
+        doctor: null,
+        appointmentType: 'walkin',
+        appointmentDateTime:"",
+        registration:null,
+        mobileNo:"",
+        visitType:null,
+        title:null,
+        pationName:"",
+        dob:'',
+        age:"",
+        gender:null,
+        address:"",
+        city:null,
+        otherRemarks:'',
+      },
+      mode:'onTouched'
+    });
   let TodayDate = new Date().toISOString().split("T")[0];
   const [ModalOpen, setModalOpen] = useState(false);
   const [newRegistrationForm,setNewRegistrationForm] = useState(false);
   const [RegistrationNumberFound, setRegistrationNumberFound] = useState(false);
-const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentData } = useAppointmentData();
-
+  const [SeachRegistrationModal, setSeachRegistrationModal] = useState(false);
+  const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentData } = useAppointmentData();
+  const { getRegistrationData } = useFrontOfficeRegistration();
   const MobileNumberWatch = watch("mobileNo");
 
   const isValidMobileNumber = (number) => {
@@ -59,45 +61,69 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
   
   }
 
+  const VisitTypeData = [{value:"firstVisit",shaw:"First Visit"},{value:"followUp",shaw:"Follow Up"}];
+
   const ApiManager = new APIManager();
 
-  const setRegistrationModalData = async() => {
-    const data = await ApiManager.get(`admin/frontOffice/registration/m/${MobileNumberWatch}`);
-    if(!data.error)
-    {
-      setNewRegistrationForm(true);
-      if(data?.data?.data) {
-        setRegistrationNumberFound(true);
-        const tempData = {...data?.data?.data,gender:{gender:data?.data?.data?.gender}};
-        const fieldSet = ['pationName','title','dob','age','gender','address','city','otherRemarks'];
-        for(let i of fieldSet)
+      const setRegistrationModalData = async(tempData) => {
+        let url;
+        console.log("this is temp data ",tempData);
+        if(tempData)
         {
-          
-          setValue(i,tempData[i])
+          url=`admin/frontOffice/registration/m/${tempData}?type=id`
+        } else {
+          url=`admin/frontOffice/registration/m/${MobileNumberWatch}`
         }
-      } else {
-        console.log("this is i got from the number nothing : ",data.data.data)
-        setRegistrationNumberFound(false);
-        toast.error("Registration number not found");
+
+        const data = await ApiManager.get(url);
+
+        if(!data.error)
+        {
+          setNewRegistrationForm(true);
+          if(data?.data?.data) {
+            const tempData = {...data?.data?.data,gender:{gender:data?.data?.data?.gender}};
+
+            setRegistrationNumberFound(tempData?._id);
+
+            const fieldSet = ['pationName','title','dob','age','gender','address','city','otherRemarks'];
+            for(let i of fieldSet)
+            {
+              setValue(i,tempData[i])
+            }
+
+          } else {
+            setRegistrationNumberFound(false);
+            const fieldSet = ['pationName','dob','age','address','otherRemarks'];
+            for(let i of fieldSet)
+            {
+              setValue(i,"")
+            }
+            const FieldSetNull = ["title","gender","city"];
+            for(let i of FieldSetNull)
+            {
+              setValue(i,null)
+            }
+          }
+
+        } else {
+          setNewRegistrationForm(false);
+        }
       }
 
-    } else {
-      setNewRegistrationForm(false);
-    }
-  }
+      useEffect(() => {
+        if (isValidMobileNumber(MobileNumberWatch)) {
+          const timeoutId = setTimeout(() => {
+            setRegistrationModalData();
+          }, 300);
 
-  useEffect(() => {
-    if (isValidMobileNumber(MobileNumberWatch)) {
-      const timeoutId = setTimeout(() => {
-        setRegistrationModalData();
-      }, 300);
+          return () => clearTimeout(timeoutId);
+        }
+      },[MobileNumberWatch])
 
-      return () => clearTimeout(timeoutId);
-    }
-  },[MobileNumberWatch])
+      useEffect(() =>{ 
+        console.log('this is modal : ',SeachRegistrationModal);
+      },[SeachRegistrationModal])
       
-     
-
       const closeTheModal = () => {
         setModalOpen(false);
         setRegistrationNumberFound(false);
@@ -122,70 +148,62 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
         clearErrors();
       } 
 
-      const submitData = (data) => {
+      const setSomeSearchDataInForm = (data) => {
+        const temp = getValues();
+        if(!temp.doctor)
+        {
+          console.log("this is data  doctor ",data.doctor);
+          setValue("doctor",data.doctor);
+        }
+          setValue("mobileNo",data.mobileNo);
+     }
+
+      const submitData = async(data) => {
 
         if(appointmentEditData)
         {
-             
-        } else {
-            if(RegistrationNumberFound && newRegistrationForm)
+          const tempData = await updateAppointmentData({...data,AppointmentId:data?._id,doctor:data.doctor._id,visitType:data.visitType.value})    
+
+          if(tempData) {
+            closeTheModal();
+          }
+
+        } else if(newRegistrationForm) {
+            if(RegistrationNumberFound)
             {
-              data = {...data,registration:watch("mobileNo")};
+              // old registration found
+              const tempData = await createAppointmentData({doctor:data.doctor._id,appointmentType:data.appointmentType,registration:RegistrationNumberFound,visitType:data.visitType.value,appointmentDateTime:data.appointmentDateTime});
+
+              if(tempData)
+              {
+                closeTheModal();
+              }
+
+            } else {
+              // new registration
+              const tempData = await createAppointmentData({
+                doctor:data.doctor._id,
+                appointmentType:data.appointmentType,
+                visitType:data.visitType.value,
+                appointmentDateTime:data.appointmentDateTime,
+                title:data.title._id,age:data?.age,
+                pationName:data?.pationName,
+                gender:data?.gender?.gender,
+                dob:data?.dob,
+                city:data?.city?._id,
+                mobileNo:data?.mobileNo,
+                otherRemarks:data?.otherRemarks,
+              })
+            
+              if(tempData)
+              {
+                getRegistrationData();
+                closeTheModal();
+              }
             }
         }
        
       }
-
-      const IOSSwitch = styled((props) => (
-        <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-      ))(({ theme }) => ({
-        width: 42,
-        height: 26,
-        padding: 0,
-        "& .MuiSwitch-switchBase": {
-          padding: 0,
-          margin: 2,
-          transitionDuration: "300ms",
-          "&.Mui-checked": {
-            transform: "translateX(16px)",
-            color: "#fff",
-            "& + .MuiSwitch-track": {
-              backgroundColor: theme.palette.mode === "dark" ? "#2ECA45" : "#65C466",
-              opacity: 1,
-              border: 0
-            },
-            "&.Mui-disabled + .MuiSwitch-track": {
-              opacity: 0.5
-            }
-          },
-          "&.Mui-focusVisible .MuiSwitch-thumb": {
-            color: "#33cf4d",
-            border: "6px solid #fff"
-          },
-          "&.Mui-disabled .MuiSwitch-thumb": {
-            color:
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[600]
-          },
-          "&.Mui-disabled + .MuiSwitch-track": {
-            opacity: theme.palette.mode === "light" ? 0.7 : 0.3
-          }
-        },
-        "& .MuiSwitch-thumb": {
-          boxSizing: "border-box",
-          width: 22,
-          height: 22
-        },
-        "& .MuiSwitch-track": {
-          borderRadius: 26 / 2,
-          backgroundColor: theme.palette.mode === "light" ? "#E9E9EA" : "#39393D",
-          opacity: 1,
-          transition: theme.transitions.create(["background-color"], {
-            duration: 500
-          })
-        }
-      }));
 
       const onPaginationChange = async({page,pageSize}) => {
         if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
@@ -219,7 +237,17 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
                 let thisData = {
                     _id:element?._id,
                     id: ++id,
-                    
+                    pationName:element?.registration?.pationName,
+                    title:element?.registration?.title?.userTitle,
+                    age:`${element?.registration?.age}`,
+                    gender:`${element?.registration?.gender}`,
+                    doctor:element?.doctor,
+                    appointmentType:element?.appointmentType,
+                    appointmentDateTime:element?.appointmentDateTime,
+                    visitType:element?.visitType,
+                    mobileNo:element?.registration?.mobileNo,
+                    bloodGroup:element?.registration?.bloodGroup,
+                    city:element?.registration?.city?.cityName,
                 };
                 array.push(thisData);
         });
@@ -242,7 +270,58 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
         field: "id",
         headerName: "ID",
       },
-     
+      {
+        field: "pationName",
+        headerName: "Pation Name",
+        flex:1,
+        renderCell: (params) => ( 
+          <div>{params.row.title} {params.row.pationName}</div>
+        )
+      },
+      {
+        field: "age",
+        headerName:"Age",
+        headerAlign:"center",
+        align:"center",
+        width:100,
+      },
+      {
+        field: "gender",
+        headerName:"Gender",
+        flex:1
+      },
+      {
+        field:'city',
+        headerName:"City",
+        flex:1,
+      },
+      {
+        field: "mobileNo",
+        headerName:"Mobile No",
+        flex:1
+      },
+      {
+        field: "appointmentType",
+        headerName:"Appointment Type",
+        width:120,
+      },
+      {
+        field: "visitType",
+        headerName:"Visit Type",
+        flex:1,
+      },
+      {
+        field: "appointmentDateTime",
+        headerName:"Appointment Date Time",
+        renderCell:(params)=>new Date(params?.row?.appointmentDateTime).toLocaleString(),
+        width:250,
+      },
+      {
+        field:'doctor',
+        headerName:"Doctor",
+        renderCell : (params) => <div>{params?.row?.doctor?.userName}</div>,
+        flex:1
+      },
       {
         field: "actions",
         headerName: "Actions",
@@ -251,7 +330,7 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
         renderCell: (params) => (
           <>
             <div
-              onClick={() => { setModalOpen(true);clearErrors(); reset({...params.row,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1});dispatch(setAppointmentEditData(true))}}
+              onClick={() => { setModalOpen(true);clearErrors(); reset({...params.row,visitType:VisitTypeData.find((d)=>d.value==params.row.visitType),id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1});dispatch(setAppointmentEditData(true))}}
               >
               <CustomIconButton />
             </div>  
@@ -259,6 +338,8 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
           </>
         ),
       }]
+
+
   return (
     <>
       <AddEditModal
@@ -297,6 +378,7 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
                         url={"admin/userMaster/user/doctor"}
                         inputRef={ref}
                         hasError={error}
+                        isOptionEqualToValue={(op,val) => { console.log("this is reality : ",op,"v : ",val,"ans:",op._id==(val || val?._id)); return op._id==(val || val?._id) }}
                         /> 
                         }}
 
@@ -341,6 +423,7 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
                             control={control}
                             label={"Mobile NO"}
                             rules={{required:{value:true,message:"Please enter the mobile number"},minLength:{value:10,message:"Please enter the min length 10"},maxLength:{value:10,message:"Please enter the max length 10"},pattern:{value:/^[0-9]*$/,message:"Please enter the valid mobile number"}}}
+                            disable={appointmentEditData}
                         /> 
                 </Grid>
 
@@ -355,8 +438,8 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
                         onChange={onChange}
                         lable={"Visit Type"}
                         value={value}
-                        getOptionLabel={(option)=>`${option?.value}`}
-                        options={[{value:"firstVisit"},{value:"followUp"}]}
+                        getOptionLabel={(option)=>`${option?.shaw}`}
+                        options={VisitTypeData}
                         inputRef={ref}
                         hasError={error}
                         /> 
@@ -365,8 +448,10 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
                     </Controller>
                 </Grid>
 
-                <Grid xs={0} sm={4} >
-
+                <Grid xs={12} sm={4} >
+                       {
+                         !appointmentEditData && <CustomButton fullWidth buttonText={"Search Registration"} startIcon={<SearchIcon/>} onClick={()=>setSeachRegistrationModal(true)}></CustomButton>
+                       }
                 </Grid>
 
                 {
@@ -397,6 +482,7 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
                                   inputRef={ref}
                                   hasError={error}
                                   readOnly={RegistrationNumberFound}
+                                  isOptionEqualToValue={(op,val) => op?._id==val?._id}
                                   /> 
                                   }}
                                   > 
@@ -502,6 +588,7 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
                          filterOnActive={true}
                          inputRef={ref}
                          hasError={!!error}
+                        isOptionEqualToValue={(op,val) => op?._id==val?._id}
                          /> 
                          }}
 
@@ -532,6 +619,8 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
           </Box>
       </AddEditModal>
 
+      <SearchRegistration setSeachRegistrationModal={setSeachRegistrationModal} SeachRegistrationModal={SeachRegistrationModal} setFormDataBySearch={setRegistrationModalData} setSomeSearchDataInForm={setSomeSearchDataInForm}/> 
+
       <TableMainBox
            title={`Appointment Master`}
             buttonText={`Add Appointment`}
@@ -561,7 +650,6 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
                     rows={rowData}
                     slots={{ toolbar: GridToolbar }}
                     getRowHeight={(_data) => 'auto'}  
-                    getRowClassName={(params) => !params?.row?.isActive && "inactive-row"}
                     classes={{cellContent:"cellContent"}}
                     paginationModel={paginationModel}
                     onPaginationModelChange={(data) => onPaginationChange(data)}
@@ -574,7 +662,7 @@ const { ListLoading,createAppointmentData,getAppintmentData,updateAppointmentDat
                   <EmptyData />
                 )}
 
-          </TableMainBox>
+      </TableMainBox>
     </>
   )
 }

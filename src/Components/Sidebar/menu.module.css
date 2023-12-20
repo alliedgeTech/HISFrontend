@@ -11,16 +11,27 @@
     gap: 5px;
     padding: 10px 15px !important;
     border-radius: 8px;
+    white-space: break-word;
 }
     
-.sidebar_height{
+.sidebar_height{    
     height:calc(100vh - 76.7px) ;
     width: fit-content;
     padding-top: 0.7rem;
+}
+
+.op{
+    margin: 2px 0;
 }
 
 @media (max-width: 1024px) {
     .menu-text.op a{
         border-radius: 0px!important;
     }
+}
+
+.searchicon{
+    transform: rotate(85deg);
+    font-size: 12px;
+    color: #25396f;
 }

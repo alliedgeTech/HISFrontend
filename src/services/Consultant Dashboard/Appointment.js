@@ -16,7 +16,7 @@ export const useAppointmentData = () => {
         
         const data = await ApiManager.get(`admin/consultant/appointment?page=${page}&pageSize=${pageSize}`);
 
-        if(!data.error)
+        if(!data.error) 
         {
             dispatch(setAppointmentData(data?.data?.data));
             dispatch(setAppointmentCount(data?.data?.count));
@@ -32,7 +32,7 @@ export const useAppointmentData = () => {
     const updateAppointmentData = async (data) => {
         dispatch(setAppointmentLoading(true));
 
-        const resData = await ApiManager.patch('admin/consultant/appointment');
+        const resData = await ApiManager.patch('admin/consultant/appointment',data);
 
         if(!resData.error)
         {
@@ -63,7 +63,7 @@ export const useAppointmentData = () => {
         return false;
     }
 
-
+    
     useEffect(() => {
         !appointmentData && getAppintmentData(true);
     },[])

@@ -1,7 +1,7 @@
 import { Controller } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 
-export const CustomTextInputField = ({ name, control, label, required,rules,disable,type,focused,inputPropsText={} }) => {
+export const CustomTextInputField = ({ name, control, label,readOnly,required,rules,disable,type,focused,inputPropsText={} }) => {
   return (
     <Controller
       name={name}

@@ -9,7 +9,7 @@ const initialState = {
 }
 
 const branchSlice = createSlice({
-    name:"branch",
+    name:"branch",  
     initialState,
     reducers : {
         setBranchData: (state, action) => {

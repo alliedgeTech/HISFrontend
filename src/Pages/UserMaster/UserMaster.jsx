@@ -110,9 +110,7 @@ const handleCheck = (checked, roleInfo) => {
   };
 
   var submitData = async(data) => {
-    console.log("before data : " ,data)
     data =  { ...data,primarylocationId:data.primarylocation._id,designation:data.designation._id,speciality:data.speciality._id,department:data.department._id,country:data.country._id,state:data.state._id,city:data.city._id,employeeCategory:data.employeeCategory._id,gender:data.gender.gender,title:data.title._id,virtualConsultation:data.virtualConsultation.value};
-    console.log("after data : " ,data)
     
     delete data.role;
 

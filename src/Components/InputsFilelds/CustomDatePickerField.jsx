@@ -37,7 +37,7 @@ function CustomDatePickerField({ name, control, label, required,rules,disable,fo
                 error: !!error,
                 onBlur: onBlur,
                 required: required,
-                inputProps:inputProps},
+                inputProps:inputProps},   
         }}
         />
         </LocalizationProvider>

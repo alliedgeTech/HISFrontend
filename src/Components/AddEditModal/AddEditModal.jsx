@@ -19,7 +19,8 @@ import CustomButton from '../Button/Button';
     handleSubmit,
     modalTitle,
     isEdit,
-    Loading
+    Loading,
+    ButtonText
   }) {
     return (
       <>
@@ -49,7 +50,7 @@ import CustomButton from '../Button/Button';
           </DialogContent>
           <DialogActions style={{display:"flex" ,gap:"0.5rem",paddingBottom:"1rem",paddingRight:"1.5rem"}}>
             {/* <Button onClick={handleClose}>Cancel</Button> */}
-            <CustomButton loading={Loading} onClick={handleSubmit} buttonText={isEdit ? 'Update' : 'Add'}></CustomButton>
+            <CustomButton loading={Loading} onClick={handleSubmit} buttonText={ ButtonText ? ButtonText : isEdit ? 'Update' : 'Add'}></CustomButton>
             {/* <LoadingButton loading={Loading} variant='contained' onClick={handleSubmit} >{}</LoadingButton> */}
           </DialogActions>
         </Dialog>

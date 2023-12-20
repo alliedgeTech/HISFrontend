@@ -9,7 +9,7 @@ export const useSiderbarData = () => {
     const [SidebarData, setSidebarData] = useState(null);
     const [Loading, setLoading] = useState(true);
 
-    const getSidebarData = async () => {
+    const getSidebarData = async () =>  {
         setLoading(true);
         const data = await ApiManager.get("admin/module");
         if(!data?.error) {

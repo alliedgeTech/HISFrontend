@@ -7,21 +7,27 @@ import { setCollapsed } from '../../slices/sidebar.slice';
 import { useSiderbarData } from '../../services/Adminastrator/Sidebar';
 import SidebarSkeleton from '../../Skeleton/SidebarSkeleton';
 import * as MuiIcons from "@material-ui/icons";
-// createElement(Icons["PersonAddAltIcon"])
-
-
-
+import SearchIcon from '@mui/icons-material/Search';
 
 function SidebarMenuItems({data}){
+  console.log({data})
   return (
     <>
-    <MenuItem style={{background:"#25396f",color:"white",borderRadius:"10px"}} component={<NavLink to={`/`}></NavLink>} icon={createElement(MuiIcons["HomeOutlined"])} className={`op`} > Dashboard </MenuItem>
+
+    <MenuItem><SearchIcon className={menuItemClasses.searchicon}/></MenuItem>
+
+    <MenuItem style={{background:"#25396f",color:"white",borderRadius:"10px"}} component={<NavLink to={`/`}></NavLink>} icon={createElement(MuiIcons["HomeOutlined"])} className={menuItemClasses.op} > Dashboard </MenuItem>
       {
         data.map((navData,index) =>
-        <SubMenu key={index} label={navData?.moduleName} className={menuItemClasses.menu_text} icon={createElement(MuiIcons["PersonOutline"])}>
+        <SubMenu open={navData?.menuItems.find((data)=>data.link==window.location.pathname)} active={true} key={index} label={navData?.moduleName} className={menuItemClasses.menu_text} icon={createElement(MuiIcons["PersonOutline"])}>
           {
             navData.menuItems.map((menuData,i) =>
-            <MenuItem key={i} style={{marginLeft:"0.5rem",height:"45px"}} component={<NavLink to={`${menuData.link}`}></NavLink>} icon={createElement(MuiIcons["LocalHospitalOutlined"])} className={`op`} >{menuData?.menuName} </MenuItem>
+            {  
+              const IconComponent = MuiIcons["LocalHospitalOutlined"];
+                return IconComponent ? (
+                  <MenuItem key={i} style={{ marginLeft: "0.5rem", height: "45px" }} component={<NavLink to={`${menuData.link}`}></NavLink>} icon={createElement(IconComponent)} className={[menuItemClasses.op,menuItemClasses.menu_text]}>{menuData?.menuName}</MenuItem>
+                ) : null;
+            }
             )
           }
       </SubMenu>
@@ -30,7 +36,7 @@ function SidebarMenuItems({data}){
     </>
   )
 }
-
+// 'LocalHospitalOutlined' || 
 
 export default function () {
   const dispatch = useDispatch();
