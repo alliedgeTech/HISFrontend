@@ -30,6 +30,7 @@ import AddEditModal from '../../Components/AddEditModal/AddEditModal';
 import EmptyData from '../../Components/NoData/EmptyData';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
+import dayjs from 'dayjs';
 
 
 function RegistrationMaster() {
@@ -42,7 +43,7 @@ function RegistrationMaster() {
 
     const { registrationData,registrationLoading,registrationEditData,registrationPagination:paginationModel,registrationCount} = useSelector(State => State.registration);
     const dispatch = useDispatch();
-    const { handleSubmit, formState: { errors },reset,control,clearErrors,getValues} = useForm({
+    const { handleSubmit, formState: { errors },reset,control,clearErrors,getValues,watch} = useForm({
       defaultValues:{
         title:null,
         doctor:null,
@@ -180,7 +181,8 @@ function RegistrationMaster() {
       }
 
       async function submitData(data) {
-        let newData = { ...data,bloodGroup:data?.bloodGroup?.value,city:data?.city?._id,gender:data?.gender?.gender,pationType:data?.pationType?.value,rfid:data?.rfid?.show,title:data?.title?._id,doctor:data?.doctor?._id,refDoctore:data?.refDoctore?._id}
+        console.log("this@ is reg date",dayjs(data.dob.$d).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"));
+        let newData = { ...data,bloodGroup:data?.bloodGroup?.value,city:data?.city?._id,gender:data?.gender?.gender,pationType:data?.pationType?.value,rfid:data?.rfid?.show,title:data?.title?._id,doctor:data?.doctor?._id,refDoctore:data?.refDoctore?._id,dob:dayjs(data?.dob?.$d)?.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")}
 
         if(registrationEditData || registrationEditData===0)
         {
@@ -378,7 +380,11 @@ function RegistrationMaster() {
         setWebCamOpen(false);
       }
 
-      
+      const watchDate = watch("dob");
+
+      useEffect(() => {
+      console.log("dob Timepass",watchDate);
+      }, [watchDate])
 
   return (
     <>

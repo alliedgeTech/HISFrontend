@@ -6,24 +6,28 @@ import { Box } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import CustomAutoCompelete from '../../../Components/CustomAutoCompelete/CustomAutoCompelete';
 import { Autocomplete, TextField } from '@mui/material'
+import CustomDatePickerField from '../../../Components/InputsFilelds/CustomDatePickerField';
+import dayjs from 'dayjs';
 
 function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,setFormDataBySearch,setSomeSearchDataInForm}) {
 
     var { handleSubmit, formState: { errors },reset,control,clearErrors,watch,setValue } = useForm({
         defaultValues: {
             searchBy:'doctor',
-            searchValue:null
+            searchValue:null,
+            date:''
         },
         mode:'onTouched'
       });
     const watchSearchBy = watch('searchBy');
     const [RegistrationOptions, setRegistrationOptions] = useState([]);
     const [SearchRegistrationTempValue, setSearchRegistrationTempValue] = useState(false);
-
+    const [Loading, setLoading] = useState(false)
+    const DateTempValue = watch('date');
     const ApiManager = new APIManager();
 
     const searchRegistration = async() => {
-
+      setLoading(true);
         const data = await ApiManager.get(`admin/frontOffice/registration/d/t/${watchSearchBy}?searchValue=${SearchRegistrationTempValue}`);
 
             if(!data.error)
@@ -34,22 +38,54 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
             } else {
               console.log('error while search registration ',errors?.message);
             }
+        setLoading(false);
       }
+    
+    const searchRegistrationByDate = async() => {
+      setLoading(true);
+      const data = await ApiManager.get(`admin/frontOffice/registration/d/t/${watchSearchBy}?searchValue=${dayjs(DateTempValue?.$d)?.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")}`);
+
+        if(!data.error)
+        {
+          console.log('this is data of search registration ',data?.data?.data);
+          setRegistrationOptions(data?.data?.data);
+
+        } 
+        setLoading(false);
+      } 
 
       useEffect(() => {
-        if (SearchRegistrationTempValue?.length > 2) {
-          const timeoutId = setTimeout(() => {
-            searchRegistration();
-          }, 800);
-
+        let timeoutId;
+        if(watchSearchBy === 'doctor')
+        {
+          if (SearchRegistrationTempValue?.length > 2) {
+             timeoutId = setTimeout(() => {
+              searchRegistration();
+            }, 800);  
+        }
           return () => clearTimeout(timeoutId);
         }
       },[SearchRegistrationTempValue])
 
+      useEffect(() => {
+        if (DateTempValue) {
+          const timeoutId = setTimeout(() => {
+            searchRegistrationByDate();
+          }, 800);
+
+          return () => clearTimeout(timeoutId);
+        }
+      },[DateTempValue])
+
+  
+
     const closeTheSearchModal = () => {
         setSeachRegistrationModal(false);
-        setValue("searchBy","doctor");
-        setValue("searchValue",null);
+        reset({
+          searchBy:'doctor',
+          searchValue:null,
+          date:''
+        })
         setRegistrationOptions([]);
       }
 
@@ -59,7 +95,12 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
         closeTheSearchModal();
      }
 
-     
+     const SearchByChange = (value) => {
+      if(value === 'doctor')
+      {
+        setValue("date",'');        
+      } 
+     }
 
   return (
     <AddEditModal
@@ -83,7 +124,7 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
                 justifyContent="space-between"
                 alignItems="center" 
               >   
-                <Grid xs={12} sm={4}>
+                <Grid xs={12} sm={6}>
                   <Controller
                         name="searchBy"
                         control={control}
@@ -91,7 +132,7 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
                         render={({ field,fieldState:{error} }) => {
                             const {onChange,value,ref} = field; 
                         return <CustomAutoCompelete 
-                        onChange={onChange}
+                        onChange={(e,values)=>{onChange(e,values);SearchByChange(values)}}
                         lable={"Select searchBy"}
                         value={value}
                         getOptionLabel={(option)=>option}
@@ -103,6 +144,19 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
                         > 
                     </Controller>
                 </Grid>
+
+                {
+                  watchSearchBy === 'date' && <Grid xs={12} sm={6}>
+                  <CustomDatePickerField 
+                  key={"search registration date"}
+                  name={"date"}
+                  control={control}
+                  label={"Select Date"}
+                  maxDate={new Date()}
+                  rules={{valueAsDate:true}}
+                  />
+                </Grid>
+                }
 
                 <Grid xs={12} sm={12}>
                     <Controller
@@ -139,7 +193,7 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
                                 },
                               },
                             }}
-                            label={"Select Registration"}
+                            label={ watchSearchBy==='date' ? "Select Registration" : 'Enter Doctor Name'}
                             inputRef={ref}
                             onChange={(e)=>{
                               setSearchRegistrationTempValue(e.target.value);
@@ -156,6 +210,8 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
 
                    
                 </Grid>
+
+                
             </Grid>
 
          </Box>

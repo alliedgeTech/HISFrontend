@@ -20,6 +20,7 @@ import { useFrontOfficeRegistration } from '../../services/FrontOffice/Registrat
 import SearchIcon from '@mui/icons-material/Search';
 import CustomButton from '../../Components/Button/Button';
 import SearchRegistration from './components/SearchRegistration';
+import dayjs from 'dayjs';
 
 function Appointment() {
 
@@ -162,7 +163,7 @@ function Appointment() {
 
         if(appointmentEditData)
         {
-          const tempData = await updateAppointmentData({...data,AppointmentId:data?._id,doctor:data.doctor._id,visitType:data.visitType.value})    
+          const tempData = await updateAppointmentData({...data,AppointmentId:data?._id,doctor:data.doctor._id,visitType:data.visitType.value,})    
 
           if(tempData) {
             closeTheModal();
@@ -189,7 +190,7 @@ function Appointment() {
                 title:data.title._id,age:data?.age,
                 pationName:data?.pationName,
                 gender:data?.gender?.gender,
-                dob:data?.dob,
+                dob:dayjs(data?.dob?.$d)?.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
                 city:data?.city?._id,
                 mobileNo:data?.mobileNo,
                 otherRemarks:data?.otherRemarks,
@@ -566,7 +567,7 @@ function Appointment() {
                              control={control}
                              label={"Address"}
                              inputPropsText={{readOnly:RegistrationNumberFound}}
-                             rules={{required:{value:true
+                             rules={{required:{value:!RegistrationNumberFound
                              ,message:"Please enter the address"}}}
                          /> 
                             </Grid> 
