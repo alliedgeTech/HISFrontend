@@ -1,0 +1,135 @@
+.container{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.Box{
+    background-color: white;
+    height: fit-content;
+    width: 60%;
+    margin: 0 auto;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.cusTypogrphy{
+    padding: 0.5rem;
+    font-size: 1.5rem!important;
+    letter-spacing: 0.5px!important;
+    margin-bottom: 0.7rem!important;
+    color:#25396f;
+}
+
+.btnContainer{
+    display: flex;
+    width: 100%;
+    justify-content: end;
+    gap: 10px;
+    margin-top:0.7rem;
+}
+
+@media (min-width:0px) {
+    .Box{
+        width: 95%;
+    }
+}
+
+@media (min-width:360px) {
+    .Box{
+        width: 85%;
+    }
+}
+
+@media (min-width:768px) {
+    .Box{
+        width: 65%;
+    }
+}
+
+
+.RenderBox{
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    min-width: 350px;
+    max-width: 350px;
+    cursor: pointer;
+    min-height: 200px;
+    color: #25396f;
+    user-select: none;
+
+}
+
+.RenderBox:hover{
+    box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+}
+
+.BoxHeading{
+    text-transform: capitalize;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 500;
+}
+
+.date{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.obj{
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 35px;
+}
+
+.flexEnd{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.slotsContainer{
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    overflow-x:scroll;
+}
+
+::-webkit-scrollbar{
+    width: 0px;
+}
+
+
+.createSlots{
+    min-width: 300px;
+    width: 300px;
+    min-height: 200px;
+    border: dashed 2px #25396f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    transform-origin: top left;
+}
+
+.createSlots > button {
+    color: #25396f!important;
+}
+
+.createSlots:hover{
+    background-color: #25396f;
+    color: white;
+}
+
+.createSlots:hover > button{
+    color: white!important;
+}

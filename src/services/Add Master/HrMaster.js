@@ -33,7 +33,7 @@ export const useHrMasterData = () => {
             }
         return true;
         } catch (error) {
-            toast.error(error?.message || "Something went wrong");
+            // toast.error(error?.message || "Something went wrong");
             return false;   
         }
     }
@@ -83,7 +83,7 @@ export const useHrMasterData = () => {
             toast.dismiss(toastId);
             return false;
         } catch (error) {
-            toast.error(error?.message || "Something went wrong");
+            // toast.error(error?.message || "Something went wrong");
             return false;
         }
     }
@@ -212,7 +212,7 @@ export const useHrMasterData = () => {
         }   
         toast.dismiss(toastId);
         setLoding(false);
-        toast.error(resData?.message);
+        // toast.error(resData?.message);
         return false;
     }
 

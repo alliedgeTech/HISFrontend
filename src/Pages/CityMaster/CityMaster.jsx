@@ -240,7 +240,7 @@ function CityMaster() {
                     justifyContent="space-between"
                     alignItems="center" 
                     > 
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <CustomTextInputField
                             name="cityName"
                             label="City Name"
@@ -253,7 +253,7 @@ function CityMaster() {
                         />
                     </Grid>
 
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <Controller
                             name="stateName"
                             rules={{required:{value:true,message:"State is required"}}}
@@ -279,7 +279,7 @@ function CityMaster() {
                         }
                     </Grid>
 
-                    <Grid xs={12} sm={6}>
+                    <Grid xs={12} sm={4}>
                         <Controller
                             name="isActive"
                             control={control}

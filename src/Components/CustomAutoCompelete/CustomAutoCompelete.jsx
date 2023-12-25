@@ -33,7 +33,7 @@ function CustomAutoCompelete({url,disable=false,onChange,lable,value,getOptionLa
             }
             getOptions();
         }
-    },[disable,options]);
+    },[disable,options,url]);
 
   return (
     <Autocomplete

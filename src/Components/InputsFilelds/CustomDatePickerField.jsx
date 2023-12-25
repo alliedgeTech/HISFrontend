@@ -6,7 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 
 function CustomDatePickerField({ name, control, label, required,rules,disable,focused,maxDate,inputProps={} }) {
-  return (
+  return (  
     <Controller
       name={name}
       rules={rules}

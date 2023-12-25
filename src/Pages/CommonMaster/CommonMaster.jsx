@@ -41,7 +41,7 @@ function CommonMaster({MainValue,Loading,ListLoading,add,update,get,tableData,pa
     {
       tempData["id"]=data.id;
       tempData["_id"]=data._id;
-      console.log("step 1 : ",paginationModel)
+      console.log("step 1 : ",paginationModel);
       update(tempData,resetAll,paginationModel.page,paginationModel.pageSize);
     } else {
       add(tempData,resetAll,paginationModel.page,paginationModel.pageSize);
@@ -174,6 +174,7 @@ const onPaginationChange = async({page,pageSize}) => {
       { field: "value", headerName: FieldHeaderName, flex:1 },
       { field: "isActive", headerName: "Is Active", flex:1, 
        renderCell: (params) => (
+      
         <IOSSwitch checked={params.row.isActive} onChange={(e)=>{update({ _id:params.row._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1},resetAll);console.log('@this is real pagination : ',params.row.id)}} />
       ) 
       },

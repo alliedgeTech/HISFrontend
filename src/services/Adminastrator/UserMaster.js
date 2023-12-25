@@ -70,13 +70,11 @@ export const useUserData = () => {
                     toast.dismiss(tosatId);
                     return true;
                 }
-                toast.error(resData?.message);
                 dispatch(setUserLoading(false));
                 toast.dismiss(tosatId);
                 return false;
 
                 } catch (error) {
-                    toast.error(error.response.data.message);
                     dispatch(setUserLoading(false));
                     toast.dismiss(tosatId);
                     return false;
@@ -98,7 +96,6 @@ export const useUserData = () => {
                 toast.success("user updated successfully");
                 return true;
             }
-            toast.error(resData.message);
             toast.dismiss(tosatId);
             dispatch(setUserLoading(false));
             return false;
@@ -128,12 +125,10 @@ export const useUserData = () => {
             }
             toast.dismiss(tosatId);
             dispatch(setUserLoading(false));
-            toast.error(resData.message);
             return false;
         }
         catch(e)
             {
-                toast.error(e?.message || "Something went wrong");
                 toast.dismiss(tosatId);
                 dispatch(setUserLoading(false));
                 return false;

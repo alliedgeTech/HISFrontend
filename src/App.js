@@ -11,13 +11,14 @@ import RegionMaster from './Pages/RegionMaster/RegionMaster';
 import HrMaster from './Pages/HrMaster/HrMaster';
 import RegistrationMaster from './Pages/RegistrationMaster/RegistrationMaster';
 import Appointment from './Pages/Appointment/Appointment';
+import DoctorCalender from './Pages/DoctorCalender/DoctorCalender';
 
 function App() {
   return (
     <NavigationScroll>
       <Routes>
         <Route path='/' element={<MainLayout/>} >
-          <Route path='/' element={<Appointment/>} />
+          <Route path='/' element={null} />
           <Route path='/rolemaster' element={<RoleMaster/>} />
           <Route path='/usermaster' element={<UserMaster/>} />
           <Route path='/locationmaster' element={<BranchMaster/>} />
@@ -25,6 +26,8 @@ function App() {
           <Route path='/regionmaster' element={<RegionMaster/>} />
           <Route path='/hrmaster' element={<HrMaster/>} />
           <Route path='/front-office/registration' element={<RegistrationMaster/>} />
+          <Route path='/consultantdashboard/appointment' element={<Appointment/>} />
+          <Route path='/calender/doctor' element={<DoctorCalender/>} />
           <Route path='*' element={<Home/>} />
         </Route>  
       </Routes>   

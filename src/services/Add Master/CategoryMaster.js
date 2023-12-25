@@ -51,15 +51,18 @@ export const useCategoryMaster = () => {
         return false;
     }
 
-    const updateCategoryData = async(data,page,pageSize) => {
+    const updateCategoryData = async(data,resetAll) => {
         dispatch(setActionLoading(true));
 
-        const resData = await ApiManaget.patch(`admin/addMaster/category`,data);
+        const resData = await ApiManaget.patch(`admin/addMaster/category`,{...data,categoryId:data._id});
 
         if(!resData?.error)
         {
+            const temp = structuredClone(categoryData);
+            temp[data.id] = resData.data.data;
+            dispatch(setCategoryData(temp)); 
+            resetAll();
             toast.success("Category Updated Successfully");
-            getCategoryData(false,page,pageSize);
             dispatch(setActionLoading(false));
             return true;
         }

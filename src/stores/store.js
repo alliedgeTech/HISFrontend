@@ -8,6 +8,8 @@ import categorySlice from "../slices/category.slice";
 import registrationSlice from "../slices/registration.slice";
 import sidebarSlice from "../slices/sidebar.slice";
 import appointmentSlice from "../slices/appointment.slice";
+import doctorCalenderSlice from "../slices/doctorCalender.slice";
+import socketSlice from "../slices/socket.slice";
 
 export const store = configureStore({
     reducer:{
@@ -19,6 +21,8 @@ export const store = configureStore({
         category:categorySlice,
         registration:registrationSlice,
         sidebar:sidebarSlice,
-        appointment:appointmentSlice
+        appointment:appointmentSlice,
+        doctorCalender:doctorCalenderSlice,
+        socket:socketSlice,
     }
 });

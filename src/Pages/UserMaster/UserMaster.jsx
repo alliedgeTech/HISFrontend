@@ -70,6 +70,7 @@ function UserMaster() {
       title:null,
       virtualConsultation:null,
       languageSpoken:"",
+      branch:null
     },
     mode: "onTouched",
   });
@@ -222,7 +223,7 @@ const handleCheck = (checked, roleInfo) => {
         email: element?.email,
         linkEmployee: element?.linkEmployee,
         mobilenumber: element?.mobilenumber,
-        primarylocation: element?.primarylocationId,
+        branch:element.branch,
         city: element?.city,
         address: element?.address,
         pincode: element?.pincode,
@@ -276,6 +277,7 @@ const handleCheck = (checked, roleInfo) => {
       title:null,
       virtualConsultation:null,
       languageSpoken:"",
+      branch:null
     });
     
   };
@@ -359,6 +361,7 @@ const onPaginationChange = async({page,pageSize}) => {
     { field: "mobilenumber", headerName: "Phone Number",flex:1, },
     { field: "address", headerName: "Address", flex:1, },
     { field: "pincode", headerName: "Code", flex:1, },
+    {field:"branch", headerName:"Branch",flex:1,renderCell:(params)=>params.row.branch.location},
     { field: "isActive", headerName: "Is Active", flex:1 , sortable:false,
     renderCell : (params)=>(
        <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateUSer({ _id: params?.row?._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1})}></IOSSwitch> 
@@ -875,6 +878,32 @@ const onPaginationChange = async({page,pageSize}) => {
                             getOptionLabel={(option)=>option?.cityName}
                             url={"admin/regionMaster/city"}
                             filterOnActive={true}
+                            inputRef={ref}
+                            /> 
+                            }}
+
+                            > 
+                        </Controller>
+                        {
+                            errors.city && <Typography variant="caption" color="error">City is required</Typography> 
+                        }
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                        <Controller
+                            name="branch"
+                            control={control}
+                            rules={{ required: 'Branch is required' }}
+                            render={({ field,fieldState:{error} }) => {
+                                const {onChange,value,ref,onBlur} = field; 
+                            return <CustomAutoCompelete 
+                            onChange={onChange}
+                            lable={"Select Branch"}
+                            value={value}
+                            hasError={error}
+                            onBlur={onBlur}
+                            getOptionLabel={(option)=>option?.location}
+                            url={"admin/locationMaster/getlocation/d"}
                             inputRef={ref}
                             /> 
                             }}

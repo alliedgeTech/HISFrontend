@@ -28,7 +28,8 @@ function BranchMaster() {
           AdIpAddress:"",
           AdPort:"",
           AdDomainName:"",
-          AdDomainType:""
+          AdDomainType:"",
+          city:null
         },
         mode:'onTouched'
       });
@@ -100,7 +101,8 @@ function BranchMaster() {
             AdIpAddress:"",
             AdPort:"",
             AdDomainName:"",
-            AdDomainType:""
+            AdDomainType:"",
+            city:null,
         });
       }
 
@@ -159,11 +161,11 @@ function BranchMaster() {
           toast.error("Please enter valid IP Address")
           return ;
         }
+        const tempData = {...data,city:data?.city?._id}
         if(editData)
-        {
-          let temp = await updateBranchData(data,paginationModel.page,paginationModel.pageSize);
+        { 
+          let temp = await updateBranchData(tempData,paginationModel.page,paginationModel.pageSize);
           if(temp){
-  
             setEditData('');
             setOpenModal(false);
           }
@@ -171,7 +173,8 @@ function BranchMaster() {
         }
         else
         {
-          let temp = await addBranchData(data,paginationModel.page,paginationModel.pageSize);
+          let temp = await addBranchData(tempData,paginationModel.page,paginationModel.pageSize);
+
           if(temp)
           {
             setOpenModal(false);
@@ -188,15 +191,17 @@ function BranchMaster() {
         { field: "_id", headerName: "", width: "0" },
         { field: "location", headerName: "Branch", flex:1 },
         { field: "locationcode", headerName: "Code", flex:1 },
+        
+        { field:"city",headerName:'City',flex:1 ,renderCell:(params) => params.row?.city?.cityName},
+        { field: "AddIpAddress", headerName: "IP Address",flex:1 },
+        { field: "adport", headerName: "Add Port", flex:1 },
+        { field: "addomainname", headerName: "Add Domain Name", flex:1 },
+        { field: "adddomaintype", headerName: "Add Domain Type", flex:1 },
         { field: "IsActive", headerName: "Is Active", flex:1 ,
         renderCell : (params) => {
         return  <IOSSwitch checked={params.row.IsActive} onChange={(e)=>updateBranchData({ _id: LocationData[params.row.id-(paginationModel.page*paginationModel.pageSize)-1]?._id,isActive:e.target.checked},paginationModel.page,paginationModel.pageSize)}></IOSSwitch>  
         }
         },
-        { field: "AddIpAddress", headerName: "IP Address",flex:1 },
-        { field: "adport", headerName: "Add Port", flex:1 },
-        { field: "addomainname", headerName: "Add Domain Name", flex:1 },
-        { field: "adddomaintype", headerName: "Add Domain Type", flex:1 },
         {
             field: "actions",
             headerName: "Actions",
@@ -227,7 +232,8 @@ function BranchMaster() {
                     IsActive: element?.isActive ,
                     adport: element?.AdPort,
                     addomainname: element?.AdDomainName,
-                    adddomaintype:element?.AdDomainType
+                    adddomaintype:element?.AdDomainType,
+                    city:element?.city,
                 };
                 array.push(thisData);
         });
@@ -278,6 +284,33 @@ function BranchMaster() {
                         rules={{required:{value:true,message:"Location is required"},maxLength:{value:50,message:"max length is 50"}}}
                         /> 
                  </Grid>
+
+                 <Grid item xs={12} md={3}>
+                        <Controller
+                            name="city"
+                            control={control}
+                            rules={{ required: 'City is required' }}
+                            render={({ field,fieldState:{error} }) => {
+                                const {onChange,value,ref,onBlur} = field; 
+                            return <CustomAutoCompelete 
+                            onChange={onChange}
+                            lable={"Select City"}
+                            value={value}
+                            hasError={error}
+                            onBlur={onBlur}
+                            getOptionLabel={(option)=>option?.cityName}
+                            url={"admin/regionMaster/city"}
+                            filterOnActive={true}
+                            inputRef={ref}
+                            /> 
+                            }}
+
+                            > 
+                        </Controller>
+                        {
+                            errors.city && <Typography variant="caption" color="error">City is required</Typography> 
+                        }
+                    </Grid>
 
                  <Grid xs={12} sm={3}>
                     <CustomTextInputField 

@@ -12,9 +12,10 @@ const CustomLoadingButton = styled(LoadingButton)({
   },
 });
 
-function CustomButton({ variant, disabled, href, onClick = () => {}, color, size, startIcon, endIcon, buttonText,loading,fullWidth }) {
+function CustomButton({ variant, disabled, href, onClick = () => {}, color, size, startIcon, endIcon, buttonText,loading,fullWidth,type }) {
   return (
     <CustomLoadingButton
+      type={type}
       variant={variant || "contained"}
       disabled={disabled}
       href={href}
