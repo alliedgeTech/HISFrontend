@@ -102,7 +102,7 @@ function RegistrationMaster() {
         return array;
       }
 
-  let TodayDate = new Date().toISOString().split("T")[0];
+  let TodayDate = new Date().toLocaleDateString('en-CA').toString();
 
 
       const CourseImageFile = (e) => {

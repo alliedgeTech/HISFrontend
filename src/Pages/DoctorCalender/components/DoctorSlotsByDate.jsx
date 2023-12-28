@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { socket } from '../../../socket';
 import { useDispatch,useSelector } from 'react-redux';
 import { setSocketConnected } from '../../../slices/socket.slice';
-import { setDoctorCalenderEditData, setDoctorCalenderLoading, setRemainingDays, setSeveDayData } from '../../../slices/doctorCalender.slice';
+import { setActiveDaySlotIndex, setActiveDaySlots, setDoctorCalenderEditData, setDoctorCalenderLoading, setLeveRoomDate, setRemainingDays, setSeveDayData } from '../../../slices/doctorCalender.slice';
 import BoxCalsses from "./handleStepOne.module.css";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import Divider from '@mui/material/Divider';
@@ -24,15 +24,14 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import toast from "react-hot-toast"
-import { Numbers } from '@mui/icons-material';
 
-function RenderBox({day,date,index,leftTime,startTime,sessionTime,doBreak}) {
+function RenderBox({day,date,index,leftTime,startTime,sessionTime,doBreak,HandleSlotDataIndex}) {
     const [MenuItemControl, setMenuItemControl] = useState(null);
     const dispatch = useDispatch(); 
     const handleClose = () =>{ 
         setMenuItemControl(null);
     }
-
+    const { activeDaySlotIndex } = useSelector(state => state.doctorCalender);
 
     return (<div className={BoxCalsses.RenderBox} >
         <div className={BoxCalsses.BoxHeading}>
@@ -52,11 +51,11 @@ function RenderBox({day,date,index,leftTime,startTime,sessionTime,doBreak}) {
             open={Boolean(MenuItemControl)}
             onClose={handleClose}
             MenuListProps={{
-            'aria-labelledby': 'basic-button',
+            'aria-labelledby': 'basic-button',  
             }}
             >
             <MenuItem onClick={()=>{doBreak(index);handleClose();}}>Holiday</MenuItem>
-            <MenuItem onClick={()=>{dispatch(setDoctorCalenderEditData(index));handleClose()}}>Edit</MenuItem>
+            <MenuItem onClick={()=>{HandleSlotDataIndex(index);handleClose()}}>Edit</MenuItem>
             </Menu>
         </div>
         <Divider style={{margin:'5px 0px'}}/>
@@ -71,33 +70,92 @@ function RenderBox({day,date,index,leftTime,startTime,sessionTime,doBreak}) {
         </div>
         <Divider style={{margin:'5px 0px'}}/>
         <div className={BoxCalsses.flexEnd}>
-            <Button variant="text" style={{color:"#25396f",alignSelf:"end"}}  size='small' > Show Slots</Button>
+            <Button variant="text" disabled={activeDaySlotIndex===index} onClick={()=>dispatch(setActiveDaySlotIndex(index))} style={{color: activeDaySlotIndex !== index ? "#25396f" : "", alignSelf: "end",}}  size='small' > Show Slots</Button>
         </div>
             </div>)
 }
 
 function DoctorSlotsByDate() {
     const dispatch = useDispatch(); 
-    const { doctor,sevenDayData,loading,remainingDays,doctorCalenderEditData,doctorCalenderLoading } = useSelector(state => state.doctorCalender);
+    const { doctor,sevenDayData,loading,remainingDays,doctorCalenderEditData,doctorCalenderLoading,activeDaySlots,activeDaySlotIndex,leaveRoomDate } = useSelector(state => state.doctorCalender);
+    const { isConnected } = useSelector(state => state.socket);
     const [createTimingModal, setCreateTimingModal] = useState(false);
     const { createDoctorSlotData,updateDoctorSlotData,BreakDoctorSlotData }  = useDoctorMasterData();
 
-    useEffect(()=>{
-        console.log('creatTimingModal',createTimingModal);
-    },[createTimingModal])
+    function getRoomId(date) {
+        let temp = `${ date?new Date(date).toLocaleDateString('en-CA').toString():new Date().toLocaleDateString('en-CA').toString()}${doctor?._id?.toString()}`;
 
-    function getRoomId() {
-        let temp = `${new Date().toISOString().slice(0, 10).toString()}${doctor?._id?.toString()}`;
+        if(temp==='Invalid Date')
+        {
+            temp = new Date().toLocaleDateString('en-CA').toString()+doctor?._id?.toString();
+        }
+
         return temp; 
     }
-    console.log("this si sevem days data : ",sevenDayData);
+    console.log("this is active this si sevem days data : ",sevenDayData);
     let roomId = getRoomId();
+
+    function getCurrentWeekDateByDay(dayName) {
+        console.log("we got the day like this: ", dayName);
+        const daysOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+        const today = new Date();
+        const currentDayIndex = today.getDay(); // 0 for Sunday, 1 for Monday, etc.
+        
+        const targetDayIndex = daysOfWeek.indexOf(dayName.toLowerCase());
+        let daysToAdd = targetDayIndex - currentDayIndex;
+      
+        if (daysToAdd < 0) {
+          // If the target day is earlier in the week, add 7 days to get the next occurrence.
+          daysToAdd += 7;
+        }
+      
+        if (daysToAdd === 0) {
+          // If the target day is today, return today's date.
+          console.log("this is today date :",today);
+          return today;
+        }
+      
+        const nextDate = new Date(today);
+        nextDate.setDate(today.getDate() + daysToAdd);
+      
+        return nextDate;
+    }        
+
+     function HandleSlotDataIndex (index){
+        if(activeDaySlotIndex===index) {
+            return;
+        }
+        if(sevenDayData && isConnected){
+
+        dispatch(setActiveDaySlotIndex(index));
+        socket.emit("leaveRoom",leaveRoomDate+doctor?._id+"_slots");
+        const { date } = sevenDayData?.commonSchedule?.[index];
+        socket.emit("joinRoom",`${getRoomId(date)}+"_slots"`,"doctor");
+        dispatch(setLeveRoomDate(date));
+
+        } else {
+            socket.connect();
+            toast.error("Please refresh the page");
+        }
+    }
+      
+    useEffect(() => {
+        console.log(" this is activeDaySlotIndex",activeDaySlotIndex);
+        if(sevenDayData && isConnected){
+            const { date } = sevenDayData?.commonSchedule?.[activeDaySlotIndex];
+
+            socket.emit("leaveRoom",roomId);
+
+        } 
+    },[activeDaySlotIndex])
 
     useEffect(() => {
         function onConnect() {
             console.log('socket is connected')
             dispatch(setSocketConnected(true));
-            socket.emit("joinRoom",roomId,"doctor");
+            dispatch(setLeveRoomDate(new Date().toLocaleDateString('en-CA').toString()))
+            socket.emit("joinRoom",[roomId,roomId+"_slots"],"doctor");
+            // socket.emit('joinRoom',`${roomId}_slots`,"admin");
         }
     
         function onDisconnect() {
@@ -123,7 +181,7 @@ function DoctorSlotsByDate() {
             console.log("this is data from socket yeyeyeyyeye: ",data);
            if(data){
             const currentDate = new Date();
-            const tempData = data.commonSchedule.map((obj,index)=>({...obj,date:new Date(new Date(currentDate).setDate(currentDate.getDate() + index)).toISOString().slice(0, 10)}))
+            const tempData = data.commonSchedule.map((obj,index)=>({...obj,date:getCurrentWeekDateByDay(obj?.dayName).toLocaleDateString('en-CA').toString()}))
             data.commonSchedule = tempData;
             dispatch(setSeveDayData(data));
             const DayData = [ 
@@ -148,7 +206,10 @@ function DoctorSlotsByDate() {
             toast.error("Something went wronge in socket");
            }
         });
-
+        socket.on("soltsData",(data)=>{
+            dispatch(setActiveDaySlots(data));
+            console.log("slotData",data);
+        })
        
         return () => {
           socket.off('connect', onConnect);
@@ -186,9 +247,9 @@ function DoctorSlotsByDate() {
         if((doctorCalenderEditData || doctorCalenderEditData==0)&& Number.isInteger(doctorCalenderEditData))
         {
             const tempData = sevenDayData?.commonSchedule?.[doctorCalenderEditData];
-            console.log('tempData',tempData);
+            console.log('tempData$',tempData);
 
-            const newData = {...tempData?.doctorTime,startTime:StringToCorrectDate(tempData?.doctorTime?.startTime),leftTime:StringToCorrectDate(tempData?.doctorTime?.leftTime)};
+            const newData = {...tempData?.doctorTime,date:tempData?.date,startTime:StringToCorrectDate(tempData?.doctorTime?.startTime),leftTime:StringToCorrectDate(tempData?.doctorTime?.leftTime)};
 
             reset({...newData});
             setCreateTimingModal(true);
@@ -208,34 +269,49 @@ function DoctorSlotsByDate() {
             sessionTime:null,
            });
         clearErrors();
+      } 
+
+
+      const SetTwoMinimumLength = (value) => {
+        return String(value).padStart(2, '0');
       }
+
+        
 
         const submitData = async(data) => {
             const compareWith = sevenDayData?.commonSchedule?.[doctorCalenderEditData]?.doctorTime
             let tempData ={}
-            console.log(`${data.startTime.$H}:${data.startTime.$m}`!= compareWith.startTime);
-            if(`${data.startTime.$H}:${data.startTime.$m}`!= compareWith.startTime)
-            {
-                tempData.startTime=`${data.startTime.$H}:${data.startTime.$m}`
+            console.log("data",data);
+            // console.log("this is start time : ",data.startTime.$H.length < 2 ? 'babu' : "op",data.startTime.$H);
+          console.log("this is left time : ", `${data.leftTime.$H}:${data.leftTime.$m}`,compareWith?.leftTime);
+          let MakeCombo;
+          MakeCombo = `${SetTwoMinimumLength(data.startTime.$H)}:${SetTwoMinimumLength(data.startTime.$m)}`;
+            if(MakeCombo!= compareWith?.startTime)
+            {   
+                tempData.startTime=MakeCombo;
             }
-             if (`${data.leftTime.$H}:${data.leftTime.$m}`!= compareWith.leftTime)
+            MakeCombo = `${SetTwoMinimumLength(data.leftTime.$H)}:${SetTwoMinimumLength(data.leftTime.$m)}`
+             if (MakeCombo!= compareWith?.leftTime)
             {
-                tempData.leftTime=`${data.leftTime.$H}:${data.leftTime.$m}`
-            }  if (data.sessionTime!=compareWith.sessionTime)
+                tempData.leftTime= MakeCombo
+            }  if (data.sessionTime!=compareWith?.sessionTime)
             {
                 tempData.sessionTime = data.sessionTime;
             } 
              tempData = {
                 ...tempData,
                 userId:doctor?._id,
+                date:data?.date,
+                day:data?.day?.name
             }   
+
+            console.log("tempData",tempData);
 
             if(doctorCalenderEditData || doctorCalenderEditData==0)
             {
-                console.log('we are some paty')
                delete tempData.day;
                tempData['_id'] = data._id;
-               const resData = await updateDoctorSlotData(tempData); 
+               const resData = await updateDoctorSlotData({...tempData,userId:doctor?._id}); 
 
                if(resData)
                {
@@ -396,7 +472,7 @@ function DoctorSlotsByDate() {
                 </Grid>
         </Box>
 
-        </AddEditModal>}
+        </AddEditModal> }
     <div>
         { <div className={BoxCalsses.slotsContainer}>
                 {
@@ -406,13 +482,35 @@ function DoctorSlotsByDate() {
                 }
             {
                 Array.isArray(sevenDayData?.commonSchedule) && sevenDayData?.commonSchedule?.map((item,index) => {
-                    return <RenderBox key={index} doBreak={doBreak} index={index} day={item?.dayName} date={item?.date} leftTime={item?.doctorTime?.leftTime} startTime={item?.doctorTime?.startTime} sessionTime={item?.doctorTime?.sessionTime} />
+                    return <RenderBox key={index} doBreak={doBreak} index={index} day={item?.dayName} date={item?.date} leftTime={item?.doctorTime?.leftTime} startTime={item?.doctorTime?.startTime} sessionTime={item?.doctorTime?.sessionTime} HandleSlotDataIndex={HandleSlotDataIndex} />
                 })
             }
             </div>
         }
 
-      
+      <div className={BoxCalsses.slotsContainer}>
+            <div className={BoxCalsses.slotsHeading}>
+                {
+                    doctor?.userName && <span>{doctor?.userName}'s Slots</span>
+                }
+                {
+                    activeDaySlots?.slotsmasters?.date && <span>{activeDaySlots?.slotsmasters?.date?.slice(0,10)}</span>
+                }
+            </div>
+
+            <div className={BoxCalsses.slotBody}>
+                {
+                    activeDaySlots?.slotsmasters?.slot?.map((item,index)=>{
+                      return <div key={index}>
+                            <span> booked:{item?.booked?.toString()}</span>
+                            <span> break:{item?.break?.toString()}</span>
+                            <span>startTime:{item?.startTime}</span>
+                            <span>count:{item?.count}</span>
+                        </div>
+                        })
+                }
+            </div>
+      </div>
 
     </div>
     </>
@@ -420,3 +518,4 @@ function DoctorSlotsByDate() {
 }
 
 export default DoctorSlotsByDate
+

@@ -11,6 +11,9 @@ const initialState = {
     doctorCalenderEditData:null,
     doctorCalenderLoading:false,
     slotDeallocationLoading:false,
+    activeDaySlots:null,
+    activeDaySlotIndex:null,
+    leaveRoomDate:null,
 };
 
 const doctorCalenderSlice = createSlice({
@@ -42,11 +45,20 @@ const doctorCalenderSlice = createSlice({
             state.step = action.payload
         },
         setSlotDeallocationLoading:(state,action) => {
-            state.slotDeallocationLoading = action.payload;
+            state.slotDeallocationLoading = action.payload
+        },
+        setActiveDaySlots:(state,action) => {
+            state.activeDaySlots = action.payload;
+        },
+        setActiveDaySlotIndex: (state,action) => {
+            state.activeDaySlotIndex = action.payload
+        },
+        setLeveRoomDate: (state,action) => {
+            state.leaveRoomDate = action.payload
         }
     }
 })
 
-export const { setCity,setLocation,setDoctor,setRemainingDays,setSeveDayData,setStep,setDoctorCalenderLoading,setDoctorCalenderEditData,setSlotDeallocationLoading } = doctorCalenderSlice.actions;
+export const { setCity,setLocation,setDoctor,setRemainingDays,setSeveDayData,setStep,setDoctorCalenderLoading,setDoctorCalenderEditData,setSlotDeallocationLoading,setActiveDaySlots,setActiveDaySlotIndex,setLeveRoomDate } = doctorCalenderSlice.actions;
 
 export default doctorCalenderSlice.reducer;
