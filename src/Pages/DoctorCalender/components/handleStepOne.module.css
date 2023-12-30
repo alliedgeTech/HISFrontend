@@ -1,3 +1,7 @@
+*{
+    box-sizing: border-box;
+}
+
 .container{
     display: flex;
     width: 100%;
@@ -34,7 +38,7 @@
 
 @media (min-width:0px) {
     .Box{
-        width: 95%;
+        width: 98%;
     }
 }
 
@@ -132,4 +136,106 @@
 
 .createSlots:hover > button{
     color: white!important;
+}
+
+.slotsContainerMini{
+    display: flex;
+    gap: 10px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px ;
+    flex-direction: column;
+    
+}
+
+.slotsHeading{
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #25396f;
+    display: flex;
+    justify-content: space-between;
+    width: 98%;
+    margin: 0 auto;
+}
+
+.slotBody{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 50px;   
+    width: 98%;
+    margin: 20px auto;
+}
+
+.text_icon_align{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+
+.ColorShow{
+    width:32px;
+    height:32px;
+    border-radius: 7px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+}
+
+.ColorLebal{
+    font-size: 17px;
+    font-weight: 500;
+}
+
+
+.colorShowSlots{
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: end;
+    margin: 0 auto;
+    width: 98%;
+}
+
+.slot{
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content:center;
+    gap: 7px;
+    padding: 8px;
+    border-radius: 10px;
+    transition: all;
+    transition-duration: 0.3s;
+    max-width: 130px;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.slot:hover{
+    transform: scale(1.1);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.count{
+    /* width: 20px;
+    height: 20px; */
+    margin-left: 10px;
+    padding-right: .5em;
+    padding-left: .5em;
+    display: inline-block;
+    border-radius: 1.1em;
+    text-align: center;
+    min-height: 1em;
+    min-width: 0.9em;
+    padding-bottom: .25em;
+    padding-top: 0.25em;
+    background-color: #25396f;
+    color: #25396f;
+    vertical-align: middle;
+    font-weight: 600;
+    font-size: 0.70rem;
+    /* border-radius: 100%; */
+    background-color: white;
+    line-height: 1;
 }
