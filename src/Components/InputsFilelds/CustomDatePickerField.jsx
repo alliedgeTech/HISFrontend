@@ -5,7 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 
-function CustomDatePickerField({ name, control, label, required,rules,disable,focused,maxDate,inputProps={} }) {
+function CustomDatePickerField({ name, control, label, required,rules,disable,focused,maxDate,inputProps={},minDate }) {
   return (  
     <Controller
       name={name}
@@ -29,7 +29,8 @@ function CustomDatePickerField({ name, control, label, required,rules,disable,fo
         disabled={disable}
         autoFocus={focused}
         onChange={onChange}
-        maxDate={dayjs(maxDate)}
+        maxDate={ maxDate && dayjs(maxDate)}
+        minDate={ minDate && dayjs(minDate)}
         value={dayjs(value)}
         slotProps={{
             textField: {

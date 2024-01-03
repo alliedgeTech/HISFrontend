@@ -12,6 +12,7 @@ import HrMaster from './Pages/HrMaster/HrMaster';
 import RegistrationMaster from './Pages/RegistrationMaster/RegistrationMaster';
 import Appointment from './Pages/Appointment/Appointment';
 import DoctorCalender from './Pages/DoctorCalender/DoctorCalender';
+import MainAppointment from './Pages/Appointment/MainAppointment';
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
           <Route path='/regionmaster' element={<RegionMaster/>} />
           <Route path='/hrmaster' element={<HrMaster/>} />
           <Route path='/front-office/registration' element={<RegistrationMaster/>} />
-          <Route path='/consultantdashboard/appointment' element={<Appointment/>} />
+          <Route path='/consultantdashboard/appointment' element={<MainAppointment/>} />
           <Route path='/calender/doctor' element={<DoctorCalender/>} />
           <Route path='*' element={<Home/>} />
         </Route>  

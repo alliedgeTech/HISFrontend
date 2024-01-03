@@ -4,7 +4,7 @@ import APIManager from '../../utils/ApiManager';
 
 const ApiManager = new APIManager();
 
-function CustomAutoCompelete({url,disable=false,onChange,lable,value,getOptionLabel,readOnly=false,filterOnActive,options,saveData,inputRef,onInputChange,onBlur,hasError,isOptionEqualToValue}) {
+function CustomAutoCompelete({url,disable=false,onChange,lable,value,getOptionLabel,readOnly=false,filterOnActive,options,saveData,inputRef,onInputChange,onBlur,hasError,isOptionEqualToValue,fullWidth,disableClearable,clearOnEscape}) {
     const [Loading, setLoading] = useState(false);
     const [RealOptios, setRealOptios] = useState([]);
 
@@ -37,11 +37,13 @@ function CustomAutoCompelete({url,disable=false,onChange,lable,value,getOptionLa
 
   return (
     <Autocomplete
-    clearOnEscape
+    clearOnEscape={clearOnEscape}
     autoComplete
     autoHighlight
     blurOnSelect
     clearOnBlur
+    disableClearable={disableClearable}
+    fullWidth={fullWidth}
     options={RealOptios}
     value={value} 
     loading={Loading}

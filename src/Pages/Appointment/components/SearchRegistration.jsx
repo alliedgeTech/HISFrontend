@@ -91,7 +91,8 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
 
       const submitSearchData = async(data) => {
         setFormDataBySearch(data?.searchValue?._id);
-        setSomeSearchDataInForm({doctor:{...data.searchValue.doctor},mobileNo:data?.searchValue?.mobileNo});
+        console.log("this is data searched : ",data);
+        setSomeSearchDataInForm({doctor:{...data.searchValue.doctor},mobileNo:data?.searchValue?.mobileNo,email:data?.searchValue?.email});
         closeTheSearchModal();
      }
 

@@ -142,7 +142,7 @@ function RenderBox({
   );
 }
 
-function BreakSlot({ time,TakeIndivisualBreak,_id }) {
+function BreakSlot({ time, TakeIndivisualBreak, _id }) {
   const [MenuItemControl, setMenuItemControl] = useState(null);
   function handleClose() {
     setMenuItemControl(null);
@@ -174,7 +174,7 @@ function BreakSlot({ time,TakeIndivisualBreak,_id }) {
         }}>
         <MenuItem
           onClick={() => {
-            TakeIndivisualBreak({ _id,boolBreak:false });
+            TakeIndivisualBreak({ _id, boolBreak: false });
             handleClose();
           }}>
           Cancle Break
@@ -217,7 +217,7 @@ function BookedSlot({ time, count, TakeIndivisualBreak, _id }) {
         }}>
         <MenuItem
           onClick={() => {
-            TakeIndivisualBreak({ _id,boolBreak:true });
+            TakeIndivisualBreak({ _id, boolBreak: true });
             handleClose();
           }}>
           Take Break
@@ -243,7 +243,13 @@ function SlotSBoxRender({
   }
 
   if (slotBreak) {
-    return <BreakSlot _id={_id} time={startTime} TakeIndivisualBreak={TakeIndivisualBreak}  />;
+    return (
+      <BreakSlot
+        _id={_id}
+        time={startTime}
+        TakeIndivisualBreak={TakeIndivisualBreak}
+      />
+    );
   }
 
   if (booked) {
@@ -297,7 +303,7 @@ function SlotSBoxRender({
         }}>
         <MenuItem
           onClick={() => {
-            TakeIndivisualBreak({ _id,boolBreak:true });
+            TakeIndivisualBreak({ _id, boolBreak: true });
             handleClose();
           }}>
           Take Break
@@ -446,7 +452,9 @@ function DoctorSlotsByDate() {
       dispatch(setActiveDaySlotIndex(null));
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
+      socket.off("soltsData");
       socket.off("doctorCalenderData");
+      socket.emit("leaveRoom",leaveRoomDate + doctor?._id + "_slots");
       disconnect();
       console.log("component is unmounted");
     };
@@ -519,7 +527,7 @@ function DoctorSlotsByDate() {
       const newData = {
         ...tempData?.doctorTime,
         date: tempData?.date,
-        day: {name:tempData?.dayName},
+        day: { name: tempData?.dayName },
         startTime: StringToCorrectDate(tempData?.doctorTime?.startTime),
         leftTime: StringToCorrectDate(tempData?.doctorTime?.leftTime),
       };
@@ -564,7 +572,10 @@ function DoctorSlotsByDate() {
     if (MakeCombo != compareWith?.startTime) {
       tempData.startTime = MakeCombo;
       if (MakeCombo < compareWith?.startTime) {
-        tempData.startTimeAdditional = { oldStartTime: compareWith?.startTime,sessionTime:data.sessionTime };
+        tempData.startTimeAdditional = {
+          oldStartTime: compareWith?.startTime,
+          sessionTime: data.sessionTime,
+        };
       }
     }
 
@@ -574,7 +585,10 @@ function DoctorSlotsByDate() {
     if (MakeCombo != compareWith?.leftTime) {
       tempData.leftTime = MakeCombo;
       if (MakeCombo < compareWith?.leftTime) {
-        tempData.leftTimeAdditional = { oldleftTime: compareWith?.leftTime,sessionTime:data.sessionTime };
+        tempData.leftTimeAdditional = {
+          oldleftTime: compareWith?.leftTime,
+          sessionTime: data.sessionTime,
+        };
       }
     }
     if (data.sessionTime != compareWith?.sessionTime) {
@@ -622,7 +636,7 @@ function DoctorSlotsByDate() {
       id: data?._id,
       userId: doctor?._id,
       date: activeDaySlots?.slotsmasters?.date,
-      boolBreak:data?.boolBreak
+      boolBreak: data?.boolBreak,
     };
     console.log("this is data TakeIndivisualBreak tempData", tempData);
     socket.emit("takeBreakIndivisual", tempData);

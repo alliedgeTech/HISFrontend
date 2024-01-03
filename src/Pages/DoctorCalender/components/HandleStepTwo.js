@@ -61,7 +61,7 @@ function HandleStepTwo() {
                         /> 
                         }}
                         > 
-                        </Controller>
+                      </Controller>
 
                         {
                             errors.doctor && <Typography variant="caption" color="error">{errors.doctor.message}</Typography> 

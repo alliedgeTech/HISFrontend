@@ -1,6 +1,6 @@
 import React from 'react'
 import SwipeableViews from "react-swipeable-views";
-import { memo, useState } from 'react'
+import { useState } from 'react'
 import CityMaster from '../CityMaster/CityMaster';
 import StateMaster from '../StateMaster/StateMaster';
 import CountryMaster from '../CountryMaster/CountryMaster';

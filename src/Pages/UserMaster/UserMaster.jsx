@@ -408,7 +408,7 @@ const onPaginationChange = async({page,pageSize}) => {
          handleSubmit={handleSubmit(submitData)}
          open={ModalOpen}
          modalTitle={editData ? "Update User" : "Add User"}
-         isEdi  t={!!editData}
+         isEdit={!!editData}
          Loading={Loading}
         >
             <Box 

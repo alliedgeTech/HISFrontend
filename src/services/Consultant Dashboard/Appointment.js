@@ -2,19 +2,22 @@ import { useEffect, useState } from "react";
 import { setAppointmentCount, setAppointmentData, setAppointmentLoading } from "../../slices/appointment.slice";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
 
 const ApiManager = new APIManager();
 
 export const useAppointmentData = () => {
 
         const [ListLoading, setListLoading] = useState(false);
-        const { appointmentPagination,appointmentData } = useSelector(state => state.appointment);
+        const { appointmentPagination,appointmentData,startDate:sD,endDate:eD,doctorAppointmentList:D } = useSelector(state => state.appointment);
         const dispatch = useDispatch();
 
-    const getAppintmentData = async (withLoading=false,page=appointmentPagination.page,pageSize=appointmentPagination.pageSize) => {
+    const getAppintmentData = async (withLoading=false,page=appointmentPagination.page,pageSize=appointmentPagination.pageSize,searchBy='date',startDate=sD,endDate=eD,doctor=D,val) => {
         withLoading && setListLoading(true);
         
-        const data = await ApiManager.get(`admin/consultant/appointment?page=${page}&pageSize=${pageSize}`);
+        let url = searchBy==='date' ? `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&searchBy=${searchBy}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}` : `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&searchBy=${searchBy}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}&val=${val}`
+
+        const data = await ApiManager.get(url);
 
         if(!data.error) 
         {
@@ -39,6 +42,7 @@ export const useAppointmentData = () => {
             const tempData = structuredClone(appointmentData);
             tempData[data.id] = resData?.data?.data;
             dispatch(setAppointmentData(tempData));
+            toast.success("Appointment updated Successfully");
             dispatch(setAppointmentLoading(false));
             return true;
         } 
@@ -56,17 +60,13 @@ export const useAppointmentData = () => {
         {
             getAppintmentData();
             dispatch(setAppointmentLoading(false));
+            toast.success("Appointment Created Successfully");
             return true;
         }
 
         dispatch(setAppointmentLoading(false));
         return false;
     }
-
-    
-    useEffect(() => {
-        !appointmentData && getAppintmentData(true);
-    },[])
 
 
     return {
