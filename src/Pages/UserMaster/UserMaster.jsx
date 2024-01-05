@@ -361,7 +361,6 @@ const onPaginationChange = async({page,pageSize}) => {
     { field: "mobilenumber", headerName: "Phone Number",flex:1, },
     { field: "address", headerName: "Address", flex:1, },
     { field: "pincode", headerName: "Code", flex:1, },
-    {field:"branch", headerName:"Branch",flex:1,renderCell:(params)=>params.row?.branch?.location},
     { field: "isActive", headerName: "Is Active", flex:1 , sortable:false,
     renderCell : (params)=>(
        <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateUSer({ _id: params?.row?._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1})}></IOSSwitch> 

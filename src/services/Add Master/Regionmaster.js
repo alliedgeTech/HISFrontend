@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCityCount, setCityData, setCityLoading, setCountryCount, setCountryData, setCountryLoading, setStateCount, setStateData, setStateLoading } from "../../slices/region.slice";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { setUserData } from "../../slices/user.slice";
 
 const ApiManager = new APIManager();
 
@@ -56,6 +57,7 @@ export const useRegionData = () => {
         if(!resData?.error)
         {
             toast.success("country updated successfully")
+            dispatch(setUserData(null));
             getAllCountry();
             getAllState();
             getAllCity();

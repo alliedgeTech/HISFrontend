@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { setAppointmentCount, setAppointmentData, setAppointmentLoading } from "../../slices/appointment.slice";
+import { setAppointmentCount, setAppointmentData, setAppointmentListLoading, setAppointmentLoading } from "../../slices/appointment.slice";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
@@ -8,12 +8,12 @@ const ApiManager = new APIManager();
 
 export const useAppointmentData = () => {
 
-        const [ListLoading, setListLoading] = useState(false);
-        const { appointmentPagination,appointmentData,startDate:sD,endDate:eD,doctorAppointmentList:D } = useSelector(state => state.appointment);
+        const { appointmentPagination,appointmentData,startDate:sD,endDate:eD,doctorAppointmentList:D,appointmentListLoading } = useSelector(state => state.appointment);
         const dispatch = useDispatch();
 
     const getAppintmentData = async (withLoading=false,page=appointmentPagination.page,pageSize=appointmentPagination.pageSize,searchBy='date',startDate=sD,endDate=eD,doctor=D,val) => {
-        withLoading && setListLoading(true);
+        // console.log("this is with loading : ",withLoading)
+        withLoading && dispatch(setAppointmentListLoading(true));
         
         let url = searchBy==='date' ? `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&searchBy=${searchBy}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}` : `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&searchBy=${searchBy}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}&val=${val}`
 
@@ -21,13 +21,15 @@ export const useAppointmentData = () => {
 
         if(!data.error) 
         {
+          setTimeout(() => {
             dispatch(setAppointmentData(data?.data?.data));
             dispatch(setAppointmentCount(data?.data?.count));
-            withLoading && setListLoading(false);
-            return true;
+            withLoading && dispatch(setAppointmentListLoading(false));
+        }, 30000);
+        return true;
         }
 
-        withLoading && setListLoading(false);
+        withLoading && dispatch(setAppointmentListLoading(false));
         return false;
     }
 
@@ -68,9 +70,12 @@ export const useAppointmentData = () => {
         return false;
     }
 
+    useEffect(()=>{
+        console.log("this is updated data in side hook :",appointmentListLoading)
+    },[appointmentListLoading])
 
     return {
-        ListLoading,
+        appointmentListLoading,
         getAppintmentData,
         updateAppointmentData,
         createAppointmentData

@@ -97,13 +97,13 @@ function SlotSBoxRender({
     );
 }
 
-function SelectSlotModal({open,setSelectSlotModal,doctor,setValueFormSelectSlot}) {
+function SelectSlotModal({open,setSelectSlotModal,doctor,setValueFormSelectSlot,defaultValue}) {
     const [slotsData, setSlotsData] = useState(null);
     let previousJoinRoomDate = null;
     const { handleSubmit,control,clearErrors,reset,watch,setValue } = useForm({
         defaultValues:{
-            slot:null,
-            date:null
+            slot:defaultValue?.time ? defaultValue?.time : null,
+            date:defaultValue?.date ? dayjs(defaultValue?.date) : dayjs()
         },
         mode:'onTouched'
     });
@@ -140,15 +140,20 @@ function SelectSlotModal({open,setSelectSlotModal,doctor,setValueFormSelectSlot}
     const watchDate = watch('date');
     const watchSlot = watch('slot');
 
+    // useEffect(()=>{
+    //   console.log("@@ default date : ",dayjs(defaultValue));
+    //   setValue("date", defaultValue ? dayjs(defaultValue) : dayjs())
+    // },[])
+
     useEffect(()=>{ 
 
         function onConnect() {
-            console.log("this is solts data socket is connected");
+            console.log("@@this is solts data socket is connected");
             // socket.emit('joinRoom',`${roomId}_slots`,"admin");
         }
 
         function onDisconnect(){
-            console.log("this is solts data socket is disconnected");
+            console.log("@@this is solts data socket is disconnected");
         }
 
         socket.connect();
@@ -172,6 +177,7 @@ function SelectSlotModal({open,setSelectSlotModal,doctor,setValueFormSelectSlot}
         return () => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
+            console.log('@@ disconnected')
             socket.off("soltsData");
             socket.emit("leaveRoom",`${dayjs(watchDate?.$d).format('YYYY-MM-DD')}${doctor?._id}_slots`)
             socket.disconnect()

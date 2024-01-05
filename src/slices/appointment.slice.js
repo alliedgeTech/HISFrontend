@@ -10,9 +10,10 @@ const initialState = {
     startDate:new Date().toLocaleDateString('en-CA').toString(),
     endDate:new Date().toLocaleDateString('en-CA').toString(),
     doctorAppointmentList:null,
-    appointmentStep:2,
+    appointmentStep:0,
     appointmentJwtData:null,
     appointmentOutTimeData:null,
+    appointmentListLoading:false
 }
 
 const appointmentSlice = createSlice({
@@ -52,10 +53,13 @@ const appointmentSlice = createSlice({
         },
         setAppointmentOutTimeData : (state,action) => {
             state.appointmentOutTimeData = action.payload;
+        },
+        setAppointmentListLoading : (state,action) => { 
+            state.appointmentListLoading = action.payload;   
         }
     }
 }) 
 
-export const { setAppointmentCount,setAppointmentData,setAppointmentEditData,setAppointmentLoading,setAppointmentpagination,setStartDate,setEndDate,setShowDoctorAppointment,setAppointmentJwtData,setAppointmentOutTimeData,setAppointmentStep } = appointmentSlice.actions;
+export const { setAppointmentCount,setAppointmentData,setAppointmentEditData,setAppointmentLoading,setAppointmentpagination,setStartDate,setEndDate,setShowDoctorAppointment,setAppointmentJwtData,setAppointmentOutTimeData,setAppointmentStep,setAppointmentListLoading } = appointmentSlice.actions;
 
 export default appointmentSlice.reducer;

@@ -94,11 +94,10 @@ function Appointment() {
   const [showSlotSelect, setShowSlotSelect] = useState(false);
   const [LeftDrawer, setLeftDrawer] = useState(false);
   const [SearchValue, setSearchValue] = useState(null);
-    
   
    
   const {
-    ListLoading,
+    appointmentListLoading,
     createAppointmentData,
     getAppintmentData,
     updateAppointmentData,
@@ -395,11 +394,11 @@ function Appointment() {
     if (
       appointmentData &&
       Array.isArray(appointmentData) &&
-      ListLoading === false
+      appointmentListLoading === false
     ) {
       return setRows(appointmentData);
     }
-  }, [appointmentData, ListLoading]);
+  }, [appointmentData, appointmentListLoading]);
 
   // function setDoctorAppointmentListDoctor(data) {
   //   console.log("this is selected doctor ", data);
@@ -415,8 +414,14 @@ function Appointment() {
   //   );
   // }
 
-  function GenrateJwtToken({_id,userId}){
-    console.log("this is id : ",_id,userId)
+  function GenrateJwtToken({_id,userId,checkDate}){
+    console.log("this is id : ",_id,userId);
+    console.log("this is check date : ",checkDate,dayjs().format("YYYY-MM-DD"))
+    if(checkDate?.slice(0,10)!=dayjs().format("YYYY-MM-DD"))
+    {
+      toast.error("Please can genrate jwt token only for today appointment");
+      return;
+    }
     socket.emit("genrateJwtToken",{_id,userId,date:dayjs().format("YYYY-MM-DD")},(data)=>{
         if(Array.isArray(appointmentData))
         {
@@ -489,7 +494,7 @@ function Appointment() {
       field:"jwt",
       headerName:"JWT",
       width:120,
-      renderCell:(params) => (params.row.jwt ? params.row.jwt : <div onClick={()=>GenrateJwtToken({_id:params?.row?._id,userId:params?.row?.doctor?._id})}>genrate</div> ),
+      renderCell:(params) => (params.row.jwt ? params.row.jwt : <div onClick={()=>GenrateJwtToken({_id:params?.row?._id,userId:params?.row?.doctor?._id,checkDate:params?.row?.appointmentDate})}>genrate</div> ),
     },
     {
       field: "appointmentDate",
@@ -721,7 +726,7 @@ function Appointment() {
           <Grid sm={12}>
             <CustomButton
               fullWidth={true}
-              loading={ListLoading}
+              loading={appointmentListLoading}
               type={"submit"}
               buttonText={"Save"}></CustomButton>
           </Grid>
@@ -1153,6 +1158,8 @@ function Appointment() {
       />
 
       <SelectSlotModal
+        key={selectSlotModal}
+        defaultValue={{date:getValues("appointmentDate"),time:getValues("time")}}
         open={selectSlotModal}
         setSelectSlotModal={setSelectSlotModal}
         doctor={DoctorWatch}
@@ -1160,7 +1167,10 @@ function Appointment() {
       />
 
       <TableMainBox customHeader={CustomHeader() }>
-        {ListLoading ? (
+        {
+          console.log("this is updated data : ",appointmentListLoading)
+        }
+        {appointmentListLoading ? (
           <>
             <LinearProgress />
             <TableSkeleton />
