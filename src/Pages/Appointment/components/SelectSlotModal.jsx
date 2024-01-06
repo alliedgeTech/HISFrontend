@@ -163,7 +163,7 @@ function SelectSlotModal({open,setSelectSlotModal,doctor,setValueFormSelectSlot,
             setSlotsData(data);
             console.log("this is solts data : ",data);
         })
-        if(watchDate)
+        if(watchDate && doctor)
         { 
             console.log("this is watch date : ",watchDate, dayjs(watchDate.$d).format('YYYY-MM-DD'));
             if(previousJoinRoomDate)
@@ -179,7 +179,10 @@ function SelectSlotModal({open,setSelectSlotModal,doctor,setValueFormSelectSlot,
             socket.off("disconnect", onDisconnect);
             console.log('@@ disconnected')
             socket.off("soltsData");
-            socket.emit("leaveRoom",`${dayjs(watchDate?.$d).format('YYYY-MM-DD')}${doctor?._id}_slots`)
+            if(doctor)
+            {
+              socket.emit("leaveRoom",`${dayjs(watchDate?.$d).format('YYYY-MM-DD')}${doctor?._id}_slots`)
+            }
             socket.disconnect()
         }
     },[watchDate]);
@@ -239,4 +242,4 @@ function SelectSlotModal({open,setSelectSlotModal,doctor,setValueFormSelectSlot,
     )
 }
 
-export default SelectSlotModal
+export default SelectSlotModal  

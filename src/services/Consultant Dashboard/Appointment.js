@@ -18,14 +18,12 @@ export const useAppointmentData = () => {
         let url = searchBy==='date' ? `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&searchBy=${searchBy}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}` : `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&searchBy=${searchBy}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}&val=${val}`
 
         const data = await ApiManager.get(url);
-
+        console.log("this is data majboot hook :",data);
         if(!data.error) 
         {
-          setTimeout(() => {
             dispatch(setAppointmentData(data?.data?.data));
             dispatch(setAppointmentCount(data?.data?.count));
             withLoading && dispatch(setAppointmentListLoading(false));
-        }, 30000);
         return true;
         }
 
