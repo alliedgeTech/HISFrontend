@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import APIManager from "../../utils/ApiManager";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setRoleCount, setRoleData, setRoleLoading } from "../../slices/role.slice";
+import { setRoleCount, setRoleCountByOne, setRoleData, setRoleLoading } from "../../slices/role.slice";
 
 const ApiManager = new APIManager();
 
@@ -60,7 +60,12 @@ export const useRoleData = () => {
 
         if(!resData.error)
         {
-            getRoleData();
+            const { page,pageSize } = rolePagination;
+            if(Number.isNaN(roleData?.length) || page*pageSize+pageSize > roleData?.length) {
+                getRoleData(false,page,pageSize);
+            } else { 
+                dispatch(setRoleCountByOne())
+            }
             resetAll();
             toast.success(resData.message);
             dispatch(setRoleLoading(false))

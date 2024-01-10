@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
-import { setDepartmentCount, setDepartmentData, setDepartmentLoading, setDesignationCount, setDesignationData, setDesignationLoading, setSpecialityData, setSpecialityLoading, setSpeciallityCount } from "../../slices/hr.slice";
+import { setDepartmentCount, setDepartmentCountByOne, setDepartmentData, setDepartmentLoading, setDesignationCount, setDesignationCountByOne, setDesignationData, setDesignationLoading, setSpecialityData, setSpecialityLoading, setSpeciallityCount, setSpeciallityCountByOne } from "../../slices/hr.slice";
 import toast from "react-hot-toast";
 
 const ApiManager = new APIManager();
@@ -46,7 +46,12 @@ export const useHrMasterData = () => {
         if(!resData.error)
         {
             resetAll();
-            getDepartmentData();
+            const { page,pageSize } = departmentPagination;
+            if(Number.isNaN(departmentData?.length) || page*pageSize+pageSize > departmentData?.length) {
+                getDepartmentData();
+            } else { 
+                dispatch(setDepartmentCountByOne())
+            }
             setLoding(false);
             toast.dismiss(toastId);
             toast.success("Department Added Successfully");
@@ -119,7 +124,12 @@ export const useHrMasterData = () => {
         if(!resData.error)
         {
             resetAll();
-            getDesignationData();
+            const { page,pageSize } = designationPagination;
+            if(Number.isNaN(designationData?.length) || page*pageSize+pageSize > designationData?.length) {
+                getDesignationData();
+            } else { 
+                dispatch(setDesignationCountByOne())
+            }
             setLoding(false);
             toast.dismiss(toastId);
             toast.success("Designation Added Successfully");
@@ -200,11 +210,15 @@ export const useHrMasterData = () => {
         const toastId = toast.loading("Loading...");
         setLoding(true);
         const resData = await ApiManager.post("admin/addMaster/createspeciality",data);
-
+        const { page,pageSize } = specialityPagination;
         if(!resData.error)
         {
             resetAll();
-            getSpecilityData();
+            if(Number.isNaN(specialityData?.length) || page*pageSize+pageSize > specialityData?.length) {
+                getSpecilityData();
+            } else { 
+                dispatch(setSpeciallityCountByOne())
+            }
             toast.dismiss(toastId);
             setLoding(false);
             toast.success("Speciality Added Successfully");

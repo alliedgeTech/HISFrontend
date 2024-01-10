@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setRegistrationCount, setRegistrationData, setRegistrationLoading } from "../../slices/registration.slice";
+import { setRegistrationCount, setRegistrationCountByOne, setRegistrationData, setRegistrationLoading } from "../../slices/registration.slice";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import APIManager from "../../utils/ApiManager";
@@ -62,7 +62,12 @@ export const  useFrontOfficeRegistration = () => {
 
                 if(!resData?.error)
                 {
-                    getRegistrationData();
+                    const { page,pageSize } = registrationPagination;
+                    if(Number.isNaN(registrationData?.length) || page*pageSize+pageSize > registrationData?.length) {
+                        getRegistrationData();
+                    } else { 
+                        dispatch(setRegistrationCountByOne())
+                    }
                     toast.success(resData.message);
                     dispatch(setRegistrationLoading(false));
                     return true;
@@ -144,7 +149,7 @@ export const  useFrontOfficeRegistration = () => {
 
     }
 
-    const updateState = async (tempData) => {
+    const updateActiveState = async (tempData) => {
         console.log("we get it is")
         dispatch(setRegistrationLoading(true));
         console.log("this is confusing data",tempData);
@@ -176,7 +181,7 @@ export const  useFrontOfficeRegistration = () => {
         getRegistrationFindById,
         createRegistration,
         updateRegistration,
-        updateState,
+        updateState:updateActiveState,
         ListLoading
     }
 

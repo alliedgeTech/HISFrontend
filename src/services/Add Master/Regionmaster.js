@@ -1,7 +1,7 @@
 // import { Toast } from "react-toastify/dist/components";
 import APIManager from "../../utils/ApiManager"
 import { useDispatch, useSelector } from "react-redux";
-import { setCityCount, setCityData, setCityLoading, setCountryCount, setCountryData, setCountryLoading, setStateCount, setStateData, setStateLoading } from "../../slices/region.slice";
+import { setCityCount, setCityCountByOne, setCityData, setCityLoading, setCountryCount, setCountryCountByOne, setCountryData, setCountryLoading, setStateCount, setStateCountByOne, setStateData, setStateLoading } from "../../slices/region.slice";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { setUserData } from "../../slices/user.slice";
@@ -20,10 +20,15 @@ export const useRegionData = () => {
         dispatch(setCountryLoading(true));
         const resData = await ApiManager.post(`admin/regionMaster/country`,data);
         if(!resData?.error)
-        {
+        {   
+            const { page,pageSize } = countryPagination;
             toast.success("country created successfully")
             dispatch(setCountryLoading(false));
-            getAllCountry();
+            if(Number.isNaN(countryData?.length) || page*pageSize+pageSize > countryData?.length) {
+                getAllCountry();
+            } else {
+                dispatch(setCountryCountByOne());
+            }
             return true;
         }
         dispatch(setCountryLoading(false));
@@ -76,7 +81,12 @@ export const useRegionData = () => {
         if(!resData?.error)
         {
             dispatch(setStateLoading(false));
-            getAllState();
+            const { page,pageSize } = statePagintion;
+            if(Number.isNaN(stateData?.length) || page*pageSize+pageSize > stateData?.length) {
+                getAllState();
+            } else { 
+                dispatch(setStateCountByOne());
+            }
             toast.success("state created successfully")
             return true;
         }
@@ -190,7 +200,12 @@ export const useRegionData = () => {
         if(!resData?.error)
         {
             toast.success("city created successfully")
-            getAllCity();
+            const { page,pageSize } = cityPagination;
+            if(Number.isNaN(cityData?.length) || page*pageSize+pageSize > cityData?.length) {
+                getAllCity();
+            } else { 
+                dispatch(setCityCountByOne());
+            }
             dispatch(setCityLoading(false));
             return true;
         }

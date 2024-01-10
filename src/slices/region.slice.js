@@ -38,6 +38,9 @@ const RegionSlice = createSlice({
         setCountryCount : (state,action) => {
             state.countryCount = action.payload
         },
+        setCountryCountByOne: (state, action) => {
+            state.countryCount = state.countryCount + 1;
+        },
         setStateData: (state, action) => {
             state.stateData = action.payload
         },
@@ -54,6 +57,9 @@ const RegionSlice = createSlice({
         setStateCount : (state,action) => {
             state.stateCount = action.payload
         },
+        setStateCountByOne: (state, action) => {
+            state.stateCount = state.stateCount + 1;
+        },
         setCityData: (state, action) => {
             state.cityData = action.payload
         },
@@ -69,11 +75,14 @@ const RegionSlice = createSlice({
         },
         setCityCount : (state,action) => {
             state.cityCount = action.payload
+        },
+        setCityCountByOne: (state, action) => {
+            state.cityCount = state.cityCount + 1;
         }
     }
 
 })
 
-export const { setCountryData,setCountryLoading,setCountryEditData,setCountryPagination,setCountryCount,setStateData,setStateLoading,setStateEditData,setStatePagination,setStateCount,setCityData,setCityLoading,setCityEditData,setCityPagination,setCityCount } = RegionSlice.actions;
+export const { setCountryData,setCountryLoading,setCountryEditData,setCountryPagination,setCountryCount,setCountryCountByOne,setStateData,setStateLoading,setStateEditData,setStatePagination,setStateCount,setStateCountByOne,setCityData,setCityLoading,setCityEditData,setCityPagination,setCityCount,setCityCountByOne } = RegionSlice.actions;
 
 export default RegionSlice.reducer;

@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import APIManager from "../../utils/ApiManager"
-import { setBranchCount, setBranchData, setBranchLoading } from "../../slices/branch.slice";
+import { setBranchCount, setBranchCountByOne, setBranchData, setBranchLoading } from "../../slices/branch.slice";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useState } from "react";
@@ -11,7 +11,7 @@ export const useBranchData = () => {
     const dispatch = useDispatch();
     const {branchLoading:Loading,branchData,branchCount,branchPagination:paginationModel} = useSelector(state => state.branch);
     const [ListLoading, setListLoading] = useState(false);
-    const getBranchData = async (withLoading=false,page,pageSize) => {
+    const getBranchData = async (withLoading=false,page=paginationModel.page,pageSize=paginationModel.pagesize) => {
         if(withLoading)
         {
             setListLoading(true);
@@ -63,7 +63,11 @@ export const useBranchData = () => {
         const resData = await ApiManager.post("admin/locationMaster/addlocation",data);
         if(!resData.error)
         {
-            getBranchData(false,page,pageSize);
+            if( Number.isNaN(branchData?.length) || page*pageSize+pageSize > branchData?.length) {
+                getBranchData(false,page,pageSize);
+            } else { 
+                dispatch(setBranchCountByOne());
+            }
             toast.dismiss(toastId)
             toast.success(resData.message);
             dispatch(setBranchLoading(false));

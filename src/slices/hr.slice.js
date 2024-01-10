@@ -33,6 +33,9 @@ const hrSlice = createSlice({
          setDepartmentCount: (state, action) => {
                 state.departmentCount = action.payload
          },
+         setDepartmentCountByOne: (state, action) => {
+                state.departmentCount = state.departmentCount + 1;
+         },
         setDesignationData: (state, action) => {
                 state.designationData = action.payload
          },
@@ -41,6 +44,9 @@ const hrSlice = createSlice({
         },
         setDesignationCount: (state, action) => {
                 state.designationCount = action.payload
+        },
+        setDesignationCountByOne: (state, action) => {
+                state.designationCount = state.designationCount + 1;
         },
         setDesignationPagination: (state, action) => {
                 state.designationPagination.page = action.payload.page;
@@ -56,6 +62,9 @@ const hrSlice = createSlice({
                 state.specialityPagination.page = action.payload.page;
                 state.specialityPagination.pageSize = action.payload.pageSize
         },
+        setSpeciallityCountByOne: (state, action) => {
+                state.specialityCount = state.specialityCount + 1;
+        },
         setSpeciallityCount: (state, action) => {
                 state.specialityCount = action.payload
         },
@@ -66,6 +75,6 @@ const hrSlice = createSlice({
 
 })
 
-export const { setDepartmentData,setDepartmentLoading,setDepartmentPagination,setDepartmentCount,setDesignationData,setDesignationCount,setDesignationLoading,setDesignationPagination,setSpecialityData,setSpeciallityCount,setSpecialityLoading,setSpecialityPagination,setEditData } = hrSlice.actions;
+export const { setDepartmentData,setDepartmentLoading,setDepartmentPagination,setDepartmentCount,setDesignationData,setDesignationCount,setDepartmentCountByOne,setDesignationLoading,setDesignationPagination,setSpecialityData,setDesignationCountByOne,setSpeciallityCount,setSpecialityLoading,setSpecialityPagination,setSpeciallityCountByOne,setEditData } = hrSlice.actions;
 
 export default hrSlice.reducer;
