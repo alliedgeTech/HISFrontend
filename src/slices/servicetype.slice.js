@@ -28,12 +28,12 @@ const serviceTypeSlice = createSlice({
             state.serviceTypePagination.page = action.payload.page;
             state.serviceTypePagination.pageSize = action.payload.pageSize;
         },
-        setServiceTypeCountByOne(state,action) {
+        setServiceTypeCountIncByOne(state,action) {
             state.serviceTypeCount = state.serviceTypeCount + 1;
         },
     }
 })
 
-export const  { setServiceTypeData,setEditServiceTypeData,setServiceTypeCount,setServiceTypeLoading,setServiceTypePagination,setServiceTypeCountByOne } = serviceTypeSlice.actions;
+export const  { setServiceTypeData,setEditServiceTypeData,setServiceTypeCount,setServiceTypeLoading,setServiceTypePagination,setServiceTypeCountIncByOne } = serviceTypeSlice.actions;
 
 export default serviceTypeSlice.reducer;

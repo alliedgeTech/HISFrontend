@@ -11,6 +11,7 @@ import appointmentSlice from "../slices/appointment.slice";
 import doctorCalenderSlice from "../slices/doctorCalender.slice";
 import socketSlice from "../slices/socket.slice";
 import servicetypeSlice from "../slices/servicetype.slice";
+import serviceSlice from "../slices/service.slice";
 
 export const store = configureStore({
     reducer:{
@@ -25,6 +26,7 @@ export const store = configureStore({
         appointment:appointmentSlice,
         doctorCalender:doctorCalenderSlice,
         socket:socketSlice,
-        serviceType:servicetypeSlice
+        serviceType:servicetypeSlice,
+        service:serviceSlice,
     }
 });

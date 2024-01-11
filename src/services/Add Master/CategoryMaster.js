@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useSelector,useDispatch } from 'react-redux';
 import APIManager from "../../utils/ApiManager";
-import { setActionLoading, setCategoryCount, setCategoryCountByOne, setCategoryData, setListLoading } from "../../slices/category.slice";
+import { setActionLoading, setCategoryCount, setCategoryCountIncByOne, setCategoryData, setListLoading } from "../../slices/category.slice";
 import toast from "react-hot-toast";
 
 const ApiManaget = new APIManager();
@@ -45,7 +45,7 @@ export const useCategoryMaster = () => {
             if(Number.isNaN(categoryData?.length) || page*pageSize+pageSize > categoryData?.length) {
                 getCategoryData(false,page,pageSize);
             } else { 
-                dispatch(setCategoryCountByOne())
+                dispatch(setCategoryCountIncByOne())
             }
             dispatch(setActionLoading(false));
             return true;

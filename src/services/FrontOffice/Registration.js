@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setRegistrationCount, setRegistrationCountByOne, setRegistrationData, setRegistrationLoading } from "../../slices/registration.slice";
+import { setRegistrationCount, setRegistrationCountIncByOne, setRegistrationData, setRegistrationLoading } from "../../slices/registration.slice";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import APIManager from "../../utils/ApiManager";
@@ -66,7 +66,7 @@ export const  useFrontOfficeRegistration = () => {
                     if(Number.isNaN(registrationData?.length) || page*pageSize+pageSize > registrationData?.length) {
                         getRegistrationData();
                     } else { 
-                        dispatch(setRegistrationCountByOne())
+                        dispatch(setRegistrationCountIncByOne())
                     }
                     toast.success(resData.message);
                     dispatch(setRegistrationLoading(false));

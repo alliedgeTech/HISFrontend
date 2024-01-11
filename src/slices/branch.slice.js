@@ -28,13 +28,13 @@ const branchSlice = createSlice({
             state.branchPagination.page = action.payload.page;
             state.branchPagination.pageSize = action.payload.pageSize
         },
-        setBranchCountByOne: (state, action) => {
+        setBranchCountIncByOne: (state, action) => {
             state.branchCount = state.branchCount + 1;
         }
     }
 
 })
 
-export const { setBranchData,setBranchLoading,setBranchEditData,setBranchCount,setBranchPagination,setBranchCountByOne } = branchSlice.actions;
+export const { setBranchData,setBranchLoading,setBranchEditData,setBranchCount,setBranchPagination,setBranchCountIncByOne } = branchSlice.actions;
 
 export default branchSlice.reducer;

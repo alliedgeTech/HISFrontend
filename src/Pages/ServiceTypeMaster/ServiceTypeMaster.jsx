@@ -192,15 +192,14 @@ function ServiceTypeMaster() {
             <div
             className="btn btn-sm"
             onClick={() => {clearErrors();dispatch(setEditServiceTypeData(true));setOpenModal(true);reset({
-                ...params.row,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1
-            })}} 
+                ...params.row,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1,isActive:params.row?.isActive?.toString() })}} 
             >
                  <CustomIconButton />
             </div>
         </>
         ),
     },
-];
+  ];
 
     const setRows = (data) => {
         var id = paginationModel.page*paginationModel.pageSize;
@@ -209,7 +208,6 @@ function ServiceTypeMaster() {
                 let thisData = {
                     id: ++id,
                     _id: element?._id,
-                    city:element?.city,
                     serviceTypeName:element?.serviceTypeName,
                     ipOp:element?.ipOp,
                     isActive:element?.isActive
@@ -358,7 +356,7 @@ function ServiceTypeMaster() {
                   )
             }
 
-        </TableMainBox>
+    </TableMainBox>
   </>;
 }
 

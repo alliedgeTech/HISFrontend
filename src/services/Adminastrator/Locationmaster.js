@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import APIManager from "../../utils/ApiManager"
-import { setBranchCount, setBranchCountByOne, setBranchData, setBranchLoading } from "../../slices/branch.slice";
+import { setBranchCount, setBranchCountIncByOne, setBranchData, setBranchLoading } from "../../slices/branch.slice";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useState } from "react";
@@ -66,7 +66,7 @@ export const useBranchData = () => {
             if( Number.isNaN(branchData?.length) || page*pageSize+pageSize > branchData?.length) {
                 getBranchData(false,page,pageSize);
             } else { 
-                dispatch(setBranchCountByOne());
+                dispatch(setBranchCountIncByOne());
             }
             toast.dismiss(toastId)
             toast.success(resData.message);

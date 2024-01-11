@@ -33,7 +33,7 @@ const hrSlice = createSlice({
          setDepartmentCount: (state, action) => {
                 state.departmentCount = action.payload
          },
-         setDepartmentCountByOne: (state, action) => {
+         setDepartmentCountIncByOne: (state, action) => {
                 state.departmentCount = state.departmentCount + 1;
          },
         setDesignationData: (state, action) => {
@@ -45,7 +45,7 @@ const hrSlice = createSlice({
         setDesignationCount: (state, action) => {
                 state.designationCount = action.payload
         },
-        setDesignationCountByOne: (state, action) => {
+        setDesignationCountIncByOne: (state, action) => {
                 state.designationCount = state.designationCount + 1;
         },
         setDesignationPagination: (state, action) => {
@@ -62,7 +62,7 @@ const hrSlice = createSlice({
                 state.specialityPagination.page = action.payload.page;
                 state.specialityPagination.pageSize = action.payload.pageSize
         },
-        setSpeciallityCountByOne: (state, action) => {
+        setSpeciallityCountIncByOne: (state, action) => {
                 state.specialityCount = state.specialityCount + 1;
         },
         setSpeciallityCount: (state, action) => {
@@ -75,6 +75,6 @@ const hrSlice = createSlice({
 
 })
 
-export const { setDepartmentData,setDepartmentLoading,setDepartmentPagination,setDepartmentCount,setDesignationData,setDesignationCount,setDepartmentCountByOne,setDesignationLoading,setDesignationPagination,setSpecialityData,setDesignationCountByOne,setSpeciallityCount,setSpecialityLoading,setSpecialityPagination,setSpeciallityCountByOne,setEditData } = hrSlice.actions;
+export const { setDepartmentData,setDepartmentLoading,setDepartmentPagination,setDepartmentCount,setDesignationData,setDesignationCount,setDepartmentCountIncByOne,setDesignationLoading,setDesignationPagination,setSpecialityData,setDesignationCountIncByOne,setSpeciallityCount,setSpecialityLoading,setSpecialityPagination,setSpeciallityCountIncByOne,setEditData } = hrSlice.actions;
 
 export default hrSlice.reducer;

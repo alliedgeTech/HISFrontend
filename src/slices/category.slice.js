@@ -33,13 +33,13 @@ const categorySlice = createSlice({
             state.categoryPagination.page = action.payload.page;
             state.categoryPagination.pageSize = action.payload.pageSize
         },
-        setCategoryCountByOne: (state, action) => {
+        setCategoryCountIncByOne: (state, action) => {
             state.categoryCount = state.categoryCount + 1;
         }
     }
 
 })
 
-export const { setCategoryData,setListLoading,setCategoryEditData,setActionLoading,setCategoryCount,setCategoryPagination,setCategoryCountByOne } = categorySlice.actions;
+export const { setCategoryData,setListLoading,setCategoryEditData,setActionLoading,setCategoryCount,setCategoryPagination,setCategoryCountIncByOne } = categorySlice.actions;
 
 export default categorySlice.reducer;

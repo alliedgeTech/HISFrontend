@@ -14,6 +14,7 @@ import Appointment from './Pages/Appointment/Appointment';
 import DoctorCalender from './Pages/DoctorCalender/DoctorCalender';
 import MainAppointment from './Pages/Appointment/MainAppointment';
 import ServiceTypeMaster from './Pages/ServiceTypeMaster/ServiceTypeMaster';
+import ServiceMaster from './Pages/ServiceMaster/ServiceMaster';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path='/front-office/registration' element={<RegistrationMaster/>} />
           <Route path='/consultantdashboard/appointment' element={<MainAppointment/>} />
           <Route path='/calender/doctor' element={<DoctorCalender/>} />
+          <Route path='/billing/servicemaster' element={<ServiceMaster/>} />
           <Route path='*' element={<Home/>} />
         </Route>  
       </Routes>   

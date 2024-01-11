@@ -28,13 +28,13 @@ const userSlice = createSlice({
             state.userPaginaiton.page = action.payload.page;
             state.userPaginaiton.pageSize = action.payload.pageSize
         },
-        setUserCountByOne: (state, action) => {
+        setUserCountIncByOne: (state, action) => {
             state.userCount = state.userCount + 1;
         }
     }
 
 })
 
-export const { setUserData,setUserLoading,setUserEditData,setUserCount,setUserPagination,setUserCountByOne } = userSlice.actions;
+export const { setUserData,setUserLoading,setUserEditData,setUserCount,setUserPagination,setUserCountIncByOne } = userSlice.actions;
 
 export default userSlice.reducer;

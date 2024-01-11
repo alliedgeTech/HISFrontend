@@ -1053,8 +1053,6 @@ function Appointment() {
                               { gender: "male" },
                               { gender: "female" },
                               { gender: "other" },
-                              { gender: "non-binary" },
-                              { gender: "prefer not to say" },
                             ]}
                             inputRef={ref}
                             hasError={error}

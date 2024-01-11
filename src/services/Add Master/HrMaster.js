@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
-import { setDepartmentCount, setDepartmentCountByOne, setDepartmentData, setDepartmentLoading, setDesignationCount, setDesignationCountByOne, setDesignationData, setDesignationLoading, setSpecialityData, setSpecialityLoading, setSpeciallityCount, setSpeciallityCountByOne } from "../../slices/hr.slice";
+import { setDepartmentCount, setDepartmentCountIncByOne, setDepartmentData, setDepartmentLoading, setDesignationCount, setDesignationCountIncByOne, setDesignationData, setDesignationLoading, setSpecialityData, setSpecialityLoading, setSpeciallityCount, setSpeciallityCountIncByOne } from "../../slices/hr.slice";
 import toast from "react-hot-toast";
 
 const ApiManager = new APIManager();
@@ -50,7 +50,7 @@ export const useHrMasterData = () => {
             if(Number.isNaN(departmentData?.length) || page*pageSize+pageSize > departmentData?.length) {
                 getDepartmentData();
             } else { 
-                dispatch(setDepartmentCountByOne())
+                dispatch(setDepartmentCountIncByOne())
             }
             setLoding(false);
             toast.dismiss(toastId);
@@ -128,7 +128,7 @@ export const useHrMasterData = () => {
             if(Number.isNaN(designationData?.length) || page*pageSize+pageSize > designationData?.length) {
                 getDesignationData();
             } else { 
-                dispatch(setDesignationCountByOne())
+                dispatch(setDesignationCountIncByOne())
             }
             setLoding(false);
             toast.dismiss(toastId);
@@ -217,7 +217,7 @@ export const useHrMasterData = () => {
             if(Number.isNaN(specialityData?.length) || page*pageSize+pageSize > specialityData?.length) {
                 getSpecilityData();
             } else { 
-                dispatch(setSpeciallityCountByOne())
+                dispatch(setSpeciallityCountIncByOne())
             }
             toast.dismiss(toastId);
             setLoding(false);

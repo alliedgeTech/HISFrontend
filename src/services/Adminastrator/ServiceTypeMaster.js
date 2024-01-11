@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
-import { setServiceTypeCount, setServiceTypeCountByOne, setServiceTypeData, setServiceTypeLoading } from "../../slices/servicetype.slice";
+import { setServiceTypeCount, setServiceTypeCountIncByOne, setServiceTypeData, setServiceTypeLoading } from "../../slices/servicetype.slice";
 import toast from 'react-hot-toast'
 
 const ApiManager = new APIManager();
@@ -69,7 +69,7 @@ export const useServiceTypeData = () => {
             if( Number.isNaN(serviceTypeData?.length) || page*pageSize+pageSize > serviceTypeData?.length) {
                 getServiceTypeData(false,page,pageSize);
             } else {
-                dispatch(setServiceTypeCountByOne())
+                dispatch(setServiceTypeCountIncByOne())
             }
             toast.dismiss(toastId)
             toast.success(resData.message);

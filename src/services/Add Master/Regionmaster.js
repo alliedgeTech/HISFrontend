@@ -1,7 +1,7 @@
 // import { Toast } from "react-toastify/dist/components";
 import APIManager from "../../utils/ApiManager"
 import { useDispatch, useSelector } from "react-redux";
-import { setCityCount, setCityCountByOne, setCityData, setCityLoading, setCountryCount, setCountryCountByOne, setCountryData, setCountryLoading, setStateCount, setStateCountByOne, setStateData, setStateLoading } from "../../slices/region.slice";
+import { setCityCount, setCityCountIncByOne, setCityData, setCityLoading, setCountryCount, setCountryCountIncByOne, setCountryData, setCountryLoading, setStateCount, setStateCountIncByOne, setStateData, setStateLoading } from "../../slices/region.slice";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { setUserData } from "../../slices/user.slice";
@@ -27,7 +27,7 @@ export const useRegionData = () => {
             if(Number.isNaN(countryData?.length) || page*pageSize+pageSize > countryData?.length) {
                 getAllCountry();
             } else {
-                dispatch(setCountryCountByOne());
+                dispatch(setCountryCountIncByOne());
             }
             return true;
         }
@@ -85,7 +85,7 @@ export const useRegionData = () => {
             if(Number.isNaN(stateData?.length) || page*pageSize+pageSize > stateData?.length) {
                 getAllState();
             } else { 
-                dispatch(setStateCountByOne());
+                dispatch(setStateCountIncByOne());
             }
             toast.success("state created successfully")
             return true;
@@ -204,7 +204,7 @@ export const useRegionData = () => {
             if(Number.isNaN(cityData?.length) || page*pageSize+pageSize > cityData?.length) {
                 getAllCity();
             } else { 
-                dispatch(setCityCountByOne());
+                dispatch(setCityCountIncByOne());
             }
             dispatch(setCityLoading(false));
             return true;

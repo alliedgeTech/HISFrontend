@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import APIManager from "../../utils/ApiManager";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserCount, setUserCountByOne, setUserData, setUserLoading } from "../../slices/user.slice";
+import { setUserCount, setUserCountIncByOne, setUserData, setUserLoading } from "../../slices/user.slice";
 import { setRegistrationData } from "../../slices/registration.slice";
 
 const ApiManager = new APIManager();
@@ -122,7 +122,7 @@ export const useUserData = () => {
                 if(Number.isNaN(UserData?.length) || page*pageSize+pageSize > UserData?.length) {
                     getUserData(false,page,pageSize);
                 } else { 
-                    dispatch(setUserCountByOne())
+                    dispatch(setUserCountIncByOne())
                 }
                 toast.success("user added successfully");
                 toast.dismiss(tosatId);
