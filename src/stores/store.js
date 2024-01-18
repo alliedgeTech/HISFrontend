@@ -12,6 +12,8 @@ import doctorCalenderSlice from "../slices/doctorCalender.slice";
 import socketSlice from "../slices/socket.slice";
 import servicetypeSlice from "../slices/servicetype.slice";
 import serviceSlice from "../slices/service.slice";
+import facilitySlice from "../slices/facility.slice";
+import tarrifSlice from "../slices/tarrif.slice";
 
 export const store = configureStore({
     reducer:{
@@ -28,5 +30,7 @@ export const store = configureStore({
         socket:socketSlice,
         serviceType:servicetypeSlice,
         service:serviceSlice,
+        facility:facilitySlice,
+        tarrif:tarrifSlice,
     }
 });

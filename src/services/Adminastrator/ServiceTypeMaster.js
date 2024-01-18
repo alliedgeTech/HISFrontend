@@ -3,6 +3,7 @@ import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
 import { setServiceTypeCount, setServiceTypeCountIncByOne, setServiceTypeData, setServiceTypeLoading } from "../../slices/servicetype.slice";
 import toast from 'react-hot-toast'
+import { setServiceData } from "../../slices/service.slice";
 
 const ApiManager = new APIManager();
 
@@ -47,6 +48,7 @@ export const useServiceTypeData = () => {
                 const tempData = structuredClone(serviceTypeData);
                 tempData[data.id] = resData.data.data;
                 dispatch(setServiceTypeData(tempData));
+                dispatch(setServiceData(null));
                 toast.dismiss(toastId)
                 toast.success(resData.message);
                 dispatch(setServiceTypeLoading(false));

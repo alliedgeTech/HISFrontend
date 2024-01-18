@@ -15,6 +15,8 @@ import DoctorCalender from './Pages/DoctorCalender/DoctorCalender';
 import MainAppointment from './Pages/Appointment/MainAppointment';
 import ServiceTypeMaster from './Pages/ServiceTypeMaster/ServiceTypeMaster';
 import ServiceMaster from './Pages/ServiceMaster/ServiceMaster';
+import FacilityMaster from './Pages/FacilityMaster/FacilityMaster';
+import TarrifMaster from './Pages/TarrifMaster/TarrifMaster';
 
 function App() {
   return (
@@ -27,7 +29,9 @@ function App() {
           <Route path='/locationmaster' element={<BranchMaster/>} />
           <Route path='/categorymaster' element={<CategoryMaster/>} />
           <Route path='/regionmaster' element={<RegionMaster/>} />
+          <Route path='/facilitymaster' element={<FacilityMaster/>} />
           <Route path='/servicetypemaster' element={<ServiceTypeMaster/>} />
+          <Route path='/tarrifmaster' element={<TarrifMaster/>} />
           <Route path='/hrmaster' element={<HrMaster/>} />
           <Route path='/front-office/registration' element={<RegistrationMaster/>} />
           <Route path='/consultantdashboard/appointment' element={<MainAppointment/>} />

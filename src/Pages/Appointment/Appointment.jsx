@@ -39,6 +39,7 @@ import Divider from "@mui/material/Divider";
 import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import { socket } from "../../socket";
+import { useDeferredValue } from "react";
 
 function Appointment() {
   const dispatch = useDispatch();
@@ -104,6 +105,7 @@ function Appointment() {
   } = useAppointmentData();
   const { getRegistrationData } = useFrontOfficeRegistration();
   const MobileNumberWatch = watch("mobileNo");
+  const defferedMobileNumber = useDeferredValue(MobileNumberWatch);
   const DoctorWatch = watch("doctor");
   const isValidMobileNumber = (number) => {
     if (number?.length === 10 && !isNaN(number)) {
@@ -129,8 +131,8 @@ function Appointment() {
     if (tempData) {
       url = `admin/frontOffice/registration/m/${tempData}?type=id`;
     } else {
-      console.log("this is from mobile No : ",MobileNumberWatch)
-      url = `admin/frontOffice/registration/m/${MobileNumberWatch}`;
+      console.log("this is from mobile No : ",defferedMobileNumber)
+      url = `admin/frontOffice/registration/m/${defferedMobileNumber}`;
     }
 
     const data = await ApiManager.get(url);
@@ -190,14 +192,14 @@ function Appointment() {
   },[])
 
   useEffect(() => {
-    if (isValidMobileNumber(MobileNumberWatch)) {
+    if (isValidMobileNumber(defferedMobileNumber)) {
       const timeoutId = setTimeout(() => {
         setRegistrationModalData();
       }, 300);
 
       return () => clearTimeout(timeoutId);
     }
-  }, [MobileNumberWatch]);
+  }, [defferedMobileNumber]);
 
   useEffect(() => {
     console.log("this is modal : ", SeachRegistrationModal);

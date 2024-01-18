@@ -12,7 +12,7 @@ export const useServiceData = () => {
     const {serviceData,servicePagination:paginationModel} = useSelector(state => state.service);
     const getServiceData = async (withLoading=false,page=paginationModel.page,pageSize=paginationModel.pageSize) => {
         withLoading && setListLoading(true);
-        const resData = await ApiManager.get(`admin/serviceMaster?page=${page}&pageSize=${pageSize}`);
+        const resData = await ApiManager.get(`admin/billing/serviceMaster?page=${page}&pageSize=${pageSize}`);
         if(!resData.error) {
             dispatch(setServiceData(resData.data.data));
             dispatch(setServiceCount(resData.data.count));
@@ -28,7 +28,7 @@ export const useServiceData = () => {
     const updateServiceData =async (data,page=paginationModel.page,pageSize=paginationModel.pageSize) => {
         const toastId = toast.loading("Loading...");
         dispatch(setServiceLoading(true));
-        const resData = await ApiManager.patch(`admin/serviceMaster/${data._id}`,data);
+        const resData = await ApiManager.patch(`admin/billing/serviceMaster/${data._id}`,data);
 
         if(!resData.error)
         {
@@ -50,7 +50,7 @@ export const useServiceData = () => {
     const createService = async (data,page=paginationModel.page,pageSize=paginationModel.pageSize) => {
         const toastId = toast.loading("Loading...");
         dispatch(setServiceLoading(true));
-        const resData = await ApiManager.post(`admin/serviceMaster`,data);
+        const resData = await ApiManager.post(`admin/billing/serviceMaster`,data);
 
         if(!resData.error)
         {
