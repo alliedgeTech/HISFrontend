@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { socket } from "../../../socket";
 import { useDispatch, useSelector } from "react-redux";
 import { setSocketConnected } from "../../../slices/socket.slice";
@@ -331,6 +331,29 @@ function DoctorSlotsByDate() {
   const { createDoctorSlotData, updateDoctorSlotData, BreakDoctorSlotData } =
     useDoctorMasterData();
 
+    let mouseDown = false;
+    let startX, scrollLeft;
+    const parentRef = useRef(null);
+  
+    const startDragging = (e) => {
+      mouseDown = true;
+      console.log("this is start dragging" ,e.pageX, parentRef.current.offsetLeft );
+      startX = e.pageX - parentRef.current.offsetLeft;
+      scrollLeft = parentRef.current.scrollLeft;
+    }
+    
+    const stopDragging = (e) => {
+      mouseDown = false;
+    }
+    
+    const move = (e) => {
+      e.preventDefault();
+      if(!mouseDown) { return; }
+      const x = e.pageX - parentRef.current.offsetLeft;
+      const scroll = x - startX;
+      parentRef.current.scrollLeft = scrollLeft - scroll;
+    }
+
   function getRoomId(date) {
     let temp = `${
       date
@@ -584,7 +607,7 @@ function DoctorSlotsByDate() {
     )}`;
     if (MakeCombo != compareWith?.leftTime) {
       tempData.leftTime = MakeCombo;
-      if (MakeCombo < compareWith?.leftTime) {
+      if (MakeCombo > compareWith?.leftTime) {
         tempData.leftTimeAdditional = {
           oldleftTime: compareWith?.leftTime,
           sessionTime: data.sessionTime,
@@ -605,6 +628,7 @@ function DoctorSlotsByDate() {
 
     if (doctorCalenderEditData || doctorCalenderEditData == 0) {
       tempData["_id"] = data._id;
+      console.log("this is final data : ", tempData);
       const resData = await updateDoctorSlotData({
         ...tempData,
         userId: doctor?._id,
@@ -696,7 +720,7 @@ function DoctorSlotsByDate() {
                             ref={ref}
                             label="Select StartTime"
                             views={["hours", "minutes"]}
-                            format="hh:mm"
+                            format="hh:mm:a"
                             ampm={false}
                           />
                         </LocalizationProvider>
@@ -740,7 +764,7 @@ function DoctorSlotsByDate() {
                             ref={ref}
                             label="Select EndTime"
                             views={["hours", "minutes"]}
-                            format="hh:mm"
+                            format="hh:mm:a"
                             ampm={false}
                             ampmInClock={false}
                           />
@@ -811,7 +835,7 @@ function DoctorSlotsByDate() {
       }
       <div>
         {
-          <div className={BoxCalsses.slotsContainer}>
+          <div className={BoxCalsses.slotsContainer} onMouseDownCapture={startDragging} onMouseMove={move} onMouseDown={startDragging} onMouseUp={stopDragging} onMouseLeave={stopDragging} ref={parentRef}>
             {remainingDays?.length > 0 && (
               <div
                 className={BoxCalsses.createSlots}
