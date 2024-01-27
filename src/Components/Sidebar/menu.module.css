@@ -15,9 +15,10 @@
 }
     
 .sidebar_height{    
-    height:calc(100vh - 76.7px) ;
-    width: fit-content;
+    max-height:calc(100vh - 76.7px) ;
     padding-top: 0.7rem;
+    overflow-x: unset;
+    overflow-y: scroll;
 }
 
 .op{

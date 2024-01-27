@@ -17,6 +17,7 @@ import ServiceTypeMaster from './Pages/ServiceTypeMaster/ServiceTypeMaster';
 import ServiceMaster from './Pages/ServiceMaster/ServiceMaster';
 import FacilityMaster from './Pages/FacilityMaster/FacilityMaster';
 import TarrifMaster from './Pages/TarrifMaster/TarrifMaster';
+import BedTypeMaster from './Pages/BedTypeMaster/BedTypeMaster';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path='/servicetypemaster' element={<ServiceTypeMaster/>} />
           <Route path='/tarrifmaster' element={<TarrifMaster/>} />
           <Route path='/hrmaster' element={<HrMaster/>} />
+          <Route path='/bedtypemaster' element={<BedTypeMaster/>} />
           <Route path='/front-office/registration' element={<RegistrationMaster/>} />
           <Route path='/consultantdashboard/appointment' element={<MainAppointment/>} />
           <Route path='/calender/doctor' element={<DoctorCalender/>} />

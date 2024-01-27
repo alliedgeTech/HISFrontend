@@ -11,7 +11,6 @@ const RoleMaster =() => {
   const dispatch = useDispatch();
   
   return (
-    <>
         <CommonMaster 
         key={"role"}
         MainValue={"role"}
@@ -29,7 +28,6 @@ const RoleMaster =() => {
         tableDataCount={roleCount}
         />
              
-    </>
   )
 }
 

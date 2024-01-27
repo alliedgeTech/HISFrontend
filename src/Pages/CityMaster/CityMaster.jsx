@@ -98,6 +98,7 @@ function CityMaster() {
           {
             field: "id",
             headerName: "ID",
+            minWidth:100
           },
           {
             field:"_id",headerName:"_id",hide:true

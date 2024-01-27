@@ -11,6 +11,7 @@ function CustomDatePickerField({ name, control, label, required,rules,disable,fo
       name={name}
       rules={rules}
       control={control}
+      
       render={({
         field: { onChange, value ,onBlur},
         fieldState: { error }
@@ -27,6 +28,7 @@ function CustomDatePickerField({ name, control, label, required,rules,disable,fo
           }}}
         label={label}
         disabled={disable}
+        fullWidth  
         autoFocus={focused}
         onChange={onChange}
         maxDate={ maxDate && dayjs(maxDate)}

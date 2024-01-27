@@ -347,47 +347,61 @@ const onPaginationChange = async({page,pageSize}) => {
     {
       field: "id",
       headerName: "ID",
-      width:"10"
+      minWidth: "50",
     },
-    { field: "_id", headerName: "", width: "0",flex:1, },
+    { field: "_id", headerName: "", width: "0" },
     {
-      filed: "image",headerName:"Profile",rowHeight:200,renderCell:(params)=>(
-        <img src={params.row.image} style={{width:"50%",maxWidth:"50px"}} />
-      ),flex:1,sortable:false,
+      filed: "image",
+      headerName: "Profile",
+      rowHeight: 200,
+      renderCell: (params) => (
+        <img src={params.row.image} style={{width:"100%",maxWidth: "100px" }} />
+      ),
+      flex: 1,
+      sortable: false,
+      maxWidth:120,
+      // headerAlign: "center", 
+      // align: "center",
     },
-    { field: "userName", headerName: "user Name", flex:1, },
-    { field: "email", headerName: "Email",flex:1, },
-    { field: "linkEmployee", headerName: "Linked Employee", flex:1, },
-    { field: "mobilenumber", headerName: "Phone Number",flex:1, },
-    { field: "address", headerName: "Address", flex:1, },
-    { field: "pincode", headerName: "Code", flex:1, },
-    { field: "isActive", headerName: "Is Active", flex:1 , sortable:false,
-    renderCell : (params)=>(
-       <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateUSer({ _id: params?.row?._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1})}></IOSSwitch> 
-      
-    )
-  },
-  {
-    field:"panNo",headerName:"Pan No",flex:1,
-  },
+    { field: "userName", headerName: "user Name",minWidth:150,flex:1 },
+    { field: "email", headerName: "Email", flex: 1,minWidth:230 },
+    { field: "linkEmployee", headerName: "Linked Employee", flex: 1,minWidth:100 },
+    { field: "mobilenumber", headerName: "Phone Number", flex: 1,minWidth:180},
+    { field: "address", headerName: "Address", flex: 1,minWidth:200 },
+    { field: "pincode", headerName: "Code",minWidth:100,flex:1},
+    { field: "isActive", headerName: "Is Active", sortable: false,minWidth:100,flex:1,
+      renderCell: (params) => (
+        <IOSSwitch checked={params.row.isActive} onChange={(e) => updateUSer({ _id: params?.row?._id, isActive: e.target.checked, id: params.row.id - (paginationModel.page * paginationModel.pageSize) - 1 })}></IOSSwitch>
+      )
+    },
     {
-      field: "actions",sortable:false,
+      field: "panNo",
+      headerName: "Pan No",
+      flex: 1,
+      // headerAlign: "center",
+      // align: "center",
+      minWidth:140
+    },
+    {
+      field: "actions",
+      sortable: false,
       headerName: "View Items",
-      flex:1,
+      flex: 1,
+      minWidth:100,
       renderCell: (params) => (
         <>
           <div
             className="btn btn-sm"
             onClick={() => {
-              setEditData({_id:params.row._id,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1});
+              setEditData({ _id: params.row._id, id: params.row.id - (paginationModel.page * paginationModel.pageSize) - 1 });
             }}
           >
             <CustomIconButton />
           </div>
           <div
-          style={{marginLeft:"0.7rem"}}
+            style={{ marginLeft: "0.7rem" }}
             onClick={() => {
-              setRoleId(params.row.id-(paginationModel.page*paginationModel.pageSize));
+              setRoleId(params.row.id - (paginationModel.page * paginationModel.pageSize));
               setRoleAssignModel(true);
             }}
           >
@@ -396,7 +410,8 @@ const onPaginationChange = async({page,pageSize}) => {
         </>
       ),
     },
-  ];
+];
+
 
 
   return (

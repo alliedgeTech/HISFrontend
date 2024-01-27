@@ -183,41 +183,45 @@ function BranchMaster() {
         }
         }
 
-    const columns = [
-        {
-            field: "id",
-            headerName: "ID",
-        },
-        { field: "_id", headerName: "", width: "0" },
-        { field: "location", headerName: "Branch", flex:1 },
-        { field: "locationcode", headerName: "Code", flex:1 },
-        
-        { field:"city",headerName:'City',flex:1 ,renderCell:(params) => params.row?.city?.cityName},
-        { field: "AddIpAddress", headerName: "IP Address",flex:1 },
-        { field: "adport", headerName: "Add Port", flex:1 },
-        { field: "addomainname", headerName: "Add Domain Name", flex:1 },
-        { field: "adddomaintype", headerName: "Add Domain Type", flex:1 },
-        { field: "IsActive", headerName: "Is Active", flex:1 ,
-        renderCell : (params) => {
-        return  <IOSSwitch checked={params.row.IsActive} onChange={(e)=>updateBranchData({ _id: LocationData[params.row.id-(paginationModel.page*paginationModel.pageSize)-1]?._id,isActive:e.target.checked},paginationModel.page,paginationModel.pageSize)}></IOSSwitch>  
-        }
-        },
-        {
-            field: "actions",
-            headerName: "Actions",
-            sortable:false,
-            renderCell: (params) => (
-            <>
-                <div
-                className="btn btn-sm"
-                onClick={() => {setEditData(params.row.id-(paginationModel.page*paginationModel.pageSize));setOpenModal(true)}} 
-                >
-                     <CustomIconButton />
-                </div>
-            </>
-            ),
-        },
-    ];
+        const columns = [
+          {
+              field: "id",
+              headerName: "ID",
+              minWidth: 50,
+              headerAlign: "center",
+              align: "center",
+          },
+          { field: "_id", headerName: "", width: "0" },
+          { field: "location", headerName: "Branch", flex: 1, headerAlign: "center", align: "center",minWidth: 150},
+          { field: "locationcode", headerName: "Code", flex: 1, headerAlign: "center", align: "center",minWidth:150 },
+          { field: "city", headerName: 'City', flex: 1, renderCell: (params) => params.row?.city?.cityName, headerAlign: "center", align: "center",minWidth:150},
+          { field: "AddIpAddress", headerName: "IP Address", flex: 1, headerAlign: "center", align: "center",minWidth:150},
+          { field: "adport", headerName: "Add Port", flex: 1, headerAlign: "center", align: "center",minWidth:150},
+          { field: "addomainname", headerName: "Add Domain Name", flex: 1, headerAlign: "center", align: "center",minWidth:180 },
+          { field: "adddomaintype", headerName: "Add Domain Type", flex: 1, headerAlign: "center", align: "center",minWidth:180 },
+          { field: "IsActive", headerName: "Is Active", flex: 1, headerAlign: "center", align: "center",minWidth:100,
+              renderCell: (params) => {
+                  return <IOSSwitch checked={params.row.IsActive} onChange={(e) => updateBranchData({ _id: LocationData[params.row.id - (paginationModel.page * paginationModel.pageSize) - 1]?._id, isActive: e.target.checked }, paginationModel.page, paginationModel.pageSize)}></IOSSwitch>
+              }
+          },
+          {
+              field: "actions",
+              headerName: "Actions",
+              sortable: false,
+              headerAlign: "center", align: "center",
+              renderCell: (params) => (
+                  <>
+                      <div
+                          className="btn btn-sm"
+                          onClick={() => { setEditData(params.row.id - (paginationModel.page * paginationModel.pageSize)); setOpenModal(true) }}
+                      >
+                          <CustomIconButton />
+                      </div>
+                  </>
+              ),
+          },
+      ];
+      
     
     const setRows = (data) => {
         var id = paginationModel.page*paginationModel.pageSize;

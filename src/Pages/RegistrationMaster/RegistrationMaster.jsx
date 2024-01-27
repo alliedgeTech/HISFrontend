@@ -508,7 +508,7 @@ function RegistrationMaster() {
                             name={"passportNo"}
                             control={control}
                             label={"Passport Number"}
-                            rules={{pattern:{value:/^[A-PR-WY-Z][1-9]\\d\\s?\\d{4}[1-9]$/,message:"Please enter valid passport number"}}}
+                            rules={{pattern:{value:/^(?!^0+$)[a-zA-Z0-9]{3,20}$/,message:"Please enter valid passport number"}}}
                         /> 
                     </Grid>
 
@@ -686,7 +686,7 @@ function RegistrationMaster() {
                             name={"panno"}
                             control={control}
                             label={"Enter Pan No"}
-                            rules={{minLength:{value:10 , message:"Please enter valid pan no"},pattern:{
+                            rules={{minLength:{value:10 , message:"Please enter the valid pan no"},pattern:{
                                 value:/[A-Z]{5}[0-9]{4}[A-Z]{1}/ , message:"Please enter the valid pan no"
                             }}}
                         /> 

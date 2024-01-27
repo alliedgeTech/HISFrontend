@@ -700,7 +700,7 @@ function DoctorSlotsByDate() {
                     },
                   }}
                   render={({ field, fieldState: { error } }) => {
-                    const { onChange, value, ref, onBlur } = field;
+                    const { onChange, value, ref} = field;
                     return (
                       <>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -743,7 +743,7 @@ function DoctorSlotsByDate() {
                     required: { value: true, message: "EndTime is required" },
                   }}
                   render={({ field, fieldState: { error } }) => {
-                    const { onChange, value, ref, onBlur } = field;
+                    const { onChange, value, ref } = field;
                     return (
                       <>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>

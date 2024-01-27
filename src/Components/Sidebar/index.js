@@ -56,7 +56,7 @@ export default function () {
     }
   },[])
   return (
-    <div className={`${menuItemClasses.sidebar_height}`}>
+    <div className={`${menuItemClasses.sidebar_height}` } style={{ width: collapsed ? 'fit-content' : '285px' }}>
 
     <Sidebar
     collapsed={collapsed}

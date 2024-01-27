@@ -23,7 +23,7 @@ function TarrifMaster() {
         setPaginationModal={(data)=>console.log("data that is data",data)}
         editData={editTarrifData}
         setEditData={(data) => dispatch(setTarrifEditData(data))}
-        FieldHeaderName={"Tarrif Master"}
+        FieldHeaderName={"Tarrif"}
         tableDataCount={tarrifCount}
     />
   )
