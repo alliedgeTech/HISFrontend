@@ -3,7 +3,7 @@ import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
 import { setServiceTypeCount, setServiceTypeCountIncByOne, setServiceTypeData, setServiceTypeLoading } from "../../slices/servicetype.slice";
 import toast from 'react-hot-toast'
-import { setServiceData } from "../../slices/service.slice";
+import { setServiceData, setServiceEmptyData } from "../../slices/service.slice";
 
 const ApiManager = new APIManager();
 
@@ -48,7 +48,7 @@ export const useServiceTypeData = () => {
                 const tempData = structuredClone(serviceTypeData);
                 tempData[data.id] = resData.data.data;
                 dispatch(setServiceTypeData(tempData));
-                dispatch(setServiceData(null));
+                dispatch(setServiceEmptyData());
                 toast.dismiss(toastId)
                 toast.success(resData.message);
                 dispatch(setServiceTypeLoading(false));
@@ -56,10 +56,10 @@ export const useServiceTypeData = () => {
             }
     
             toast.dismiss(toastId);
-            toast.error(resData.message);
             dispatch(setServiceTypeLoading(false));
             return false;
         }
+
 
     const createServiceType = async (data,page=paginationModel.page,pageSize=paginationModel.pageSize) => {
         dispatch(setServiceTypeLoading(true));
@@ -80,7 +80,6 @@ export const useServiceTypeData = () => {
         }
 
         toast.dismiss(toastId);
-        toast.error(resData.message);
             dispatch(setServiceTypeLoading(false));
         return false;
     }

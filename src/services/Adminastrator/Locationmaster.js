@@ -45,14 +45,13 @@ export const useBranchData = () => {
         if(!resData.error)
         {
             getBranchData(false,page,pageSize);
+            dispatch(setBranchLoading(false));
             toast.dismiss(toastId)
             toast.success(resData.message);
-            dispatch(setBranchLoading(false));
             return true;    
         }
 
         toast.dismiss(toastId);
-        toast.error(resData.message);
         dispatch(setBranchLoading(false));
         return false;
     }
@@ -68,15 +67,14 @@ export const useBranchData = () => {
             } else { 
                 dispatch(setBranchCountIncByOne());
             }
+            dispatch(setBranchLoading(false));
             toast.dismiss(toastId)
             toast.success(resData.message);
-            dispatch(setBranchLoading(false));
             return true;
         }
 
         toast.dismiss(toastId);
-        toast.error(resData.message);
-            dispatch(setBranchLoading(false));
+        dispatch(setBranchLoading(false));
         return false;
     }
 

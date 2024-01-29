@@ -15,10 +15,12 @@ import serviceSlice from "../slices/service.slice";
 import facilitySlice from "../slices/facility.slice";
 import tarrifSlice from "../slices/tarrif.slice";
 import bedtypeSlice from "../slices/bedtype.slice";
+import userTitleSlice from "../slices/userTitle.slice";
 
 export const store = configureStore({
     reducer:{
         user: userSlice,
+        userTitle: userTitleSlice,
         role: roleSlice,
         branch: branchSlice,
         region:regionSlice,

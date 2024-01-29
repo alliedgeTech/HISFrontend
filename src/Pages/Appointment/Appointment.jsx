@@ -1130,6 +1130,7 @@ function Appointment() {
                       name={"email"}
                       control={control}
                       label={"Email Address"}
+                      inputPropsText={{ readOnly: RegistrationNumberFound }}
                       rules={{
                         required: { value: true, message: "Email is required" },
                         pattern: {

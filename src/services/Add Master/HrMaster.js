@@ -3,6 +3,7 @@ import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
 import { setDepartmentCount, setDepartmentCountIncByOne, setDepartmentData, setDepartmentLoading, setDesignationCount, setDesignationCountIncByOne, setDesignationData, setDesignationLoading, setSpecialityData, setSpecialityLoading, setSpeciallityCount, setSpeciallityCountIncByOne } from "../../slices/hr.slice";
 import toast from "react-hot-toast";
+import { setServiceEmptyData } from "../../slices/service.slice";
 
 const ApiManager = new APIManager();
 
@@ -79,6 +80,7 @@ export const useHrMasterData = () => {
                 console.log('this is temp data',data.id,tempData,tempData?.[data?.id],departmentData);
                 tempData[data?.id] = resData?.data?.data;
                 dispatch(setDepartmentData(tempData));
+                dispatch(setServiceEmptyData());
                 toast.dismiss(toastId);
                 setLoding(false);
                 toast.success("Department Updated Successfully");
@@ -135,6 +137,7 @@ export const useHrMasterData = () => {
             toast.success("Designation Added Successfully");
             return true;
         }
+        toast.dismiss(toastId);
         setLoding(false);
         return false;
     }

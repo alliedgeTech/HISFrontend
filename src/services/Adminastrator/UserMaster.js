@@ -3,7 +3,7 @@ import APIManager from "../../utils/ApiManager";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserCount, setUserCountIncByOne, setUserData, setUserLoading } from "../../slices/user.slice";
-import { setRegistrationData } from "../../slices/registration.slice";
+import { setRegistrationEmptyData } from "../../slices/registration.slice";
 
 const ApiManager = new APIManager();
 
@@ -68,7 +68,7 @@ export const useUserData = () => {
                     dispatch(setUserData(tempData));
                     toast.success(resData?.message);
                     dispatch(setUserLoading(false));
-                    dispatch(setRegistrationData(null));
+                    dispatch(setRegistrationEmptyData(null));
                     toast.dismiss(tosatId);
                     return true;
                 }
@@ -89,7 +89,6 @@ export const useUserData = () => {
 
             if(!resData.error)
             {
-
                 const tempData = structuredClone(UserData);
                 tempData[data?.id] = resData.data.data;
                 dispatch(setUserData(tempData));
@@ -164,6 +163,7 @@ export const useUserData = () => {
         toast.dismiss(toastId);
         return false;
     }
+    
     useEffect(()=>{
         if(!UserData)
         {

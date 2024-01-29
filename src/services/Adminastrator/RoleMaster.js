@@ -35,7 +35,7 @@ export const useRoleData = () => {
 
     const updateRole = async (data,resetAll) => {
         dispatch(setRoleLoading(true));
-        const resData = await ApiManager.put(`admin/RoleMaster/updaterole/${data._id}`,data);
+        const resData = await ApiManager.patch(`admin/RoleMaster/updaterole/${data._id}`,data);
         
         if(!resData.error)
         {

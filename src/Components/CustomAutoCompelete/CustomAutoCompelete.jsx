@@ -24,6 +24,7 @@ function CustomAutoCompelete({url,disable=false,onChange,lable,value,getOptionLa
                     saveData && saveData(data.data.data);
                     if(filterOnActive)
                     {
+                      console.log("data",data);
                         setRealOptios(data.data.data.filter(item=>item?.isActive));
                     } else {
                         setRealOptios(data.data.data);

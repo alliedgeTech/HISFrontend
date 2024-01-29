@@ -18,7 +18,7 @@ export const useTarrifData = () => {
             setListLoading(true);
         }
 
-        const resData = await ApiManager.get(`admin/tarrifMaster?page=${page}&pageSize=${pageSize}`);
+        const resData = await ApiManager.get(`admin/addMaster/tarrifMaster?page=${page}&pageSize=${pageSize}`);
 
         if(!resData.error){
             dispatch(setTarrifData(resData.data.data)); 
@@ -38,7 +38,7 @@ export const useTarrifData = () => {
     const createTarrifData = async (data,resetAll) => { 
 
         dispatch(setTarrifLoading(true));
-        const resData = await ApiManager.post(`admin/tarrifMaster`,data);   
+        const resData = await ApiManager.post(`admin/addMaster/tarrifMaster`,data);   
 
             if(!resData.error){
                 resetAll();
@@ -59,7 +59,7 @@ export const useTarrifData = () => {
     const updateTarrifData = async (data,resetAll) => {
         dispatch(setTarrifLoading(true));
 
-        const resData = await ApiManager.patch(`admin/tarrifMaster/${data._id}`,data);
+        const resData = await ApiManager.patch(`admin/addMaster/tarrifMaster/${data._id}`,data);
 
         if(!resData.error)
         {

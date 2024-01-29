@@ -30,11 +30,16 @@ const branchSlice = createSlice({
         },
         setBranchCountIncByOne: (state, action) => {
             state.branchCount = state.branchCount + 1;
+        },
+        setBranchEmptyData : (state,action) => {
+            state.branchCount = null;
+            state.branchData = null;
+            state.branchEditData = null;
         }
     }
 
 })
 
-export const { setBranchData,setBranchLoading,setBranchEditData,setBranchCount,setBranchPagination,setBranchCountIncByOne } = branchSlice.actions;
+export const { setBranchData,setBranchLoading,setBranchEditData,setBranchCount,setBranchPagination,setBranchCountIncByOne,setBranchEmptyData } = branchSlice.actions;
 
 export default branchSlice.reducer;

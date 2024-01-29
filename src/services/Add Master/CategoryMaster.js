@@ -8,7 +8,7 @@ const ApiManaget = new APIManager();
 
 export const useCategoryMaster = () => {
 
-    const { categoryData } = useSelector(state => state.category);
+    const { categoryData,categoryPagination } = useSelector(state => state.category);
     const dispatch = useDispatch();
     
     const getCategoryData = async(withLoading=false,page,pageSize) => {
@@ -34,14 +34,16 @@ export const useCategoryMaster = () => {
         return false;
     }
 
-    const createCategoryData = async(data,page,pageSize) => {
+    const createCategoryData = async(data,resetAll) => {
         dispatch(setActionLoading(true));
 
         const resData = await ApiManaget.post("admin/addMaster/category",data);
 
         if(!resData?.error)
         {
+            resetAll();
             toast.success("Category Created Successfully");
+            let { page,pageSize } = categoryPagination;
             if(Number.isNaN(categoryData?.length) || page*pageSize+pageSize > categoryData?.length) {
                 getCategoryData(false,page,pageSize);
             } else { 

@@ -137,8 +137,8 @@ export const  useFrontOfficeRegistration = () => {
             if(!resData?.error)
             {
                 getRegistrationData();
-                toast.success("registration updated successfully");   
                 dispatch(setRegistrationLoading(false));
+                toast.success("registration updated successfully");   
                 return true;
             }
             // toast.error(resData?.message);

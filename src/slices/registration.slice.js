@@ -30,11 +30,15 @@ const registrationSlice = createSlice({
         },
         setRegistrationCountIncByOne: (state, action) => {
             state.registrationCount = state.registrationCount + 1;
+        },
+        setRegistrationEmptyData : (state,action) => {
+            state.registrationCount = null;
+            state.registrationData = null;        
         }
     }
 
 });
 
-export const { setRegistrationData,setRegistrationLoading,setRegistrationEditData,setRegistrationPagination,setRegistrationCount,setRegistrationCountIncByOne } = registrationSlice.actions;   
+export const { setRegistrationData,setRegistrationLoading,setRegistrationEditData,setRegistrationPagination,setRegistrationCount,setRegistrationCountIncByOne,setRegistrationEmptyData } = registrationSlice.actions;   
 
 export default registrationSlice.reducer;

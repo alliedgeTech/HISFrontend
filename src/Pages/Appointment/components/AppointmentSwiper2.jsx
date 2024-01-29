@@ -8,6 +8,7 @@ import TableSkeleton from '../../../Skeleton/TableSkeleton';
 import { LinearProgress } from '@mui/material';
 import TableClasses from '../../../Components/TableMainBox/TableMainBox.module.css'
 import TableMainBox from '../../../Components/TableMainBox/TableMainBox';
+import toast from 'react-hot-toast';
 
 function AppointmentSwiper2() {
     const  { doctorAppointmentList,appointmentJwtData } = useSelector((state) => state.appointment);
@@ -91,6 +92,7 @@ function AppointmentSwiper2() {
 
   function emitOutTimeEvent(_id)
   {
+
     let tempData = {
       _id,
       userId:doctorAppointmentList?._id,
@@ -178,11 +180,13 @@ function AppointmentSwiper2() {
       renderCell: (params) => (
         <>
           <div
-            onClick={() => { emitInTimeEvent(params?.row?._id) }}>
+          style={{cursor:"pointer"}}
+          onClick={() => { emitInTimeEvent(params?.row?._id) }}>
             In Time
           </div>
           <div 
-            onClick={()=>{emitOutTimeEvent(params?.row?._id)}}
+              style={{cursor:"pointer"}}
+            onClick={()=>{ if(params.row.inTime) {emitOutTimeEvent(params?.row?._id)} else toast.error("Please click on In Time first")}}
           >
             Out Time
           </div>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import CommonMaster from '../CommonMaster/CommonMaster'
 import { useBedType } from '../../services/Add Master/BedTypeMaster'
 import { setBedTypeEditData, setBedTypePagination } from '../../slices/bedtype.slice';

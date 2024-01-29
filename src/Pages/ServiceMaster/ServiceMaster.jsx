@@ -158,7 +158,8 @@ const { listLoading, createService, getServiceData, updateServiceData } =
 
   var submitData = async (data) => {
     console.log(" form data", data);
-
+    data.department = data.department?._id;
+    data.serviceType = data.serviceType?._id;
     if (editServiceData) {
       let temp = await updateServiceData(
         data,
@@ -166,8 +167,7 @@ const { listLoading, createService, getServiceData, updateServiceData } =
         paginationModel.pageSize
       );
       if (temp) {
-        dispatch(setEditServiceData(null));
-        setOpenModal(false);
+        CloseModal();
       }
     } else {
       delete data?._id;
@@ -178,8 +178,6 @@ const { listLoading, createService, getServiceData, updateServiceData } =
       );
       if (temp) {
         CloseModal();
-        setOpenModal(false);
-        dispatch(setEditServiceData(null));
       }
     }
   };
@@ -258,7 +256,7 @@ const { listLoading, createService, getServiceData, updateServiceData } =
               <CustomIconButton />
             </div>
           }
-          cd
+          
         </>
       ),
     },
@@ -307,7 +305,7 @@ const { listLoading, createService, getServiceData, updateServiceData } =
         handleSubmit={handleSubmit(submitData)}
         open={OpenModal}
         modalTitle={
-          editServiceData ? `Update ServiceType` : `Add ServiceType`
+          editServiceData ? `Update Service` : `Add Service`
         }
         isEdit={!!editServiceData}
         Loading={serviceLoading}>
@@ -623,9 +621,6 @@ const { listLoading, createService, getServiceData, updateServiceData } =
                 name={"remarks"}
                 control={control}
                 label={"Remarks"}
-                rules={{
-                  required: { value: true, message: "remarks is required" },
-                }}
               />
             </Grid>
           </Grid>

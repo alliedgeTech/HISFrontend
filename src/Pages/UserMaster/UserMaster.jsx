@@ -95,7 +95,7 @@ function UserMaster() {
   const { updateUSer, addUser, Loading, assignRoleToUser, ListLoading,getUserData,userCount,paginationModel,getUserFindById } =
   useUserData();
 const dispatch = useDispatch();
-const RoleHook = useRoleData(); // check we need it or what 
+const RoleHook = useRoleData(); //* this is for if data is not fetched for role master then call the api 
 const RoleData = useSelector((state) => state.role?.roleData);  
 const [editData, setEditData] = useState("");
 const [RoleId, setRoleId] = useState("");
@@ -355,7 +355,7 @@ const onPaginationChange = async({page,pageSize}) => {
       headerName: "Profile",
       rowHeight: 200,
       renderCell: (params) => (
-        <img src={params.row.image} style={{width:"100%",maxWidth: "100px" }} />
+        <img src={params.row.image} style={{width:"100%",maxWidth: "100px" }} alt='' />
       ),
       flex: 1,
       sortable: false,
@@ -903,7 +903,7 @@ const onPaginationChange = async({page,pageSize}) => {
                         }
                     </Grid>
 
-                    <Grid item xs={12} md={3}>
+                    {/* <Grid item xs={12} md={3}>
                         <Controller
                             name="branch"
                             control={control}
@@ -927,7 +927,7 @@ const onPaginationChange = async({page,pageSize}) => {
                         {
                             errors.city && <Typography variant="caption" color="error">City is required</Typography> 
                         }
-                    </Grid>
+                    </Grid> */}
 
                     <Grid xs={12} md={3}>
                         <Controller
@@ -1086,10 +1086,12 @@ const onPaginationChange = async({page,pageSize}) => {
             {
             (Array.isArray(RoleDataFilterd) && RoleDataFilterd.length > 0) ? RoleDataFilterd.map((item, index) => (
                       <div key={index} style={{display:"flex", alignItems:"center"}}>
+                       { console.log("djkasjfkdk",RoleId ,UserData,item,
+                            UserData?.[RoleId - 1]?.role?.findIndex((data) => data === item._id) !== (-1 || undefined)) }
                         <Checkbox
                           checked={
                             RoleId &&
-                            UserData[RoleId - 1]?.role?.findIndex((data) => data === item._id) !== -1
+                            UserData?.[RoleId - 1]?.role?.findIndex((data) => data === item._id) !== (-1 || undefined)
                           }
                           onChange={(e) => handleCheck(e.target.checked, item)}
                         />

@@ -83,7 +83,7 @@ export const useBedType = () => {
   }
 
   useEffect(() => {
-    !bedTypeData && getBedTypeData();
+    !bedTypeData && getBedTypeData(true);
   },[])
 
   return {

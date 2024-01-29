@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm,Controller } from "react-hook-form";
 import { useServiceTypeData } from "../../services/Adminastrator/ServiceTypeMaster";
 import { useDispatch, useSelector } from "react-redux";
@@ -152,8 +152,7 @@ function ServiceTypeMaster() {
         paginationModel.pageSize
       );
       if (temp) {
-        dispatch(setEditServiceTypeData(null));
-        setOpenModal(false);
+        CloseModal();
       }
     } else {
       delete data?._id;
@@ -164,8 +163,6 @@ function ServiceTypeMaster() {
       );
       if (temp) {
         CloseModal();
-        setOpenModal(false);
-        dispatch(setEditServiceTypeData(null));
       }
     }
   };
@@ -224,7 +221,6 @@ function ServiceTypeMaster() {
           return setRows(serviceTypeData)
         }
       },[serviceTypeData,ListLoading])
-
 
   return <>
      <AddEditModal

@@ -31,9 +31,13 @@ const serviceSlice = createSlice({
         setServiceCountIncByOne(state,action) {
             state.serviceCount = state.serviceCount + 1;
         },
+        setServiceEmptyData : (state,action ) =>{
+            state.serviceData = null;
+            state.serviceCount = null;
+        }
     }
 })
 
-export const  { setServiceData,setEditServiceData,setServiceCount,setServiceLoading,setServicePagination,setServiceCountIncByOne } = serviceSlice.actions;
+export const  { setServiceData,setEditServiceData,setServiceCount,setServiceLoading,setServicePagination,setServiceCountIncByOne,setServiceEmptyData } = serviceSlice.actions;
 
 export default serviceSlice.reducer;

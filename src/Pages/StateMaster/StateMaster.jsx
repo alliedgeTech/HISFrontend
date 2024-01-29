@@ -1,7 +1,7 @@
 import React, { useState,useMemo, useEffect } from 'react'
 import { useRegionData } from '../../services/Add Master/Regionmaster'
-import { useDispatch, useSelector } from "react-redux";
-import { setCountryEditData, setCountryPagination, setStateEditData, setStatePagination } from '../../slices/region.slice';
+import { useDispatch } from "react-redux";
+import {setStateEditData, setStatePagination } from '../../slices/region.slice';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 import AddEditModal from '../../Components/AddEditModal/AddEditModal';
 import { useForm,Controller } from 'react-hook-form';

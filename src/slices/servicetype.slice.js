@@ -16,7 +16,7 @@ const serviceTypeSlice = createSlice({
             state.serviceTypeData = action.payload;
         },
         setServiceTypeLoading(state,action) {
-            state.editServiceTypeData = action.payload;
+            state.serviceTypeLoading = action.payload;
         },
         setEditServiceTypeData (state,action) {
             state.editServiceTypeData = action.payload;

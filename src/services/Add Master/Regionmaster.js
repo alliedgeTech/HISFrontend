@@ -1,10 +1,11 @@
-// import { Toast } from "react-toastify/dist/components";
 import APIManager from "../../utils/ApiManager"
 import { useDispatch, useSelector } from "react-redux";
 import { setCityCount, setCityCountIncByOne, setCityData, setCityLoading, setCountryCount, setCountryCountIncByOne, setCountryData, setCountryLoading, setStateCount, setStateCountIncByOne, setStateData, setStateLoading } from "../../slices/region.slice";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { setUserData } from "../../slices/user.slice";
+import { setBranchData, setBranchEmptyData } from "../../slices/branch.slice";
+import { setRegistrationEmptyData } from "../../slices/registration.slice";
 
 const ApiManager = new APIManager();
 
@@ -32,7 +33,6 @@ export const useRegionData = () => {
             return true;
         }
         dispatch(setCountryLoading(false));
-        toast.error(resData?.message)
         return false;
     }
 
@@ -70,7 +70,6 @@ export const useRegionData = () => {
             return true;
         }
         dispatch(setCountryLoading(false));
-        toast.error(resData?.message)
         return false;
     
     }
@@ -91,7 +90,6 @@ export const useRegionData = () => {
             return true;
         }
         dispatch(setStateLoading(false));
-        toast.error(resData?.message)
         return false;
     }
 
@@ -112,7 +110,7 @@ export const useRegionData = () => {
                 stateName : data?.stateName
             }
         }
-        if(tempData?.isActive!==data?.isActive)
+        if(tempData?.isActive?.toString()!==data?.isActive)
         {
             formData = {
                 ...formData,
@@ -134,12 +132,12 @@ export const useRegionData = () => {
             toast.success("state updated successfully")
             getAllState();
             getAllCity();
+            dispatch(setRegistrationEmptyData());
             dispatch(setStateLoading(false));
             return true;
         } 
 
         dispatch(setStateLoading(false));
-        toast.error(resData?.message)
         return false;
     }
 
@@ -196,7 +194,14 @@ export const useRegionData = () => {
 
     const createCity = async (data) => {
         dispatch(setCityLoading(true));
-        const resData = await ApiManager.post("admin/regionMaster/city",data);
+        console.log("for create city : ",data);
+        const tempdata = {
+            cityName : data?.cityName,
+            isActive : data?.isActive,
+            stateId : data?.stateId,
+            countryId: data?.stateName?.countryId
+        }
+        const resData = await ApiManager.post("admin/regionMaster/city",tempdata);
         if(!resData?.error)
         {
             toast.success("city created successfully")
@@ -217,6 +222,7 @@ export const useRegionData = () => {
         dispatch(setCityLoading(true));
         let tempData = cityData[cityEditData-1];
         let formData = {};
+        console.log('this is temp data',tempData,data)
         if(tempData?.cityName!==data?.cityName)
         {
             formData = {
@@ -230,7 +236,7 @@ export const useRegionData = () => {
                 stateId : data?.stateName?._id
             }
         }
-        if(tempData?.isActive!==data?.isActive)
+        if(tempData?.isActive?.toString()!==data?.isActive)
         {
             formData = {
                 ...formData,
@@ -241,6 +247,7 @@ export const useRegionData = () => {
         if(Object.keys(formData).length===0)
         {
             toast.error("in form no changes are there");
+            dispatch(setCityLoading(false));
             return false;
         }
 
@@ -248,8 +255,11 @@ export const useRegionData = () => {
 
         if(!resData?.error)
         {
-            toast.success("city updated successfully")
+            toast.success("city updated successfully");
             getAllCity();
+            dispatch(setBranchEmptyData());
+            dispatch(setRegistrationEmptyData());
+            dispatch(setBranchData(null));
             dispatch(setCityLoading(false));
             return true;
         }
@@ -267,12 +277,12 @@ export const useRegionData = () => {
                 const resData = await ApiManager.patch(`admin/regionMaster/country`,{isActive:value,countryId:id});
                 if(!resData?.error)
                 {
-                    toast.success("country updated successfully")
                     getAllCountry();
                     getAllState(true);
                     getAllCity(true);
                     toast.dismiss(toastId);
                     dispatch(setCountryLoading(false));
+                    toast.success("country updated successfully")
                     return true;
                     
                 }
@@ -284,11 +294,11 @@ export const useRegionData = () => {
                 const resData1 = await ApiManager.patch(`admin/regionMaster/state`,{isActive:value,stateId:id});
                 if(!resData1?.error)
                 {
-                    toast.success("state updated successfully")
                     getAllState();
                     getAllCity();
                     toast.dismiss(toastId);
                     dispatch(setStateLoading(false));
+                    toast.success("state updated successfully")
                     return;
                 }
                 toast.dismiss(toastId);
@@ -300,10 +310,10 @@ export const useRegionData = () => {
                 const resData2 = await ApiManager.patch(`admin/regionMaster/city`,{isActive:value,cityId:id});
                 if(!resData2?.error)
                 {
-                    toast.success("city updated successfully")
                     getAllCity();
                     toast.dismiss(toastId);
                     dispatch(setCityLoading(false));
+                    toast.success("city updated successfully")
                     return;
                 }
                 toast.dismiss(toastId);
