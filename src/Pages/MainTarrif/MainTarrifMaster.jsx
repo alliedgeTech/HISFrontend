@@ -3,9 +3,8 @@ import SwipeableViews from "react-swipeable-views";
 import { useState } from 'react'
 import { AppBar, Box, Tab, Tabs, Typography } from '@mui/material';
 import { useTheme } from '@emotion/react';
-import DepartmentMaster from '../DepartmentMaster/DepartmentMaster';
-import DesignationMaster from '../DesignationMaster/DesignationMaster';
-import SpecialityMaster from '../SpecialityMaster/SpecialityMaster';
+import TarrifWithService from '../TarrifWithService/TarrifWithService';
+import TarrifMaster from '../TarrifMaster/TarrifMaster';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -27,7 +26,7 @@ function TabPanel(props) {
   );
 }
 
-function HrMaster() {
+function MainTarrif() {
   const [value, setValue] = useState(0);
   const theme = useTheme();
 const handleChangeIndex = (index) => {
@@ -55,9 +54,8 @@ return (
       textColor="#6c757d"
       variant="fullWidth"
     >
-      <Tab label="Department" {...a11yProps(0)} style={{fontWeight:"bold",color: value!==0 ? "#6c757d" : "rgb(37,57,111)"}}/>
-      <Tab label="Degisnation" {...a11yProps(1)} style={{fontWeight:"bold",color: value!==1 ? "#6c757d" : "rgb(37,57,111)"}}/>
-      <Tab label="Speciality" {...a11yProps(2)} style={{fontWeight:"bold",color: value!==2 ? "#6c757d" : "rgb(37,57,111)"}}/>
+      <Tab label="Tarrif Master With Service" {...a11yProps(0)} style={{fontWeight:"bold",color: value!==0 ? "#6c757d" : "rgb(37,57,111)"}}/>
+      <Tab label="Tarrif Master" {...a11yProps(2)} style={{fontWeight:"bold",color: value!==2 ? "#6c757d" : "rgb(37,57,111)"}}/>
     </Tabs>
     </AppBar> 
     <SwipeableViews
@@ -67,17 +65,14 @@ return (
     onChangeIndex={handleChangeIndex}
     >
     <TabPanel  value={value} index={0} dir={theme.direction}>
-    <DepartmentMaster/>
+    <TarrifWithService/>
     </TabPanel>
     <TabPanel value={value} index={1} dir={theme.direction}>
-    <DesignationMaster />
-    </TabPanel>
-    <TabPanel value={value} index={2} dir={theme.direction}>
-    <SpecialityMaster />
+    <TarrifMaster />
     </TabPanel>
     </SwipeableViews> 
     </Box>
     )
 }
 
-export default HrMaster
+export default MainTarrif

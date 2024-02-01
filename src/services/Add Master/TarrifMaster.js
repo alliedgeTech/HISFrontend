@@ -58,7 +58,6 @@ export const useTarrifData = () => {
 
     const updateTarrifData = async (data,resetAll) => {
         dispatch(setTarrifLoading(true));
-
         const resData = await ApiManager.patch(`admin/addMaster/tarrifMaster/${data._id}`,data);
 
         if(!resData.error)

@@ -9,6 +9,14 @@ const initialState = {
     page: 0,
     pageSize: 10,
   },
+  tarrifWithServiceData: null,
+  tarrifWithServiceLoading: false,
+  editTarrifWithServiceData: null,
+  tarrifWithServiceCount: null,
+  tarrifWithServicePagination: {
+    page: 0,
+    pageSize: 10,
+  },
 };
 
 const tarrifSlice = createSlice({
@@ -34,6 +42,25 @@ const tarrifSlice = createSlice({
     setTarrifCountIncByOne: (state, action) => {
       state.tarrifCount = state.tarrifCount + 1;
     },
+    setTarrifWithServiceData: (state, action) => {
+      state.tarrifWithServiceData = action.payload;
+    },
+    setTarrifWithServiceLoading: (state, action) => {
+      state.tarrifWithServiceLoading = action.payload;
+    },
+    setTarrifWithServiceEditData: (state, action) => {
+      state.editTarrifWithServiceData = action.payload;
+    },
+    setTarrifWithServiceCount: (state, action) => {
+      state.tarrifWithServiceCount = action.payload;
+    },
+    setTarrifWithServicePagination: (state, action) => {
+      state.tarrifWithServicePagination.page = action.payload.page;
+      state.tarrifWithServicePagination.pageSize = action.payload.pageSize;
+    },
+    setTarrifWithServiceCountIncByOne: (state, action) => {
+      state.tarrifCount = state.tarrifCount + 1;
+    },
   },
 });
 
@@ -44,6 +71,13 @@ export const {
   setTarrifCount,
   setTarrifPagination,
   setTarrifCountIncByOne,
+
+  setTarrifWithServiceCount,
+  setTarrifWithServiceCountIncByOne,
+  setTarrifWithServiceData,
+  setTarrifWithServiceEditData,
+  setTarrifWithServiceLoading,
+  setTarrifWithServicePagination
 } = tarrifSlice.actions;
 
 export default tarrifSlice.reducer;

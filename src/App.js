@@ -19,6 +19,8 @@ import FacilityMaster from './Pages/FacilityMaster/FacilityMaster';
 import TarrifMaster from './Pages/TarrifMaster/TarrifMaster';
 import BedTypeMaster from './Pages/BedTypeMaster/BedTypeMaster';
 import UserTitleMaster from './Pages/UserTitleMaster/UserTitleMaster';
+import TarrifWithService from './Pages/TarrifWithService/TarrifWithService';
+import MainTarrif from './Pages/MainTarrif/MainTarrifMaster';
 
 function App() {
   return (
@@ -33,7 +35,7 @@ function App() {
           <Route path='/regionmaster' element={<RegionMaster/>} />
           <Route path='/facilitymaster' element={<FacilityMaster/>} />
           <Route path='/servicetypemaster' element={<ServiceTypeMaster/>} />
-          <Route path='/tarrifmaster' element={<TarrifMaster/>} />
+          <Route path='/tarrifmaster' element={<MainTarrif/>} />
           <Route path='/hrmaster' element={<HrMaster/>} />
           <Route path='/bedtypemaster' element={<BedTypeMaster/>} />
           <Route path='/usertitlemaster' element={<UserTitleMaster/>} />
