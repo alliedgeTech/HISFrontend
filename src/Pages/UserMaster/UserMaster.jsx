@@ -27,6 +27,7 @@ import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 import Switch from '@mui/material/Switch';
 import { setUserPagination } from '../../slices/user.slice';
 import toast from 'react-hot-toast';
+import CommonTable from '../../Components/CommonTable/CommonTable';
 
 function UserMaster() {
     const UserData = useSelector((state) => state.user?.userData);
@@ -1026,39 +1027,7 @@ const onPaginationChange = async({page,pageSize}) => {
         onClick={() => {setModalOpen(true);clearErrors();}}
         >
             {
-                ListLoading ? <><LinearProgress /><TableSkeleton /></> : Array.isArray(rowData) && rowData.length !== 0 ? ( <DataGrid
-                    style={{maxHeight:"calc(100vh - 173px)"}}
-                    initialState={{ pagination: { paginationModel: { pageSize: paginationModel.pageSize,page:paginationModel.page } } , 
-                    columns: {
-                      columnVisibilityModel: {
-                        // Hide columns status and traderName, the other columns will remain visible
-                        _id: false,
-                      },
-                    },
-                  
-                  }}
-                    sx={{
-                      "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                        outline: "none !important",
-                     },
-                      '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
-                      '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
-                      '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
-                    }}
-                      disableRowSelectionOnClick={true}
-                      columns={columns}
-                      rows={rowData}
-                      slots={{ toolbar: GridToolbar }}
-                      getRowHeight={(_data) => 'auto'}  
-                      getRowClassName={(params) => !params?.row?.isActive && "inactive-row"}
-                      classes={{cellContent:"cellContent"}}
-                      paginationModel={paginationModel}
-                      onPaginationModelChange={(data) => onPaginationChange(data)}
-                      rowCount={userCount}
-                      pagination
-                      pageSizeOptions={[10,30,50,100]}
-                      paginationMode="server"
-                    />) : (<EmptyData />)
+                ListLoading ? <><LinearProgress /><TableSkeleton /></> : Array.isArray(rowData) && rowData.length !== 0 ? ( <CommonTable  columns={columns} count={userCount} paginationModel={paginationModel} rowData={rowData}  onPaginationChange={onPaginationChange}/> ) : (<EmptyData />)
             }
         </TableMainBox>
 

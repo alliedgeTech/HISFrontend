@@ -15,6 +15,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { DataGrid,GridToolbar } from '@mui/x-data-grid';
 import TableSkeleton from '../../Skeleton/TableSkeleton';
 import EmptyData from '../../Components/NoData/EmptyData';
+import CommonMaster from '../CommonMaster/CommonMaster';
+import CommonTable from '../../Components/CommonTable/CommonTable';
 
 
 
@@ -315,38 +317,8 @@ function CityMaster() {
         >
             {
                 ListLoadingCity ? <><LinearProgress /><TableSkeleton/></>: Array.isArray(CityRowData) && CityRowData.length > 0 ? (
-                    <DataGrid
-                    style={{maxHeight:"calc(100vh - 248px)"}}
-                    initialState={{ pagination: { paginationModel: { pageSize: CityRowData.pageSize,page:CityRowData.page } } , 
-                    columns: {
-                      columnVisibilityModel: {
-                        _id: false,
-                      },
-                    },
-                  
-                  }}
-                    sx={{
-                      "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                        outline: "none !important",
-                     },
-                      '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
-                      '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
-                      '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
-                    }}
-                      disableRowSelectionOnClick={true}
-                      columns={columns}
-                      rows={CityRowData}
-                      slots={{ toolbar: GridToolbar }}
-                      getRowHeight={(_data) => 'auto'}  
-                      getRowClassName={(params) => !params?.row?.isActive && "inactive-row"}
-                      classes={{cellContent:"cellContent"}}
-                      paginationModel={cityPagination}
-                      onPaginationModelChange={(data) => onPaginationChange(data)}
-                      rowCount={cityCount}
-                      pagination
-                      pageSizeOptions={[10,30,50,100]}
-                      paginationMode="server"
-                    />
+                  <CommonTable paginationModel={cityPagination} rowData={CityRowData} columns={columns} onPaginationChange={onPaginationChange} count={cityCount} customHeight='248px' />
+                
                   ) : (
                     <EmptyData />
                   )

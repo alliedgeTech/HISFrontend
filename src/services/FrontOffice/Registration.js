@@ -149,11 +149,9 @@ export const  useFrontOfficeRegistration = () => {
 
     }
 
-    const updateActiveState = async (tempData) => {
-        console.log("we get it is")
+    const updateActiveStateAndAmount = async (tempData) => {
         dispatch(setRegistrationLoading(true));
-        console.log("this is confusing data",tempData);
-        const data = await ApiManager.patch("admin/frontOffice/registration/active",{registrationId:tempData.id,isActive:tempData.value});
+        const data = await ApiManager.patch("admin/frontOffice/registration/active",{registrationId:tempData.id,isActive:tempData.value,availableAmount:tempData.availableAmount});
 
         if(!data.error)
         {
@@ -181,7 +179,7 @@ export const  useFrontOfficeRegistration = () => {
         getRegistrationFindById,
         createRegistration,
         updateRegistration,
-        updateState:updateActiveState,
+        updateStateAndAmount: updateActiveStateAndAmount,
         ListLoading
     }
 

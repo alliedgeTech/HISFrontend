@@ -404,7 +404,6 @@ function BranchMaster() {
                     initialState={{ pagination: { paginationModel: { pageSize: paginationModel.pageSize,page:paginationModel.page } } , 
                     columns: {
                       columnVisibilityModel: {
-                        // Hide columns status and traderName, the other columns will remain visible
                         _id: false,
                       },
                     },
@@ -427,7 +426,7 @@ function BranchMaster() {
                       classes={{cellContent:"cellContent"}}
                       paginationModel={paginationModel}
                       onPaginationModelChange={(data) => onPaginationChange(data)}
-                      rowCount={branchCount} // baki**
+                      rowCount={branchCount} 
                       pagination
                       pageSizeOptions={[10,30,50,100]}
                       paginationMode="server"

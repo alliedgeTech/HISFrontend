@@ -12,6 +12,7 @@ import CustomAutoCompelete from '../../Components/CustomAutoCompelete/CustomAuto
 import TableMainBox from '../../Components/TableMainBox/TableMainBox';
 import Grid from '@mui/material/Unstable_Grid2';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import CommonTable from '../../Components/CommonTable/CommonTable';
 
 function CommonMaster({MainValue,Loading,ListLoading,add,update,get,tableData,paginationModel,setPaginationModal,editData,setEditData,FieldHeaderName,tableDataCount,customHeight="173px"}) {
   var { handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
@@ -183,12 +184,10 @@ const onPaginationChange = async({page,pageSize}) => {
         headerName: "Actions",
         sortable:false,
         width: 150,
-        renderCell: (params) => (
-          <>
+        renderCell: (params) => ( <>
             <div
               onClick={() => { setModalOpen(true);clearErrors(); reset({...params.row,isActive:params?.row?.isActive?.toString(),id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1});setEditData(true);}}
               >
-              
               <CustomIconButton />
             </div>  
 
@@ -265,42 +264,12 @@ const onPaginationChange = async({page,pageSize}) => {
             buttonText={`Add ${FieldHeaderName}`}
             onClick={() => {setModalOpen(true);clearErrors();}}
             >
+            { console.log("this is render again") }
            { ListLoading ? <><LinearProgress /><TableSkeleton/></>: Array.isArray(rowData) && rowData.length > 0 ? (
-                  <DataGrid
-                  style={{maxHeight:`calc(100vh - ${customHeight})`}}
-                  initialState={{ pagination: { paginationModel: { pageSize: paginationModel.pageSize,page:paginationModel.page } } , 
-                  columns: {
-                    columnVisibilityModel: {
-                      _id: false,
-                    },
-                  },
-                
-                }}
-                  sx={{
-                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                      outline: "none !important",
-                   },
-                    '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
-                    '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
-                    '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
-                  }}
-                    disableRowSelectionOnClick={true}
-                    columns={columns}
-                    rows={rowData}
-                    slots={{ toolbar: GridToolbar }}
-                    getRowHeight={(_data) => 'auto'}  
-                    getRowClassName={(params) => !params?.row?.isActive && "inactive-row"}
-                    classes={{cellContent:"cellContent"}}
-                    paginationModel={paginationModel}
-                    onPaginationModelChange={(data) => onPaginationChange(data)}
-                    rowCount={tableDataCount}
-                    pagination
-                    pageSizeOptions={[10,30,50,100]}
-                    paginationMode="server"
-                  />
+            <CommonTable paginationModel={paginationModel} customHeight={customHeight} columns={columns} count={tableDataCount} rowData={rowData} onPaginationChange={onPaginationChange}  />
                 ) : (
                   <EmptyData />
-                )}
+                )}  
 
           </TableMainBox>
 

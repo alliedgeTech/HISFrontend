@@ -15,6 +15,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { DataGrid,GridToolbar } from '@mui/x-data-grid';
 import TableSkeleton from '../../Skeleton/TableSkeleton';
 import EmptyData from '../../Components/NoData/EmptyData';
+import CommonTable from '../../Components/CommonTable/CommonTable';
 
 
 
@@ -310,38 +311,7 @@ function StateMaster() {
         >
             {
                 ListLoadingState ? <><LinearProgress /><TableSkeleton/></>: Array.isArray(StateRowData) && StateRowData.length > 0 ? (
-                    <DataGrid
-                    style={{maxHeight:"calc(100vh - 248px)"}}
-                    initialState={{ pagination: { paginationModel: { pageSize: statePagintion.pageSize,page:statePagintion.page } } , 
-                    columns: {
-                      columnVisibilityModel: {
-                        _id: false,
-                      },
-                    },
-                  
-                  }}
-                    sx={{
-                      "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                        outline: "none !important",
-                     },
-                      '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
-                      '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
-                      '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
-                    }}
-                      disableRowSelectionOnClick={true}
-                      columns={columns}
-                      rows={StateRowData}
-                      slots={{ toolbar: GridToolbar }}
-                      getRowHeight={(_data) => 'auto'}  
-                      getRowClassName={(params) => !params?.row?.isActive && "inactive-row"}
-                      classes={{cellContent:"cellContent"}}
-                      paginationModel={statePagintion}
-                      onPaginationModelChange={(data) => onPaginationChange(data)}
-                      rowCount={stateCount}
-                      pagination
-                      pageSizeOptions={[10,30,50,100]}
-                      paginationMode="server"
-                    />
+                  <CommonTable columns={columns} count={stateCount} paginationModel={statePagintion} rowData={StateRowData} onPaginationChange={onPaginationChange}  customHeight='248px'/>
                   ) : (
                     <EmptyData />
                   )

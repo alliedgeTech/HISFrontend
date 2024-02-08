@@ -31,6 +31,7 @@ import EmptyData from '../../Components/NoData/EmptyData';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 import dayjs from 'dayjs';
+import CommonTable from '../../Components/CommonTable/CommonTable';
 
 
 function RegistrationMaster() {
@@ -38,6 +39,7 @@ function RegistrationMaster() {
     const [DFile, setFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [webCamOpen,setWebCamOpen] = useState(false);
+    const [addAmountModal, setAddAmountModal] = useState(false);
     const webcamRef = useRef(null);
 
 
@@ -68,11 +70,13 @@ function RegistrationMaster() {
         bloodGroup:null,
         pationType:null,
         rfid:null,  
+        availableAmount:"",
+        newAvailableAmount:""
       },
       mode:"onTouched"
     }); 
 
-    const  { getRegistrationData,createRegistration,updateRegistration,updateState,ListLoading,getRegistrationFindById } = useFrontOfficeRegistration();
+    const  { getRegistrationData,createRegistration,updateRegistration,updateStateAndAmount,ListLoading,getRegistrationFindById } = useFrontOfficeRegistration();
 
     function setRowDataRegistration(data){
         var id = paginationModel.page * paginationModel.pageSize;
@@ -95,6 +99,7 @@ function RegistrationMaster() {
             isActive:element?.isActive,
             pincode:element?.pincode,
             address:element?.address,
+            availableAmount:element?.availableAmount
           };
           array.push(thisData);
         });
@@ -217,10 +222,6 @@ function RegistrationMaster() {
         return new File([u8arr], filename, {type:mime});
     }
 
-    useEffect(() => {
-      console.log("this is getVAlues : ",getValues())
-    },[getValues])
-
     const rowData = useMemo(()=> {
         if( Array.isArray(registrationData) && !ListLoading ){
             return setRowDataRegistration(registrationData);
@@ -330,7 +331,7 @@ function RegistrationMaster() {
         { field: "pincode", headerName: "Code", width: 100 },
         { field: "isActive", headerName: "Is Active", width: 80, 
         renderCell : (params)=>(
-           <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateState({ id: params.row._id,value:e.target.checked})}></IOSSwitch> 
+           <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateStateAndAmount({ id: params.row._id,value:e.target.checked})}></IOSSwitch> 
           
         )
       },
@@ -345,6 +346,15 @@ function RegistrationMaster() {
               <div
                 onClick={() => {
                   dispatch(setRegistrationEditData(params.row._id));
+                }}
+              >
+               <CustomIconButton/>
+              </div>
+
+              <div
+                onClick={() => {
+                  reset({ availableAmount:params.row.availableAmount,id:params.row._id});
+                  setAddAmountModal(true);
                 }}
               >
                <CustomIconButton/>
@@ -382,9 +392,24 @@ function RegistrationMaster() {
 
       const watchDate = watch("dob");
 
-      useEffect(() => {
-      console.log("dob Timepass",watchDate);
-      }, [watchDate])
+     async function submitAvailableAmount(data)
+     {
+        console.log('data.availableAmount',data.availableAmount,typeof data.availableAmount,'data.newAvailableAmount',data.newAvailableAmount,typeof data.newAvailableAmount)
+        data.availableAmount += Number(data.newAvailableAmount)
+        const resData = await updateStateAndAmount(data);
+        if(resData) {
+          closeTheAvailbleAmountModal();
+        }
+     }
+
+     function closeTheAvailbleAmountModal(){
+        setAddAmountModal(false);
+        reset({
+          availableAmount:"",
+          newAvailableAmount:"",
+          id:""
+        });
+     }
 
   return (
     <>
@@ -407,6 +432,52 @@ function RegistrationMaster() {
           </DialogActions>
       </DialogContent>
     </Dialog>
+
+
+    <AddEditModal 
+      maxWidth="lg"
+      handleClose={closeTheAvailbleAmountModal}
+      handleSubmit={handleSubmit(submitAvailableAmount)}
+      open={addAmountModal}
+      modalTitle={"Update Available Amount"}
+      isEdit={false}
+      Loading={registrationLoading} 
+      > 
+            <Box
+            component="form"
+            onSubmit={handleSubmit(submitAvailableAmount)}
+            p={1}
+            >
+                <Grid 
+                    container
+                    spacing={{ md:3 ,xs:2 }}
+                    // columns={{ xs: 4, sm: 8, md: 12 }}
+                    justifyContent="space-between"
+                    alignItems="center" 
+                > 
+                   <Grid xs={12} sm={6}>
+                        <CustomTextInputField 
+                            name={"availableAmount"}
+                            disable={true}
+                            type={"number"}
+                            control={control}
+                            label={"Available Amount"}
+                            rules={{valueAsNumber: true,required:{value:true,message:"Please enter the amount to add"}}}
+                        /> 
+                    </Grid>
+                   <Grid xs={12} sm={6}>
+                        <CustomTextInputField 
+                            name={"newAvailableAmount"}
+                            type={"number"}
+                            control={control}
+                            label={"Add Amount"}
+                            rules={{valueAsNumber: true,required:{value:true,message:"Please enter the amount to add",min:{value:1,message:"Please enter the amount to add"}}}}
+                        /> 
+                    </Grid>
+                    
+                </Grid>
+              </Box>
+          </AddEditModal>
 
     <AddEditModal 
       maxWidth="lg"
@@ -855,40 +926,8 @@ function RegistrationMaster() {
         onClick={() => {setModalOpen(true);clearErrors();}}
         >
             {
-                ListLoading ? <><LinearProgress /><TableSkeleton /></> : Array.isArray(rowData) && rowData.length !== 0 ? ( <DataGrid
-                    style={{maxHeight:"calc(100vh - 173px)"}}
-                    initialState={{ pagination: { paginationModel: { pageSize: paginationModel.pageSize,page:paginationModel.page } } , 
-                    columns: {
-                      columnVisibilityModel: {
-                        // Hide columns status and traderName, the other columns will remain visible
-                        _id: false,
-                      },
-                    },
-                  
-                  }}
-                  cellStyle={{textAlign: 'center'}}
-                    sx={{
-                      "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                        outline: "none !important",
-                     },
-                      '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
-                      '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
-                      '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
-                    }}
-                      disableRowSelectionOnClick={true}
-                      columns={columns}
-                      rows={rowData}
-                      slots={{ toolbar: GridToolbar }}
-                      getRowHeight={(_data) => 'auto'}  
-                      getRowClassName={(params) => !params?.row?.isActive && "inactive-row"}
-                      classes={{cellContent:"cellContent"}}
-                      paginationModel={paginationModel}
-                      onPaginationModelChange={(data) => onPaginationChange(data)}
-                      rowCount={registrationCount}
-                      pagination
-                      pageSizeOptions={[10,30,50,100]}
-                      paginationMode="server"
-                    />) : (<EmptyData />)
+                ListLoading ? <><LinearProgress /><TableSkeleton /></> : Array.isArray(rowData) && rowData.length !== 0 ? ( 
+                <CommonTable columns={columns} count={registrationCount} paginationModel={paginationModel} rowData={rowData} onPaginationChange={onPaginationChange} />) : (<EmptyData />)
             }
         </TableMainBox>                        
     

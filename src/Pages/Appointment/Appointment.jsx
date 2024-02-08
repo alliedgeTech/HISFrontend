@@ -40,6 +40,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import { socket } from "../../socket";
 import { useDeferredValue } from "react";
+import CommonTable from "../../Components/CommonTable/CommonTable";
 
 function Appointment() {
   const dispatch = useDispatch();
@@ -501,7 +502,8 @@ function Appointment() {
       field:"jwt",
       headerName:"JWT",
       width:120,
-      renderCell:(params) => (params.row.jwt ? params.row.jwt : <div onClick={()=>GenrateJwtToken({_id:params?.row?._id,userId:params?.row?.doctor?._id,checkDate:params?.row?.appointmentDate})}>genrate</div> ),
+      renderCell:(params) => ( params.row.jwt ? params.row.jwt : <div onClick={()=>GenrateJwtToken({_id:params?.row?._id,userId:params?.row?.doctor?._id,checkDate:params?.row?.appointmentDate})}>genrate</div>
+       ),
     },
     {
       field: "appointmentDate",
@@ -1173,55 +1175,14 @@ function Appointment() {
       />
 
       <TableMainBox customHeader={CustomHeader() }>
-
+          { console.log("this is time to render again") }
         {appointmentListLoading ? (
           <>
             <LinearProgress />
             <TableSkeleton />
           </>
         ) : Array.isArray(rowData) && rowData.length > 0 ? (
-          <DataGrid
-            style={{ maxHeight: `calc(100vh - 173px)` }}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: paginationModel.pageSize,
-                  page: paginationModel.page,
-                },
-              },
-              columns: {
-                columnVisibilityModel: {
-                  _id: false,
-                },
-              },
-            }}
-            sx={{
-              "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                outline: "none !important",
-              },
-              "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
-                py: "8px",
-              },  
-              "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
-                py: "15px",
-              },
-              "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
-                py: "22px",
-              },
-            }}
-            disableRowSelectionOnClick={true}
-            columns={columns}
-            rows={rowData}
-            slots={{ toolbar: GridToolbar }}
-            getRowHeight={(_data) => "auto"}
-            classes={{ cellContent: "cellContent" }}
-            paginationModel={paginationModel}
-            onPaginationModelChange={(data) => onPaginationChange(data)}
-            rowCount={appointmentCount}
-            pagination
-            pageSizeOptions={[10, 30, 50, 100]}
-            paginationMode="server"
-          />
+         <CommonTable columns={columns} count={appointmentCount} activeInActiveNeeded={false} paginationModel={paginationModel} rowData={rowData} onPaginationChange={onPaginationChange} />
         ) : (
           <EmptyData />
         )}

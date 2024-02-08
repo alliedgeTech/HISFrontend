@@ -15,6 +15,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { DataGrid,GridToolbar } from '@mui/x-data-grid';
 import TableSkeleton from '../../Skeleton/TableSkeleton';
 import EmptyData from '../../Components/NoData/EmptyData';
+import CommonTable from '../../Components/CommonTable/CommonTable';
 
 
 
@@ -273,39 +274,7 @@ function CountryMaster() {
         >
             {
                 ListLoadingCountry ? <><LinearProgress /><TableSkeleton/></>: Array.isArray(CountryRowData) && CountryRowData.length > 0 ? (
-                    <DataGrid
-                    style={{maxHeight:"calc(100vh - 248px)"}}
-                    initialState={{ pagination: { paginationModel: { pageSize: countryPagination.pageSize,page:countryPagination.page } } , 
-                    columns: {
-                      columnVisibilityModel: {
-                        // Hide columns status and traderName, the other columns will remain visible
-                        _id: false,
-                      },
-                    },
-                  
-                  }}
-                    sx={{
-                      "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                        outline: "none !important",
-                     },
-                      '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
-                      '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
-                      '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
-                    }}
-                      disableRowSelectionOnClick={true}
-                      columns={columns}
-                      rows={CountryRowData}
-                      slots={{ toolbar: GridToolbar }}
-                      getRowHeight={(_data) => 'auto'}  
-                      getRowClassName={(params) => !params?.row?.isActive && "inactive-row"}
-                      classes={{cellContent:"cellContent"}}
-                      paginationModel={countryPagination}
-                      onPaginationModelChange={(data) => onPaginationChange(data)}
-                      rowCount={countryCount}
-                      pagination
-                      pageSizeOptions={[10,30,50,100]}
-                      paginationMode="server"
-                    />
+                  <CommonTable columns={columns} count={countryCount} paginationModel={countryPagination} rowData={CountryRowData} onPaginationChange={onPaginationChange} customHeight='248px' />
                   ) : (
                     <EmptyData />
                   )
