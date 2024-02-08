@@ -10,8 +10,8 @@ import toast from 'react-hot-toast';
 
 const dataColorSow = [
     {
-      color: "#25396f",
       label: "Booked",
+      color: "#25396f",
     },
     {
       color: "#ef5350",

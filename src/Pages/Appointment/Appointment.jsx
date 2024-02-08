@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setAppointmentData,
@@ -128,7 +128,6 @@ function Appointment() {
 
   const setRegistrationModalData = async (tempData) => {
     let url;
-    console.log("this is temp data ", tempData);
     if (tempData) {
       url = `admin/frontOffice/registration/m/${tempData}?type=id`;
     } else {
@@ -196,7 +195,7 @@ function Appointment() {
     if (isValidMobileNumber(defferedMobileNumber)) {
       const timeoutId = setTimeout(() => {
         setRegistrationModalData();
-      }, 300);
+      }, 500);
 
       return () => clearTimeout(timeoutId);
     }
@@ -215,6 +214,7 @@ function Appointment() {
   }, [DoctorWatch]);
 
   function FetchTheNewList(value) {
+    dispatch(setAppointmentpagination({ page: 0, pageSize: paginationModel.pageSize }));
     getAppintmentData(false,0,undefined,'conName',undefined,undefined,undefined,value)
   }
 
@@ -626,7 +626,7 @@ function Appointment() {
     );
   }
 
-  const LeftSideDrawerList = () => {
+  const LeftSideDrawerList = useCallback(() => {
     const watchStartDate = watch("startDate");
 
     const getListAccordingDoctorDate = async (data) => {
@@ -651,10 +651,11 @@ function Appointment() {
         dispatch(setStartDate(newStartDate));
         dispatch(setEndDate(newEndDate));
         dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
+        dispatch(setAppointmentpagination({ page: 0, pageSize: paginationModel.pageSize }));
         const innerResData = await getAppintmentData(
           true,
           0,
-          undefined,
+          undefined, 
           undefined,
           newStartDate,
           newEndDate,
@@ -742,7 +743,8 @@ function Appointment() {
         </Grid>
       </Box>
     );
-  };
+
+  },[doctorAppointmentList,control,appointmentListLoading])  ;
 
   // if (!doctorAppointmentList) {
   //   return (
@@ -1155,7 +1157,9 @@ function Appointment() {
         open={LeftDrawer}
         onClose={toggleDrawer(false)}
         onOpen={toggleDrawer(true)}>
-        {LeftSideDrawerList()}
+        {
+          <LeftSideDrawerList />
+        }
       </SwipeableDrawer>
 
       <SearchRegistration
@@ -1182,7 +1186,7 @@ function Appointment() {
             <TableSkeleton />
           </>
         ) : Array.isArray(rowData) && rowData.length > 0 ? (
-         <CommonTable columns={columns} count={appointmentCount} activeInActiveNeeded={false} paginationModel={paginationModel} rowData={rowData} onPaginationChange={onPaginationChange} />
+         <CommonTable columns={columns} count={appointmentCount} activeInActiveNeeded={false} paginationModel={paginationModel} customHeight="248px" rowData={rowData} onPaginationChange={onPaginationChange} />
         ) : (
           <EmptyData />
         )}
