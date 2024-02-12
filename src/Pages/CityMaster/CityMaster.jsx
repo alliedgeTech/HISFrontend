@@ -149,7 +149,7 @@ function CityMaster() {
           const recentData = structuredClone(cityPagination);
           dispatch(setCityPagination({page,pageSize}))
 
-          if(page!==cityPagination.page)
+          if(page!==recentData.page)
           {
               // change the page
                 const resData = await getAllCity(true,page,pageSize);

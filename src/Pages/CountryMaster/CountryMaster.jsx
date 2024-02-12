@@ -128,7 +128,7 @@ function CountryMaster() {
           const recentData = structuredClone(countryPagination);
           dispatch(setCountryPagination({page,pageSize}))
 
-          if(page!==countryPagination.page)
+          if(page!==recentData.page)
           {
               // change the page
                 const resData = await getAllCountry(true,page,pageSize);

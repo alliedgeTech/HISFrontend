@@ -131,7 +131,7 @@ function BranchMaster() {
         {
           const recentState = structuredClone(paginationModel);
           dispatch(setBranchPagination({page,pageSize}))
-          if(page!==paginationModel.page)
+          if(page!==recentState.page)
           {
               // change the page
                 const resData = await getBranchData(true,page,pageSize);

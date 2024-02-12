@@ -86,7 +86,8 @@ export const useRoleData = () => {
         addRole,
         Loading,
         ListLoading,
-        getRoleData
+        getRoleData,
+        setListLoading
     }
 }
 

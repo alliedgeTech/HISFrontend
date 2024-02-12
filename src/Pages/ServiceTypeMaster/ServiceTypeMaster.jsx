@@ -126,7 +126,7 @@ function ServiceTypeMaster() {
     ) {
       const recentState = structuredClone(paginationModel);
       dispatch(setServiceTypePagination({ page, pageSize }));
-      if (page !== paginationModel.page) {
+      if (page !== recentState.page) {
         // change the page
         const resData = await getServiceTypeData(true, page, pageSize);
         if (!resData) {

@@ -93,7 +93,7 @@ function UserMaster() {
 
 
 
-  const { updateUSer, addUser, Loading, assignRoleToUser, ListLoading,getUserData,userCount,paginationModel,getUserFindById } =
+  const { updateUSer, addUser, Loading, assignRoleToUser, ListLoading,getUserData,userCount,paginationModel,getUserFindById,setListLoading } =
   useUserData();
 const dispatch = useDispatch();
 const RoleHook = useRoleData(); //* this is for if data is not fetched for role master then call the api 
@@ -143,7 +143,6 @@ const handleCheck = (checked, roleInfo) => {
       setFileError(true);
       return;
     }
-    console.log("this is selected file:  ",selectedFile);
     setFile(selectedFile);
 
     const reader = new FileReader();
@@ -234,15 +233,16 @@ const handleCheck = (checked, roleInfo) => {
       };
       array.push(thisData);
     });
+    ListLoading && setListLoading(false);
     return array;
   };
 
   const rowData = useMemo(() => {
-    if(UserData && Array.isArray(UserData) && ListLoading === false)
+    if(UserData && Array.isArray(UserData))
     {
       return setRows(UserData);
     }
-  },[UserData,ListLoading])
+  },[UserData])
 
   const closeTheModal = () => {
     setModalOpen(false);
@@ -307,11 +307,14 @@ const handleCheck = (checked, roleInfo) => {
 
 
 const onPaginationChange = async({page,pageSize}) => {
+  console.log('called')
+  console.log("%% this is resData",pageSize);
     if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
     {
       const recentData = structuredClone(paginationModel);
       dispatch(setUserPagination({page,pageSize}));
-      if(page!==paginationModel.page)
+      console.log("%% this is resData 3",page!==recentData.page)
+      if(page!==recentData.page)
       {
           // change the page
             const resData = await getUserData(true,page,pageSize);
@@ -323,8 +326,8 @@ const onPaginationChange = async({page,pageSize}) => {
       } else {
           // change the pageSize
           const resData = await getUserData(true,0,pageSize);
-          
-          if(resData)
+          console.log('%% this is resData : ',resData);
+          if(!resData)
           {
             dispatch(setUserPagination(recentData))
           }

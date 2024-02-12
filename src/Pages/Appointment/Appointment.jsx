@@ -41,6 +41,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import { socket } from "../../socket";
 import { useDeferredValue } from "react";
 import CommonTable from "../../Components/CommonTable/CommonTable";
+import AddTaskOutlinedIcon from '@mui/icons-material/AddTaskOutlined';
 
 function Appointment() {
   const dispatch = useDispatch();
@@ -352,7 +353,7 @@ function Appointment() {
       const recentData = structuredClone(paginationModel);
       dispatch(setAppointmentpagination({ page, pageSize }));
 
-      if (page !== paginationModel.page) {
+      if (page !== recentData.page) {
         const resData = await getAppintmentData(true, page, pageSize);
         if (!resData) {
           dispatch(setAppointmentpagination(recentData));
@@ -502,7 +503,7 @@ function Appointment() {
       field:"jwt",
       headerName:"JWT",
       width:120,
-      renderCell:(params) => ( params.row.jwt ? params.row.jwt : <div onClick={()=>GenrateJwtToken({_id:params?.row?._id,userId:params?.row?.doctor?._id,checkDate:params?.row?.appointmentDate})}>genrate</div>
+      renderCell:(params) => ( params.row.jwt ? params.row.jwt : <div style={{cursor:"pointer"}} onClick={()=>GenrateJwtToken({_id:params?.row?._id,userId:params?.row?.doctor?._id,checkDate:params?.row?.appointmentDate})}><AddTaskOutlinedIcon/></div>
        ),
     },
     {

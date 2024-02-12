@@ -142,7 +142,7 @@ function StateMaster() {
           const recentData = structuredClone(statePagintion);
           dispatch(setStatePagination({page,pageSize}))
 
-          if(page!==statePagintion.page)
+          if(page!==recentData.page)
           {
                 const resData = await getAllState(true,page,pageSize);
                 if(!resData)

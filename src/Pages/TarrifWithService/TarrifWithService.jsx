@@ -105,7 +105,7 @@ function TarrifWithService() {
         {
           const recentState = structuredClone(paginationModel);
           dispatch(setTarrifWithServicePagination({page,pageSize}))
-          if(page!==paginationModel.page)
+          if(page!==recentState.page)
           {
               // change the page
                 const resData = await getTarrifWithServiceData(true,page,pageSize);

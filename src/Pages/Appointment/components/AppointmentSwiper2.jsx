@@ -9,6 +9,8 @@ import { LinearProgress } from '@mui/material';
 import TableClasses from '../../../Components/TableMainBox/TableMainBox.module.css'
 import TableMainBox from '../../../Components/TableMainBox/TableMainBox';
 import toast from 'react-hot-toast';
+import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
+import AlarmOnOutlinedIcon from '@mui/icons-material/AlarmOnOutlined';
 
 function AppointmentSwiper2() {
     const  { doctorAppointmentList,appointmentJwtData } = useSelector((state) => state.appointment);
@@ -178,20 +180,20 @@ function AppointmentSwiper2() {
       sortable: false,
       width: 150,
       renderCell: (params) => (
-        <>
+        <div style={{gap:20,display:"flex"}}>
           <div
           style={{cursor:"pointer"}}
           onClick={() => { emitInTimeEvent(params?.row?._id) }}>
-            In Time
+            <WatchLaterOutlinedIcon/>
           </div>
           <div 
               style={{cursor:"pointer"}}
             onClick={()=>{ if(params.row.inTime) {emitOutTimeEvent(params?.row?._id)} else toast.error("Please click on In Time first")}}
           >
-            Out Time
+            <AlarmOnOutlinedIcon />
           </div>
 
-        </>
+        </div>
       ),
     },
   ];

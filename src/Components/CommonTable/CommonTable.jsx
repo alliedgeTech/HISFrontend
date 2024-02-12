@@ -3,7 +3,7 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
 
 function CommonTable({ paginationModel, columns, rowData, count, activeInActiveNeeded=true,onPaginationChange=()=>null, customHeight="173px"}) {
-    console.log("this is time to render again inside")
+    console.log("this is time to render again inside &&",paginationModel?.pageSize);
   return (
     <DataGrid
             style={{maxHeight:`calc(100vh - ${customHeight})`}}

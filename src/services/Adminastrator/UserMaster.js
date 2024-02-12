@@ -23,7 +23,6 @@ export const useUserData = () => {
         {
             dispatch(setUserData(data.data.data));   
             dispatch(setUserCount(data.data.count));
-            withLoading && setListLoading(false);
             return true;
         }
         if(withLoading)
@@ -181,7 +180,8 @@ export const useUserData = () => {
         assignRoleToUser,
         ListLoading,
         userCount,
-        paginationModel
+        paginationModel,
+        setListLoading
     }
 }
 

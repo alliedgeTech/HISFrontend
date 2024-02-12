@@ -2,11 +2,10 @@ import React, { useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Box, LinearProgress, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
 import { useDispatch, useSelector } from "react-redux";
-import { useServiceData } from "../../services/Adminastrator/ServiceMaster";
+import { useServiceData } from "../../services/Billing/ServiceMaster";
 import {
   setEditServiceData,
   setServicePagination,
@@ -140,7 +139,7 @@ const { listLoading, createService, getServiceData, updateServiceData } =
     ) {
       const recentState = structuredClone(paginationModel);
       dispatch(setServicePagination({ page, pageSize }));
-      if (page !== paginationModel.page) {
+      if (page !== recentState.page) {
         // change the page
         const resData = await getServiceData(true, page, pageSize);
         if (!resData) {

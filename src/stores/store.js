@@ -16,6 +16,7 @@ import facilitySlice from "../slices/facility.slice";
 import tarrifSlice from "../slices/tarrif.slice";
 import bedtypeSlice from "../slices/bedtype.slice";
 import userTitleSlice from "../slices/userTitle.slice";
+import socSlice from "../slices/soc.slice";
 
 export const store = configureStore({
     reducer:{
@@ -36,5 +37,6 @@ export const store = configureStore({
         facility:facilitySlice,
         tarrif:tarrifSlice,
         bedType:bedtypeSlice,
+        soc: socSlice
     }
 });

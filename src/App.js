@@ -21,6 +21,7 @@ import BedTypeMaster from './Pages/BedTypeMaster/BedTypeMaster';
 import UserTitleMaster from './Pages/UserTitleMaster/UserTitleMaster';
 import TarrifWithService from './Pages/TarrifWithService/TarrifWithService';
 import MainTarrif from './Pages/MainTarrif/MainTarrifMaster';
+import SocMaster from './Pages/SocMaster/SocMaster';
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
           <Route path='/consultantdashboard/appointment' element={<MainAppointment/>} />
           <Route path='/calender/doctor' element={<DoctorCalender/>} />
           <Route path='/billing/servicemaster' element={<ServiceMaster/>} />
+          <Route path='/billing/socmaster' element={<SocMaster/>} />
           <Route path='*' element={<Home/>} />
         </Route>  
       </Routes>   

@@ -11,10 +11,9 @@ import { CustomTextInputField } from '../../Components/InputsFilelds/CustomTextI
 import CustomAutoCompelete from '../../Components/CustomAutoCompelete/CustomAutoCompelete';
 import TableMainBox from '../../Components/TableMainBox/TableMainBox';
 import Grid from '@mui/material/Unstable_Grid2';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import CommonTable from '../../Components/CommonTable/CommonTable';
 
-function CommonMaster({MainValue,Loading,ListLoading,add,update,get,tableData,paginationModel,setPaginationModal,editData,setEditData,FieldHeaderName,tableDataCount,customHeight="173px"}) {
+function CommonMaster({MainValue,Loading,ListLoading,add,update,get,tableData,paginationModel,setPaginationModal,editData,setEditData,FieldHeaderName,tableDataCount,customHeight="173px",setListLoading}) {
   var { handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
     defaultValues: {
       value: "",
@@ -107,7 +106,7 @@ const onPaginationChange = async({page,pageSize}) => {
   {
     const recentData = structuredClone(paginationModel);
     setPaginationModal({page,pageSize})
-    if(page!==paginationModel.page)
+    if(page!==recentData.page)
     {
         // change the page
         console.log("this is data i am getting pagination new i am sending page",page,pageSize);
@@ -150,16 +149,16 @@ const onPaginationChange = async({page,pageSize}) => {
             };
             array.push(thisData);
     });
+    ListLoading && setListLoading  && setListLoading(false);
     return array;
   }; 
 
 
   const rowData = useMemo(()=>{
-    console.log("this is table data",tableData,ListLoading);
-    if( tableData  && Array.isArray(tableData) && ListLoading === false){
+    if( tableData  && Array.isArray(tableData)){
        return setRows(tableData);                                 
     }
-  },[tableData,ListLoading]);
+  },[tableData]);
                                     
 
   const columns =[  

@@ -131,7 +131,7 @@ function RegistrationMaster() {
         {
           const recentData = structuredClone(paginationModel);
           dispatch(setRegistrationPagination({page,pageSize}));
-          if(page!==paginationModel.page)
+          if(page!==recentData.page)
           {
               // change the page
                 const resData = await getRegistrationData(true,page,pageSize);
