@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useLayoutEffect } from 'react'
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useForm,Controller } from 'react-hook-form';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
@@ -30,8 +30,9 @@ import toast from 'react-hot-toast';
 import CommonTable from '../../Components/CommonTable/CommonTable';
 
 function UserMaster() {
-    const UserData = useSelector((state) => state.user?.userData);
-
+    const { userListLoading,userData:UserData} = useSelector((state) => state.user);
+    const { updateUSer, addUser, Loading, assignRoleToUser,getUserData,userCount,paginationModel,getUserFindById } =
+  useUserData();
   var {
     handleSubmit,
     formState: { errors },
@@ -78,6 +79,10 @@ function UserMaster() {
 
   const watchCity = watch("city");
 
+  useLayoutEffect(() => {
+    console.time('end');
+  },[]);
+
   useEffect(() =>{ 
     if(watchCity)
     {
@@ -90,11 +95,6 @@ function UserMaster() {
     }
   },[watchCity])
 
-
-
-
-  const { updateUSer, addUser, Loading, assignRoleToUser, ListLoading,getUserData,userCount,paginationModel,getUserFindById,setListLoading } =
-  useUserData();
 const dispatch = useDispatch();
 const RoleHook = useRoleData(); //* this is for if data is not fetched for role master then call the api 
 const RoleData = useSelector((state) => state.role?.roleData);  
@@ -233,7 +233,6 @@ const handleCheck = (checked, roleInfo) => {
       };
       array.push(thisData);
     });
-    ListLoading && setListLoading(false);
     return array;
   };
 
@@ -1030,7 +1029,7 @@ const onPaginationChange = async({page,pageSize}) => {
         onClick={() => {setModalOpen(true);clearErrors();}}
         >
             {
-                ListLoading ? <><LinearProgress /><TableSkeleton /></> : Array.isArray(rowData) && rowData.length !== 0 ? ( <CommonTable  columns={columns} count={userCount} paginationModel={paginationModel} rowData={rowData}  onPaginationChange={onPaginationChange}/> ) : (<EmptyData />)
+                userListLoading ? <><LinearProgress /><TableSkeleton /></> : Array.isArray(rowData) && rowData.length !== 0 ? ( <CommonTable  columns={columns} count={userCount} paginationModel={paginationModel} rowData={rowData}  onPaginationChange={onPaginationChange}/> ) : (<EmptyData />)
             }
         </TableMainBox>
 

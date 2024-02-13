@@ -5,8 +5,8 @@ import { setRolePagination } from '../../slices/role.slice';
 import CommonMaster from '../CommonMaster/CommonMaster';
 
 const RoleMaster =() => {
-  const { Loading,addRole,updateRole,ListLoading,getRoleData,setListLoading } = useRoleData();
-  const { roleData:RoleData,roleCount,rolePagination:paginationModel } = useSelector(state => state.role);
+  const { Loading,addRole,updateRole,getRoleData } = useRoleData();
+  const { roleData:RoleData,roleCount,rolePagination:paginationModel,roleListLoading } = useSelector(state => state.role);
   const [editData, setEditData] = useState('');
   const dispatch = useDispatch();
   
@@ -15,7 +15,7 @@ const RoleMaster =() => {
         key={"role"}
         MainValue={"role"}
         Loading={Loading}
-        ListLoading={ListLoading}
+        ListLoading={roleListLoading}
         get={getRoleData}
         add={addRole}
         update={updateRole}
@@ -26,7 +26,6 @@ const RoleMaster =() => {
         setEditData={setEditData}
         FieldHeaderName={"Role"}
         tableDataCount={roleCount}
-        setListLoading={setListLoading}
         />
              
   )

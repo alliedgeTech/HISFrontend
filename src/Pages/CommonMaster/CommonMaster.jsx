@@ -13,7 +13,7 @@ import TableMainBox from '../../Components/TableMainBox/TableMainBox';
 import Grid from '@mui/material/Unstable_Grid2';
 import CommonTable from '../../Components/CommonTable/CommonTable';
 
-function CommonMaster({MainValue,Loading,ListLoading,add,update,get,tableData,paginationModel,setPaginationModal,editData,setEditData,FieldHeaderName,tableDataCount,customHeight="173px",setListLoading}) {
+function CommonMaster({MainValue,Loading,ListLoading,add,update,get,tableData,paginationModel,setPaginationModal,editData,setEditData,FieldHeaderName,tableDataCount,customHeight="173px"}) {
   var { handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
     defaultValues: {
       value: "",
@@ -149,7 +149,6 @@ const onPaginationChange = async({page,pageSize}) => {
             };
             array.push(thisData);
     });
-    ListLoading && setListLoading  && setListLoading(false);
     return array;
   }; 
 

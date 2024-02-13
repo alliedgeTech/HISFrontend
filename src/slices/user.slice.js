@@ -6,6 +6,7 @@ const initialState = {
     editUserData: null,
     userCount:null,
     userPaginaiton:{page:0,pageSize:10},
+    userListLoading:true,
 }
 
 const userSlice = createSlice({
@@ -30,11 +31,14 @@ const userSlice = createSlice({
         },
         setUserCountIncByOne: (state, action) => {
             state.userCount = state.userCount + 1;
+        },
+        setUserListLoading: (state, action) => {
+            state.userListLoading = action.payload
         }
     }
 
 })
 
-export const { setUserData,setUserLoading,setUserEditData,setUserCount,setUserPagination,setUserCountIncByOne } = userSlice.actions;
+export const { setUserData,setUserLoading,setUserEditData,setUserCount,setUserPagination,setUserCountIncByOne,setUserListLoading } = userSlice.actions;
 
 export default userSlice.reducer;

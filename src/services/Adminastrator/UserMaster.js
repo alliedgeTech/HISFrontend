@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import APIManager from "../../utils/ApiManager";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserCount, setUserCountIncByOne, setUserData, setUserLoading } from "../../slices/user.slice";
+import { setUserCount, setUserCountIncByOne, setUserData, setUserListLoading, setUserLoading } from "../../slices/user.slice";
 import { setRegistrationEmptyData } from "../../slices/registration.slice";
 
 const ApiManager = new APIManager();
@@ -11,23 +11,24 @@ const ApiManager = new APIManager();
 export const useUserData = () => {
     const dispatch = useDispatch();
     const { userLoading : Loading,userData:UserData,userCount,userPaginaiton:paginationModel } = useSelector(state => state.user);
-    const [ListLoading, setListLoading] = useState(false);
 
     const getUserData = async (withLoading=false,page=0,pageSize=10) => {
         if(withLoading)
         {
-            setListLoading(true);
+            dispatch(setUserListLoading(true));
+            console.timeEnd('end');
         }
         const data = await ApiManager.get(`admin/userMaster/getuser?page=${page}&pageSize=${pageSize}`);
         if(!data.error)
         {
             dispatch(setUserData(data.data.data));   
             dispatch(setUserCount(data.data.count));
+            withLoading && dispatch(setUserListLoading(false));
             return true;
         }
         if(withLoading)
         {
-            setListLoading(false);
+            dispatch(setUserListLoading(false));
         }
         return false;
     }
@@ -137,9 +138,6 @@ export const useUserData = () => {
                 dispatch(setUserLoading(false));
                 return false;
             }
-        
-      
-       
     }
 
     const assignRoleToUser = async (data) => {
@@ -162,7 +160,7 @@ export const useUserData = () => {
         toast.dismiss(toastId);
         return false;
     }
-    
+
     useEffect(()=>{
         if(!UserData)
         {
@@ -172,16 +170,13 @@ export const useUserData = () => {
 
     return {
         getUserData,
-        setListLoading,
         getUserFindById,
         updateUSer,
         addUser,
         Loading,
         assignRoleToUser,
-        ListLoading,
         userCount,
         paginationModel,
-        setListLoading
     }
 }
 

@@ -1,21 +1,25 @@
 import toast from "react-hot-toast";
 import APIManager from "../../utils/ApiManager";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setRoleCount, setRoleCountIncByOne, setRoleData, setRoleLoading } from "../../slices/role.slice";
+import { setRoleCount, setRoleCountIncByOne, setRoleData, setRoleListLoading, setRoleLoading } from "../../slices/role.slice";
 
 const ApiManager = new APIManager();
 
 
 export const useRoleData = () => {
-    const [ListLoading, setListLoading] = useState(false);
 
     const dispatch = useDispatch();
     const {roleLoading:Loading,roleData,rolePagination} = useSelector(state => state.role); 
 
+    function setListLoading(value) {
+        dispatch(setRoleListLoading(value));
+    }
+
     const getRoleData = async (withLoading=false,page=rolePagination.page,pageSize=rolePagination.pageSize) => {
     if(withLoading)
         {
+            
             setListLoading(true);
         }
         const data = await ApiManager.get(`admin/RoleMaster/getrole?page=${page}&pageSize=${pageSize}`);
@@ -85,9 +89,7 @@ export const useRoleData = () => {
         updateRole,
         addRole,
         Loading,
-        ListLoading,
         getRoleData,
-        setListLoading
     }
 }
 
