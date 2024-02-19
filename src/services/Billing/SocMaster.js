@@ -23,8 +23,6 @@ export const useSocMasterData = () => {
 
         const [ resData, bedTypeData ] = temp;  
 
-        console.log({temp})
-
         if(!bedTypeData.error){
             dispatch(setBedTypeData(bedTypeData.data.data));
         }
@@ -40,11 +38,24 @@ export const useSocMasterData = () => {
         return false;
     }
 
+
+    async function getSocMasterDataById(id) {
+        const toastId = toast.loading("Loading...")
+        const resData = await ApiManager.get(`admin/billing/soc/${id}`);
+
+        if(!resData.error){
+            toast.dismiss(toastId);
+            return resData.data.data;
+        }
+        toast.dismiss(toastId);
+        return null;
+    }
+
     async function createSocMaster(data)  {
         const toastId = toast.loading("Loading...");
         dispatch(setSocLoading(true));
 
-        const resData = await ApiManager.post("soc",data);
+        const resData = await ApiManager.post("admin/billing/soc",data);
 
         if(!resData.error){
             const { page,pageSize } = paginationModal;
@@ -70,7 +81,7 @@ export const useSocMasterData = () => {
         const toastId = toast.loading("Loading...");
         dispatch(setSocLoading(true));
 
-        const resData = await ApiManager.patch(`soc/${data._id}`,data);
+        const resData = await ApiManager.patch(`admin/billing/soc/${data._id}`,data);
 
         if(!resData.error){
             const tempData = structuredClone(socData);
@@ -96,7 +107,8 @@ export const useSocMasterData = () => {
         listLoading:loading,
         getSocMasterData,
         createSocMaster,
-        updateSocMaster
+        updateSocMaster,
+        getSocMasterDataById
     }
 }
 

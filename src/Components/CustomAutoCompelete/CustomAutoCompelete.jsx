@@ -4,7 +4,7 @@ import APIManager from '../../utils/ApiManager';
 
 const ApiManager = new APIManager();
 
-function CustomAutoCompelete({url,disable=false,onChange,lable,value,getOptionLabel,readOnly=false,filterOnActive,options,saveData,inputRef,onInputChange,onBlur,hasError,isOptionEqualToValue,fullWidth,disableClearable,clearOnEscape}) {
+function CustomAutoCompelete({url,disable=false,onChange,lable,value,getOptionLabel,readOnly=false,filterOnActive,options,saveData,inputRef,onInputChange,onBlur,hasError,isOptionEqualToValue,fullWidth,disableClearable,clearOnEscape,additionOptions=[]}) {
     const [Loading, setLoading] = useState(false);
     const [RealOptios, setRealOptios] = useState([]);
 
@@ -24,18 +24,18 @@ function CustomAutoCompelete({url,disable=false,onChange,lable,value,getOptionLa
                     saveData && saveData(data.data.data);
                     if(filterOnActive)
                     {
-                      console.log("data",data);
-                        setRealOptios(data.data.data.filter(item=>item?.isActive));
+                      // setRealOptios(...data.data.data.filter(item=>item?.isActive),...additionOptions);
+                      setRealOptios(data.data.data.filter(item=>item?.isActive));
                     } else {
-                        setRealOptios(data.data.data);
+                      // setRealOptios([...data.data.data,...additionOptions]);
+                      setRealOptios(data.data.data);
                     }
                 }
                 setLoading(false);
             }
             getOptions();
         }
-    },[disable,options,url]);
-
+    },[options,url,disable]); 
   return (
     <Autocomplete
     clearOnEscape={clearOnEscape}

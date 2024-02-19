@@ -10,8 +10,8 @@ function CommonTable({ paginationModel, columns, rowData, count, activeInActiveN
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: paginationModel.pageSize,
-                  page: paginationModel.page,
+                  pageSize: paginationModel?.pageSize,
+                  page: paginationModel?.page,
                 },
               },
               columns: {

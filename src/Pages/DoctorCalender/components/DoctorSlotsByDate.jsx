@@ -875,7 +875,7 @@ function DoctorSlotsByDate() {
               <span className={BoxCalsses.text_icon_align}>
                 {" "}
                 <CalendarMonthOutlinedIcon style={{ fontSize: "28px" }} />{" "}
-                {activeDaySlots?.slotsmasters?.date?.slice(0, 10)}
+                {new Date(activeDaySlots?.slotsmasters?.date).toLocaleDateString("en-CA").toString()}
               </span>
             )}
           </div>

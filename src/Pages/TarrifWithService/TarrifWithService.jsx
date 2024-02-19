@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useTarrifWithServiceData } from '../../services/Add Master/TarrifWithService'
 import { useDispatch, useSelector } from 'react-redux';
 import { setTarrifWithServiceEditData, setTarrifWithServicePagination } from '../../slices/tarrif.slice';
@@ -101,35 +101,33 @@ function TarrifWithService() {
 
       const onPaginationChange = async({page,pageSize}) => {
 
-        if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
-        {
-          const recentState = structuredClone(paginationModel);
-          dispatch(setTarrifWithServicePagination({page,pageSize}))
-          if(page!==recentState.page)
+          if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
           {
-              // change the page
-                const resData = await getTarrifWithServiceData(true,page,pageSize);
-
+            const recentState = structuredClone(paginationModel);
+            dispatch(setTarrifWithServicePagination({page,pageSize}))
+            if(page!==recentState.page)
+            {
+                // change the page
+                  const resData = await getTarrifWithServiceData(true,page,pageSize);
+  
+                  if(!resData)
+                  {
+                    dispatch(setTarrifWithServicePagination(recentState))
+                  }
+      
+            } else {
+                // change the pageSize
+                const resData = await getTarrifWithServiceData(true,0,pageSize);
+                
                 if(!resData)
                 {
                   dispatch(setTarrifWithServicePagination(recentState))
                 }
-    
-          } else {
-              // change the pageSize
-              const resData = await getTarrifWithServiceData(true,0,pageSize);
-              
-              if(!resData)
-              {
-                dispatch(setTarrifWithServicePagination(recentState))
-              }
+            }
           }
-        }
-    } 
+      }
 
     var submitData = async(data) => {
-
-        console.log(" form data", data);
 
         const tempData = { discount:data?.discount,tarrif:data?.tarrif?._id,bedType:data.bedType?._id,service:data?.service?._id,isActive:data?.isActive,id:data.id };
 
@@ -153,51 +151,50 @@ function TarrifWithService() {
         }
     }
 
-    const columns = [
-        {
-            field: "id",
-            headerName: "ID",
-            minWidth: 50,
-            headerAlign: "center",
-            align: "center",
-        },
-        { field: "_id", headerName: "", width: "0" },
-        { field: "tarrif", headerName: "Tarrif", flex: 1, headerAlign: "center", align: "center",minWidth:150,renderCell:(params) => (params.row.tarrif.tariffName)},
-        { field: "service", headerName: "Service", flex: 1, headerAlign: "center", align: "center",minWidth:180,renderCell : (paramas) => {
-            return <span>{paramas.row.service?.serviceName} {`(${paramas.row?.service?.serviceType?.serviceTypeName})`} </span>
-        } },
-        { field: "bedType", headerName: "Bed Type", flex: 1, headerAlign: "center", align: "center",minWidth:180,renderCell : (params) => {
-            return <span>{params.row.bedType?.bedName}</span>
-        } },
-        { field: "discount", headerName: "Discount", flex: 1, headerAlign: "center", align: "center",minWidth:100,renderCell : (paramas) => {
-            return <span>{paramas.row.discount}%</span>
-        }
-        },
-        { field: "isActive", headerName: "Is Active", flex: 1, headerAlign: "center", align: "center",minWidth:100,
-            renderCell: (params) => {
-                return <IOSSwitch checked={params.row.isActive} onChange={(e) =>  updateTarrifWithServiceData({ _id: tarrifWithServiceData[params.row.id - (paginationModel.page * paginationModel.pageSize) - 1]?._id, isActive: e.target.checked,id:params.row.id - (paginationModel.page * paginationModel.pageSize) -1})
-                }
-                  ></IOSSwitch>
-            }
-        },
-        {
-            field: "actions",
-            headerName: "Actions",
-            sortable: false,
-            headerAlign: "center", align: "center",
-            renderCell: (params) => (
-                <>
-                    <div
-                        className="btn btn-sm"
-                        onClick={() => { dispatch(setTarrifWithServiceEditData(true));setOpenModal(true);reset({...params.row,isActive:params.row.isActive.toString(),id:params.row.id - (paginationModel.page * paginationModel.pageSize) -1}) }}
-                    > 
-                      { console.log("i am setted this ",params.row.id - (paginationModel.page * paginationModel.pageSize) -1," for this : ",params.row.id) }
-                      <CustomIconButton />
-                    </div>
-                </>
-            ),
-        },
-    ];
+    const columns = useMemo(() => [
+      {
+          field: "id",
+          headerName: "ID",
+          minWidth: 50,
+          headerAlign: "center",
+          align: "center",
+      },
+      { field: "_id", headerName: "", width: "0" },
+      { field: "tarrif", headerName: "Tarrif", flex: 1, headerAlign: "center", align: "center",minWidth:150,renderCell:(params) => (params.row.tarrif.tariffName)},
+      { field: "service", headerName: "Service", flex: 1, headerAlign: "center", align: "center",minWidth:180,renderCell : (paramas) => {
+          return <span>{paramas.row.service?.serviceName} {`(${paramas.row?.service?.serviceType?.serviceTypeName})`} </span>
+      } },
+      { field: "bedType", headerName: "Bed Type", flex: 1, headerAlign: "center", align: "center",minWidth:180,renderCell : (params) => {
+          return <span>{params.row.bedType?.bedName}</span>
+      } },
+      { field: "discount", headerName: "Discount", flex: 1, headerAlign: "center", align: "center",minWidth:100,renderCell : (paramas) => {
+          return <span>{paramas.row.discount}%</span>
+      }
+      },
+      { field: "isActive", headerName: "Is Active", flex: 1, headerAlign: "center", align: "center",minWidth:100,
+          renderCell: (params) => {
+              return <IOSSwitch checked={params.row.isActive} onChange={(e) =>  updateTarrifWithServiceData({ _id: tarrifWithServiceData[params.row.id - (paginationModel.page * paginationModel.pageSize) - 1]?._id, isActive: e.target.checked,id:params.row.id - (paginationModel.page * paginationModel.pageSize) -1})
+              }
+                ></IOSSwitch>
+          }
+      },
+      {
+          field: "actions",
+          headerName: "Actions",
+          sortable: false,
+          headerAlign: "center", align: "center",
+          renderCell: (params) => (
+              <>
+                  <div
+                      className="btn btn-sm"
+                      onClick={() => { dispatch(setTarrifWithServiceEditData(true));setOpenModal(true);reset({...params.row,isActive:params.row.isActive.toString(),id:params.row.id - (paginationModel.page * paginationModel.pageSize) -1}) }}
+                  >   
+                    <CustomIconButton />
+                  </div>
+              </>
+          ),
+      },
+  ], [paginationModel,tarrifWithServiceData]);
 
     const setRows = (data) => {
         var id = paginationModel.page*paginationModel.pageSize;
