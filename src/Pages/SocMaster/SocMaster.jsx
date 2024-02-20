@@ -49,18 +49,17 @@ function SocMaster() {
     watch,
     getValues,
     setValue,
-    unregister,
-    register,
     clearErrors,
   } = useForm({
     defaultValues: {
-      tarrif: "",
-      price: "",
+      tarrif: null,
+      price: null,
       priceItem:[],
       effectiveFromDate: new Date(),
-      service: "",
-      emrPrice: "",
+      service: null,
+      emrPrice: null,
       emrPriceItem:[],
+      effectiveFromDateItem:[]
     },
     mode: "onTouched",
   });
@@ -86,7 +85,7 @@ function SocMaster() {
     }
   }, [bedTypeData]);
 
-    console.log("this is fields to unregister useEffect : ",getValues())
+  console.log("this is fields to unregister useEffect : ",getValues())
 
   function onChangeCommonCheckBoxValue(value) {
     startTransition(() => {
@@ -102,7 +101,7 @@ function SocMaster() {
       let temp = tempBedTypedata.length;
       for (let i = 0; i < temp; i++) {
         if (tempBedTypedata[i]["selected"]) {
-          setValue(`price-${i}`, value);
+          setValue(`priceItem.${i}`, value);
         }
       }
     });
@@ -113,7 +112,7 @@ function SocMaster() {
     let temp = tempBedTypedata.length;
     for (let i = 0; i < temp; i++) {
       if (tempBedTypedata[i]["selected"]) {
-        setValue(`emrPrice-${i}`, value);
+        setValue(`emrPriceItem.${i}`, value);
       }
     }
   }
@@ -122,11 +121,7 @@ function SocMaster() {
     setOpenModal(false);
     dispatch(setSocEditData(null));
     clearErrors();
-    let unreigsterFields = [];
-    let tempLength = tempBedTypedata.length;
-    console.log("this is fields to unregister : ",unreigsterFields,getValues());
-    unregister(unreigsterFields);
-    console.log("this is fields to unregistered after  : ",getValues());
+    let tempDatalength = tempBedTypedata.length;
     setTempBedTypedata(
       bedTypeData.map((item) => ({
         ...item,
@@ -138,25 +133,24 @@ function SocMaster() {
       reset({
         tarrif: null,
         commonCheckBox: true,
+        priceItem:[],
         price: null,
+        effectiveFromDateItem:[],
         effectiveFromDate: new Date(),
         service: null,
+        emrPriceItem:[],
         emrPrice: null,
         allDoctor: true,
         doctor: null,
       });
-
-
-      for (let i = 0; i < tempLength; i++) {
-        unregister(`price-${i}`);
-        unregister(`emrPrice-${i}`);
-        unregister(`effectiveFromDate-${i}`);
+      for(let i=0;i<tempDatalength;i++) {
+          setValue(`priceItem.${i}`,null);
+          setValue(`emrPriceItem.${i}`,null);
+          setValue(`effectiveFromDateItem.${i}`,undefined);
       }
 
-      setValue('price-1',90);
-
-      console.log("this is fields to unregistered after  : ",getValues());
-  };
+    };
+    console.log("this is fields to unregistered after  : ",getValues());
 
   const onCheckBoxValueChange = (index) => {
     let temp = JSON.parse(JSON.stringify(tempBedTypedata));
@@ -231,8 +225,8 @@ function SocMaster() {
         if (!tempBedTypedata[i].selected) continue;
         bedType.push({
           id: tempBedTypedata[i]._id,
-          price: data[`price-${i}`],
-          emrPrice: data[`emrPrice-${i}`],
+          price: data[`priceItem.${i}`],
+          emrPrice: data[`emrPriceItem.${i}`],
         });
       }
 
@@ -281,10 +275,10 @@ function SocMaster() {
 
     //* this is all selected bed type data
     tempResBedTypeData = tempResBedTypeData.map((item, index) => {
-      setValue(`price-${index}`, Number(item.prices.currentValue || 0));
-      setValue(`emrPrice-${index}`, Number(item.emrPrices.currentValue || 0));
+      setValue(`priceItem.${index}`, Number(item.prices.currentValue || 0));
+      setValue(`emrPriceItem.${index}`, Number(item.emrPrices.currentValue || 0));
       setValue(
-        `effectiveFromDate-${index}`,
+        `effectiveFromDateItem.${index}`,
         new Date(item.prices.effectiveFromDate)
       );
       return {
@@ -301,8 +295,8 @@ function SocMaster() {
     let unSelectedBedTypes = bedTypeData
       .filter((obj) => !tempResBedTypeData.some((item) => item.id === obj._id))
       .map((item, index) => {
-        setValue(`price-${tempResBedTypeData.length + index}`, 0);
-        setValue(`emrPrice-${tempResBedTypeData.length + index}`, 0);
+        setValue(`priceItem.${tempResBedTypeData.length + index}`, 0);
+        setValue(`emrPriceItem.${tempResBedTypeData.length + index}`, 0);
         return {
           ...item,
           selected: false,
@@ -642,7 +636,7 @@ function SocMaster() {
                 }}
                 label={"Price"}
                 rules={{
-                  // valueAsNumber: true,
+                  valueAsNumber: true,
                   min: { value: 0, message: "min value 0 is required" },
                 }}
               />
@@ -677,7 +671,7 @@ function SocMaster() {
                   ),
                 }}
                 rules={{
-                  // valueAsNumber: true,
+                  valueAsNumber: true,
                   min: { value: 0, message: "min value 0 is required" },
                 }}
               />
@@ -728,7 +722,7 @@ function SocMaster() {
                     <Grid xs={12} sm={gridWidth}>
                       <CustomTextInputField
                         type="number"
-                        name={`price-${index}`}   
+                        name={`priceItem.${index}`}   
                         disable={!item.selected || item.delete}
                         InputPropsText={{
                           startAdornment: (
@@ -754,7 +748,7 @@ function SocMaster() {
                         }}
                         label={`${item.bedName} Price`}
                         rules={{
-                          // valueAsNumber: true,
+                          valueAsNumber: true,
                           required: {
                             value: true,
                             message: `${item.bedName} price is required`,
@@ -767,7 +761,7 @@ function SocMaster() {
                     <Grid xs={12} sm={gridWidth}>
                       <CustomTextInputField
                         type="number"
-                        name={`emrPrice-${index}`}
+                        name={`emrPriceItem.${index}`}
                         disable={!item.selected || item.delete}
                         InputPropsText={{
                           startAdornment: (
@@ -793,7 +787,7 @@ function SocMaster() {
                         }}
                         label={`${item.bedName} Emr Price`}
                         rules={{
-                          // valueAsNumber: true,
+                          valueAsNumber: true,
                           required: {
                             value: true,
                             message: `${item.bedName} emr price is required`,
@@ -809,7 +803,7 @@ function SocMaster() {
                     {editSocData && (
                       <Grid xs={12} sm={gridWidth}>
                         <CustomDatePickerField
-                          name={`effectiveFromDate-${index}`}
+                          name={`effectiveFromDateItem.${index}`}
                           control={control}
                           format="DD/MM/YYYY"
                           label={`${item.bedName} Effective From Date`}
