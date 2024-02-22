@@ -24,6 +24,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import Chip from "@mui/material/Chip";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useTransition } from "react";
+import toast from 'react-hot-toast'
 
 function SocMaster() {
   const {
@@ -54,19 +55,20 @@ function SocMaster() {
     clearErrors,
   } = useForm({
     defaultValues: {
-      tarrif: "",
-      price: "",
-      priceItem:[],
+      tarrif: null,
+      price: null,
+      priceItem: [],
       effectiveFromDate: new Date(),
-      service: "",
-      emrPrice: "",
-      emrPriceItem:[],
+      service: null,
+      emrPrice: null,
+      emrPriceItem: [],
     },
     mode: "onTouched",
   });
 
   const [isPending, startTransition] = useTransition();
   const dispatch = useDispatch();
+  let effectiveFormDateCount = 0;
   const [OpenModal, setOpenModal] = useState(false);
   const watchAllDoctor = watch("allDoctor");
   const [tempBedTypedata, setTempBedTypedata] = useState([]);
@@ -86,7 +88,7 @@ function SocMaster() {
     }
   }, [bedTypeData]);
 
-    console.log("this is fields to unregister useEffect : ",getValues())
+  console.log("this is fields to unregister useEffect : ", getValues());
 
   function onChangeCommonCheckBoxValue(value) {
     startTransition(() => {
@@ -120,13 +122,18 @@ function SocMaster() {
 
   const CloseModal = () => {
     setOpenModal(false);
+    effectiveFormDateCount = 0;
     dispatch(setSocEditData(null));
     clearErrors();
     let unreigsterFields = [];
     let tempLength = tempBedTypedata.length;
-    console.log("this is fields to unregister : ",unreigsterFields,getValues());
+    console.log(
+      "this is fields to unregister : ",
+      unreigsterFields,
+      getValues()
+    );
     unregister(unreigsterFields);
-    console.log("this is fields to unregistered after  : ",getValues());
+    console.log("this is fields to unregistered after  : ", getValues());
     setTempBedTypedata(
       bedTypeData.map((item) => ({
         ...item,
@@ -134,28 +141,20 @@ function SocMaster() {
         price: 0,
         emrPrice: 0,
       }))
-      );
-      reset({
-        tarrif: null,
-        commonCheckBox: true,
-        price: null,
-        effectiveFromDate: new Date(),
-        service: null,
-        emrPrice: null,
-        allDoctor: true,
-        doctor: null,
-      });
+    );
+    // reset();
+    reset({
+      tarrif: null,
+      commonCheckBox: true,
+      price: null,
+      effectiveFromDate: new Date(),
+      service: null,
+      emrPrice: null,
+      allDoctor: true,
+      doctor: null,
+    });
 
-
-      for (let i = 0; i < tempLength; i++) {
-        unregister(`price-${i}`);
-        unregister(`emrPrice-${i}`);
-        unregister(`effectiveFromDate-${i}`);
-      }
-
-      setValue('price-1',90);
-
-      console.log("this is fields to unregistered after  : ",getValues());
+    console.log("this is fields to unregistered after  : ", getValues());
   };
 
   const onCheckBoxValueChange = (index) => {
@@ -205,22 +204,85 @@ function SocMaster() {
 
   var submitData = async (data) => {
     if (editSocData) {
+      console.log("this is form data : ", data, tempBedTypedata);
       let deletedBedType = [];
       let editedBedType = [];
       let addedBedType = [];
+      let finalData = {};
 
-      console.log("this is form data : ",data);
-
+      console.log("this is form data : ", data);
+      let editAndNewTotalLength = 0;
+      let deleteLength = 0;
       //* find the first index where to start new added bedTypes
       let firstIndexOfNewBedType = tempBedTypedata.findIndex((obj) => obj.new);
       if (firstIndexOfNewBedType !== -1) {
-        addedBedType = tempBedTypedata.slice(firstIndexOfNewBedType).filter((obj) => obj.selected);
-        console.log("added bed type : ", addedBedType);
+        addedBedType = tempBedTypedata.slice(firstIndexOfNewBedType);
+        let addedBedTypeLength = addedBedType.length;
+        let addedBed = [];
+        
+        for (let i = 0; i < addedBedTypeLength; i++) {
+          if (addedBedType[i].selected) {
+            addedBed.push({
+              id: addedBedType[i]._id, //* here is _id for new added bedType either we use id for old data
+              price: data[`price-${firstIndexOfNewBedType + i}`],
+              emrPrice: data[`emrPrice-${firstIndexOfNewBedType + i}`],
+              effectiveFromDate : data[`effectiveFromDate-${firstIndexOfNewBedType + i}`]
+            })
+          }
+        }
+        editAndNewTotalLength = addedBed.length;
+        finalData.addedBed = JSON.stringify(addedBed);
       }
-      return;
-      //*
 
-      let temp = await updateSocMaster(data);
+      //* now start finding the deleted bedTypes
+      let filterdTempBedTypeData = tempBedTypedata.filter((obj) => !obj.new);
+      let filterdTempBedTypeDataLength = filterdTempBedTypeData.length;
+      for(let i=0;i<filterdTempBedTypeDataLength;i++){
+        if(filterdTempBedTypeData[i].delete) {
+          deletedBedType.push({
+            priceId: filterdTempBedTypeData[i].priceId,
+            emrPriceId: filterdTempBedTypeData[i].emrPriceId,
+            priceMasterId: filterdTempBedTypeData[i].priceMasterId,
+          })
+        }
+      }
+      deleteLength = deletedBedType.length;
+      finalData.deletedBed = JSON.stringify(deletedBedType);
+
+
+      //* now we are start for edited data
+      for(let i=0;i<filterdTempBedTypeData.length;i++){
+        if(filterdTempBedTypeData[i].delete) continue;
+        let tempEffectiveFromDate = new Date(data[`effectiveFromDate-${i}`]);
+
+        editedBedType.push({
+          _id: filterdTempBedTypeData[i].priceId,
+          price: data[`price-${i}`],
+          effectiveFromDate : tempEffectiveFromDate,
+
+        });
+        editedBedType.push({
+          _id: filterdTempBedTypeData[i].emrPriceId,
+          price: data[`emrPrice-${i}`],
+          effectiveFromDate : tempEffectiveFromDate
+        });
+      }
+      editAndNewTotalLength += editedBedType.length; 
+      finalData.editedBed = JSON.stringify(editedBedType);
+
+      if(editAndNewTotalLength === 0 && deleteLength > 0) {
+        toast.error("Please select at least one bed type");
+        return;
+      }
+      finalData.tarrif = data.tarrif._id;
+      finalData.service = data.service._id;
+      finalData.doctor = data.allDoctor ? null : data?.doctor?._id;
+      finalData._id = data._id;
+      finalData.id = data.id;
+      
+      console.log("this is final data : ",finalData );
+      // return;
+      let temp = await updateSocMaster(finalData);
       if (temp) {
         CloseModal();
       }
@@ -243,6 +305,8 @@ function SocMaster() {
         delete data.allDoctor;
       }
 
+      console.log("effectFormDate :  ",data);
+
       let temp = await createSocMaster({
         tarrif: data.tarrif._id,
         service: data.service._id,
@@ -257,15 +321,15 @@ function SocMaster() {
   };
 
   async function setEditDateHandler(data) {
-    console.log("debugging@ : ",getValues());
+    console.log("debugging@ : ", getValues());
     clearErrors();
     dispatch(setSocEditData(true));
     //* get data
     const resData = await getSocMasterDataById(data._id);
     if (!resData) return;
-    console.log("this is params row : ",data);
+    console.log("this is params row : ", data);
     reset({
-      id: data.id,
+      id: data.id-(paginationModel.page*paginationModel.pageSize)-1,
       _id: data._id,
       commonCheckBox: true,
       tarrif: data.tarrif,
@@ -291,6 +355,7 @@ function SocMaster() {
         id: item.bedType._id,
         priceId: item.prices._id,
         emrPriceId: item.emrPrices._id,
+        priceMasterId: item._id,
         bedName: item.bedType.bedName,
         selected: true,
         delete: false,
@@ -303,6 +368,10 @@ function SocMaster() {
       .map((item, index) => {
         setValue(`price-${tempResBedTypeData.length + index}`, 0);
         setValue(`emrPrice-${tempResBedTypeData.length + index}`, 0);
+        setValue(
+          `effectiveFromDate-${tempResBedTypeData.length + index}`,
+          new Date()
+        );
         return {
           ...item,
           selected: false,
@@ -728,7 +797,7 @@ function SocMaster() {
                     <Grid xs={12} sm={gridWidth}>
                       <CustomTextInputField
                         type="number"
-                        name={`price-${index}`}   
+                        name={`price-${index}`}
                         disable={!item.selected || item.delete}
                         InputPropsText={{
                           startAdornment: (
@@ -806,19 +875,18 @@ function SocMaster() {
                       "price- ",
                       getValues()
                     )} */}
-                    {editSocData && (
-                      <Grid xs={12} sm={gridWidth}>
-                        <CustomDatePickerField
-                          name={`effectiveFromDate-${index}`}
-                          control={control}
-                          format="DD/MM/YYYY"
-                          label={`${item.bedName} Effective From Date`}
-                          disable={!item.selected || item.delete}
-                          minDate={editSocData ? undefined : new Date()}
-                        />
-                      </Grid>
-                    )}
-
+                    {editSocData &&
+                            <Grid xs={12} sm={gridWidth}>
+                              <CustomDatePickerField
+                                name={`effectiveFromDate-${index}`}
+                                control={control}
+                                format="DD/MM/YYYY"
+                                label={`${item.bedName} Effective From Date`}
+                                disable={!item.selected || item.delete}
+                                minDate={editSocData ? undefined : new Date()}
+                              />
+                            </Grid>
+                    }
                     {editSocData && (
                       <Grid
                         xs={12}
@@ -857,7 +925,7 @@ function SocMaster() {
         title={"Soc Master"}
         buttonText={"Add Soc"}
         onClick={() => {
-          console.log("debugging@ : ",getValues());
+          reset({ commonCheckBox:true,allDoctor:true,effectiveFromDate: new Date() });
           setOpenModal(true);
           clearErrors();
         }}>
