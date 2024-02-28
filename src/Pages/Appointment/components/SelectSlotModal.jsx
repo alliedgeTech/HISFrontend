@@ -187,6 +187,26 @@ function SelectSlotModal({open,setSelectSlotModal,doctor,setValueFormSelectSlot,
         }
     },[watchDate]);
 
+    useEffect(() => {
+      socket.on("responce_takeBreakIndivisual",(data) => {
+        console.log("let me  check step : 1",data)
+        let activeDaySlotsRef = slotsData?.slotsmasters?.slot;
+        console.log("let me  check step 1.1 ->",activeDaySlotsRef,slotsData)
+        if(!Array.isArray(activeDaySlotsRef)) return; 
+        console.log("let me  check step : 2")
+        console.log("bhai bhai check karo",slotsData)
+        const tempData = JSON.parse(JSON.stringify(slotsData));
+        console.log("let me  check step : 3")
+        tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
+          return obj._id===data._id ? {...obj,break:data.value} : obj ;
+        })
+        console.log("this is i mead a final obj : ",tempData);
+        setSlotsData(tempData);
+        console.log("let me  check step : 4")
+        console.log("this is responce_takeBreakIndivisual : ",slotsData,data);
+      })
+    },[slotsData])
+
   return (
         <AddEditModal
         maxWidth="lg"

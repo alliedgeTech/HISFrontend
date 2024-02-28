@@ -492,9 +492,7 @@ function DoctorSlotsByDate() {
       dispatch(setActiveDaySlots(data));
       console.log("slotData", data);
     });
-    socket.on("responce_takeBreakIndivisual",gotIndu);
     
-    socket.on("timepass" ,timepassHola)
     return () => {
       dispatch(setActiveDaySlotIndex(0));
       socket.off("connect", onConnect);
@@ -507,6 +505,9 @@ function DoctorSlotsByDate() {
     };
   }, []);
 
+  useEffect(() => {
+    socket.on("responce_takeBreakIndivisual" ,gotIndu);
+  },[activeDaySlots])
 
   useEffect(() => {
     console.log("let me  check step 1.2->",activeDaySlots);
