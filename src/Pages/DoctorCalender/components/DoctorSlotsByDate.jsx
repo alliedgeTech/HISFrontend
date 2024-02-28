@@ -74,9 +74,9 @@ function RenderBox({
     setMenuItemControl(null);
   };
   const { activeDaySlotIndex } = useSelector((state) => state.doctorCalender);
-
+  console.log("who is activeDaySlotIndex : ", activeDaySlotIndex, index);
   return (
-    <div className={BoxCalsses.RenderBox}>
+    <div className={BoxCalsses.RenderBox} style={{ background: activeDaySlotIndex === index ? "rgb(37, 57, 111)" : "white",color: activeDaySlotIndex === index ? 'white' : 'black' }}>
       <div className={BoxCalsses.BoxHeading}>
         <span>{day}</span>
         <span className={BoxCalsses.date}>
@@ -86,6 +86,7 @@ function RenderBox({
             onClick={(e) => setMenuItemControl(e.currentTarget)}
             aria-controls={MenuItemControl ? "basic-menu" : undefined}
             aria-haspopup="true"
+            style={{color: activeDaySlotIndex === index ? 'white' : 'black' }}
             aria-expanded={MenuItemControl ? "true" : undefined}>
             <MoreVertIcon />
           </IconButton>
@@ -130,7 +131,7 @@ function RenderBox({
           disabled={activeDaySlotIndex === index}
           onClick={() => HandleSlotDataIndex(index)}
           style={{
-            color: activeDaySlotIndex !== index ? "#25396f" : "",
+            color: activeDaySlotIndex !== index ? "#25396f" : "white",
             alignSelf: "end",
           }}
           size="small">
@@ -472,7 +473,7 @@ function DoctorSlotsByDate() {
     });
 
     return () => {
-      dispatch(setActiveDaySlotIndex(null));
+      dispatch(setActiveDaySlotIndex(0));
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("soltsData");
@@ -834,7 +835,6 @@ function DoctorSlotsByDate() {
         </AddEditModal>
       }
       <div>
-        {
           <div className={BoxCalsses.slotsContainer} onMouseDownCapture={startDragging} onMouseMove={move} onMouseDown={startDragging} onMouseUp={stopDragging} onMouseLeave={stopDragging} ref={parentRef}>
             {remainingDays?.length > 0 && (
               <div
@@ -866,8 +866,6 @@ function DoctorSlotsByDate() {
                 );
               })}
           </div>
-        }
-
         <div className={BoxCalsses.slotsContainerMini}>
           <div className={BoxCalsses.slotsHeading}>
             {doctor?.userName && <span>{doctor?.userName}'s Slots</span>}

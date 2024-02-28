@@ -65,7 +65,7 @@ function RegistrationMaster() {
         spouseName:"",
         dob:"",
         mobileNo:"",
-        panno:"",
+        panNo:"",
         city:null,
         bloodGroup:null,
         pationType:null,
@@ -175,7 +175,7 @@ function RegistrationMaster() {
         spouseName:"",
         dob:"",
         mobileNo:"",
-        panno:"",
+        panNo:"",
         city:null,
         bloodGroup:null,
         pationType:null,
@@ -754,7 +754,7 @@ function RegistrationMaster() {
 
                     <Grid xs={12} sm={3}>
                         <CustomTextInputField 
-                            name={"panno"}
+                            name={"panNo"}
                             control={control}
                             label={"Enter Pan No"}
                             rules={{minLength:{value:10 , message:"Please enter the valid pan no"},pattern:{

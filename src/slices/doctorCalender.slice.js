@@ -11,8 +11,8 @@ const initialState = {
     doctorCalenderEditData:null,
     doctorCalenderLoading:false,
     slotDeallocationLoading:false,
-    activeDaySlots:null,
-    activeDaySlotIndex:null,
+    activeDaySlots:null,    
+    activeDaySlotIndex:0,
     leaveRoomDate:null,
 };
 

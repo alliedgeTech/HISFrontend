@@ -47,7 +47,6 @@ export const  useFrontOfficeRegistration = () => {
     }
 
     const createRegistration = async (data) => {
-
         dispatch(setRegistrationLoading(true));
 
         // api calling
