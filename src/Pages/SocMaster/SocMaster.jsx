@@ -24,7 +24,12 @@ import UndoIcon from "@mui/icons-material/Undo";
 import Chip from "@mui/material/Chip";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useTransition } from "react";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
+import ArrowDropUpRoundedIcon from "@mui/icons-material/ArrowDropUpRounded";
+import { height } from "@mui/system";
+import { CustomTextInputFieldWithoutController } from "../../Components/InputsFilelds/CustomTextFieldsWithoutController";
+import CustomDatePickerFieldWithoutController from "../../Components/InputsFilelds/CustomDatePicketWithoutController";
 
 function SocMaster() {
   const {
@@ -72,6 +77,7 @@ function SocMaster() {
   const [OpenModal, setOpenModal] = useState(false);
   const watchAllDoctor = watch("allDoctor");
   const [tempBedTypedata, setTempBedTypedata] = useState([]);
+  const [openPriceMaster, setOpenPriceMaster] = useState([]);
   const defferedAllDoctorValue = useDeferredValue(watchAllDoctor);
 
   useEffect(() => {
@@ -120,6 +126,27 @@ function SocMaster() {
     }
   }
 
+  function handleOpenNewPrices(bedTypeId,addOrRemove,index){
+    console.log("this is open price master : started")
+      if(tempBedTypedata[index].delete) return;
+      if(addOrRemove) {
+        setOpenPriceMaster([...openPriceMaster, bedTypeId])
+      } else {
+        setOpenPriceMaster(openPriceMaster.filter(item=>item!==bedTypeId))
+      }
+  }
+
+  function deleteNewValuesOfBedType(socIndex,newPriceIndex,value){
+    let temp = JSON.parse(JSON.stringify(tempBedTypedata));
+    temp[socIndex].newPrice[newPriceIndex].deleted = value;
+    temp[socIndex].newEmrPrice[newPriceIndex].deleted = value;
+    setTempBedTypedata(temp);
+  }
+
+  useEffect(() => {
+    console.log("this is open price master : ", openPriceMaster);
+  },[openPriceMaster])
+
   const CloseModal = () => {
     setOpenModal(false);
     effectiveFormDateCount = 0;
@@ -142,6 +169,7 @@ function SocMaster() {
         emrPrice: 0,
       }))
     );
+    setOpenPriceMaster([]);
     // reset();
     reset({
       tarrif: null,
@@ -219,15 +247,17 @@ function SocMaster() {
         addedBedType = tempBedTypedata.slice(firstIndexOfNewBedType);
         let addedBedTypeLength = addedBedType.length;
         let addedBed = [];
-        
+
         for (let i = 0; i < addedBedTypeLength; i++) {
           if (addedBedType[i].selected) {
+            let tempDate = new Date(data[`effectiveFromDate-${firstIndexOfNewBedType + i}`]);
+            tempDate.setHours(0, 0, 0, 0);
             addedBed.push({
               id: addedBedType[i]._id, //* here is _id for new added bedType either we use id for old data
               price: data[`price-${firstIndexOfNewBedType + i}`],
               emrPrice: data[`emrPrice-${firstIndexOfNewBedType + i}`],
-              effectiveFromDate : data[`effectiveFromDate-${firstIndexOfNewBedType + i}`]
-            })
+              effectiveFromDate: tempDate,
+            });
           }
         }
         editAndNewTotalLength = addedBed.length;
@@ -237,40 +267,44 @@ function SocMaster() {
       //* now start finding the deleted bedTypes
       let filterdTempBedTypeData = tempBedTypedata.filter((obj) => !obj.new);
       let filterdTempBedTypeDataLength = filterdTempBedTypeData.length;
-      for(let i=0;i<filterdTempBedTypeDataLength;i++){
-        if(filterdTempBedTypeData[i].delete) {
+      for (let i = 0; i < filterdTempBedTypeDataLength; i++) {
+        if (filterdTempBedTypeData[i].delete) {
           deletedBedType.push({
             priceId: filterdTempBedTypeData[i].priceId,
             emrPriceId: filterdTempBedTypeData[i].emrPriceId,
             priceMasterId: filterdTempBedTypeData[i].priceMasterId,
-          })
+          });
         }
       }
       deleteLength = deletedBedType.length;
       finalData.deletedBed = JSON.stringify(deletedBedType);
-
-
+      console.log("this is final data of filterdTempBedTypeData ", filterdTempBedTypeData);
       //* now we are start for edited data
-      for(let i=0;i<filterdTempBedTypeData.length;i++){
-        if(filterdTempBedTypeData[i].delete) continue;
-        let tempEffectiveFromDate = new Date(data[`effectiveFromDate-${i}`]);
+      for (let i = 0; i < filterdTempBedTypeData.length; i++) {
+        if (filterdTempBedTypeData[i].delete) continue;
 
+        let tempEffectiveFromDate = new Date(data[`effectiveFromDate-${i}`]);
+        tempEffectiveFromDate.setHours(0, 0, 0, 0);
+        const deletedNewPrice = filterdTempBedTypeData[i].newPrice.filter((obj)=>obj.deleted);
+        const deletedNewEmrPrice = filterdTempBedTypeData[i].newEmrPrice.filter((obj)=>obj.deleted);
         editedBedType.push({
           _id: filterdTempBedTypeData[i].priceId,
           price: data[`price-${i}`],
-          effectiveFromDate : tempEffectiveFromDate,
-
+          effectiveFromDate: tempEffectiveFromDate,
+          deletedNewValues: deletedNewPrice,
         });
         editedBedType.push({
           _id: filterdTempBedTypeData[i].emrPriceId,
           price: data[`emrPrice-${i}`],
-          effectiveFromDate : tempEffectiveFromDate
+          effectiveFromDate: tempEffectiveFromDate,
+          deletedNewValues: deletedNewEmrPrice,
         });
       }
-      editAndNewTotalLength += editedBedType.length; 
+      editAndNewTotalLength += editedBedType.length;
+      console.log("this is final data :  ", JSON.parse(JSON.stringify(editedBedType)));
       finalData.editedBed = JSON.stringify(editedBedType);
 
-      if(editAndNewTotalLength === 0 && deleteLength > 0) {
+      if (editAndNewTotalLength === 0 && deleteLength > 0) {
         toast.error("Please select at least one bed type");
         return;
       }
@@ -279,8 +313,8 @@ function SocMaster() {
       finalData.doctor = data.allDoctor ? null : data?.doctor?._id;
       finalData._id = data._id;
       finalData.id = data.id;
-      
-      console.log("this is final data : ",finalData );
+
+      console.log("this is final data : ", finalData);
       // return;
       let temp = await updateSocMaster(finalData);
       if (temp) {
@@ -305,13 +339,14 @@ function SocMaster() {
         delete data.allDoctor;
       }
 
-      console.log("effectFormDate :  ",data);
-
+      console.log("effectFormDate :  ", data);
+      let tempDate = data?.effectiveFromDate ? new Date(data.effectiveFromDate) : new Date();
+      tempDate.setHours(0, 0, 0, 0);
       let temp = await createSocMaster({
         tarrif: data.tarrif._id,
         service: data.service._id,
         doctor: data?.doctor?._id,
-        effectiveFromDate: data?.effectiveFromDate,
+        effectiveFromDate: tempDate,
         bedType: JSON.stringify(bedType),
       });
       if (temp) {
@@ -321,7 +356,6 @@ function SocMaster() {
   };
 
   async function setEditDateHandler(data) {
-    console.log("debugging@ : ", getValues());
     clearErrors();
     dispatch(setSocEditData(true));
     //* get data
@@ -329,7 +363,7 @@ function SocMaster() {
     if (!resData) return;
     console.log("this is params row : ", data);
     reset({
-      id: data.id-(paginationModel.page*paginationModel.pageSize)-1,
+      id: data.id - paginationModel.page * paginationModel.pageSize - 1,
       _id: data._id,
       commonCheckBox: true,
       tarrif: data.tarrif,
@@ -344,6 +378,7 @@ function SocMaster() {
       return;
 
     //* this is all selected bed type data
+    console.log("@this is i want to find  : ", tempResBedTypeData);
     tempResBedTypeData = tempResBedTypeData.map((item, index) => {
       setValue(`price-${index}`, Number(item.prices.currentValue || 0));
       setValue(`emrPrice-${index}`, Number(item.emrPrices.currentValue || 0));
@@ -359,6 +394,14 @@ function SocMaster() {
         bedName: item.bedType.bedName,
         selected: true,
         delete: false,
+        newPrice: item.prices.newValues?.map((obj) => ({
+          ...obj,
+          deleted: false,
+        })),
+        newEmrPrice: item.emrPrices.newValues?.map((obj) => ({
+          ...obj,
+          deleted: false,
+        })),
       };
     });
 
@@ -382,6 +425,7 @@ function SocMaster() {
       });
 
     tempResBedTypeData = tempResBedTypeData.concat(unSelectedBedTypes);
+    console.log("#this is i want to find : ", tempResBedTypeData);
     setTempBedTypedata(tempResBedTypeData);
     setOpenModal(true);
   }
@@ -389,6 +433,7 @@ function SocMaster() {
   function deleteBedType(index, value) {
     let temp = JSON.parse(JSON.stringify(tempBedTypedata));
     temp[index].delete = value;
+    setOpenPriceMaster(openPriceMaster.filter(item=>item!==temp[index].id))
     setTempBedTypedata(temp);
   }
 
@@ -632,7 +677,7 @@ function SocMaster() {
                   control={control}
                   format="DD/MM/YYYY"
                   label={"Effective From Date"}
-                  minDate={!editSocData && new Date()}
+                  minDate={new Date()}
                 />
               </Grid>
             )}
@@ -759,6 +804,7 @@ function SocMaster() {
                   control={control}
                   format="DD/MM/YYYY"
                   label={"Effective From Date"}
+                  minDate={new Date()}
                 />
               </Grid>
             )}
@@ -769,6 +815,11 @@ function SocMaster() {
 
             {tempBedTypedata.length > 0 ? (
               tempBedTypedata.map((item, index) => {
+                let newPriceVar =
+                  editSocData &&
+                  Array.isArray(item.newPrice) &&
+                  item.newPrice.length > 0 &&
+                  openPriceMaster.includes(item.id);
                 return (
                   <Grid container xs={12} key={index}>
                     <Grid
@@ -786,7 +837,10 @@ function SocMaster() {
                         control={
                           <Checkbox
                             checked={item.selected}
-                            disabled={item.delete}
+                            disabled={
+                              item.delete ||
+                              (editSocData && !item.hasOwnProperty("new"))
+                            }
                             size="medium"
                             onChange={() => onCheckBoxValueChange(index)}
                           />
@@ -875,18 +929,18 @@ function SocMaster() {
                       "price- ",
                       getValues()
                     )} */}
-                    {editSocData &&
-                            <Grid xs={12} sm={gridWidth}>
-                              <CustomDatePickerField
-                                name={`effectiveFromDate-${index}`}
-                                control={control}
-                                format="DD/MM/YYYY"
-                                label={`${item.bedName} Effective From Date`}
-                                disable={!item.selected || item.delete}
-                                minDate={editSocData ? undefined : new Date()}
-                              />
-                            </Grid>
-                    }
+                    {editSocData && (
+                      <Grid xs={12} sm={gridWidth}>
+                        <CustomDatePickerField
+                          name={`effectiveFromDate-${index}`}
+                          control={control}
+                          format="DD/MM/YYYY"
+                          label={`${item.bedName} Effective From Date`}
+                          disable={!item.selected || item.delete}
+                          minDate={new Date()}
+                        />
+                      </Grid>
+                    )}
                     {editSocData && (
                       <Grid
                         xs={12}
@@ -909,8 +963,119 @@ function SocMaster() {
                               style={{ color: "#e91e63" }}
                             />
                           ))}
+                        {Array.isArray(item.newPrice) &&
+                        item.newPrice.length > 0 ? (
+                          openPriceMaster.includes(item.id) ? (
+                            // handleOpenNewPrices(item.id,true)
+                              <ArrowDropUpRoundedIcon
+                              onClick={()=>handleOpenNewPrices(item.id,false,index)}
+                              style={{ fontSize: "40px",color: item.delete ? '#888888' : 'black' }}
+                              />
+                              ) : (
+                                <ArrowDropDownRoundedIcon
+                                onClick={()=>handleOpenNewPrices(item.id,true,index)}
+                                style={{ fontSize: "40px",color: item.delete ? '#888888' : 'black' }}
+                              />
+                          )
+                        ) : (
+                          <ArrowDropUpRoundedIcon
+                            style={{ fontSize: "40px", opacity: 0 }}
+                          />
+                        )}
                       </Grid>
                     )}
+                    <Grid
+                     container
+                     justifyContent="center"
+                     alignItems={"center"}
+                     xs={12}
+                      style={{
+                        height: newPriceVar ? `${84*item.newPrice.length+30}px` : 0,
+                        overflow: newPriceVar ? "auto" : "hidden",
+                        transition: "height opacity",
+                        transitionDuration: "0.5s",
+                        opacity : newPriceVar ? 1 : 0,
+                      }}>
+                      {Array.isArray(item.newPrice) &&
+                        item.newPrice.map((newPriceObj, index_newPrice) => {
+                          console.log("this is new price obj ; ", newPriceObj);
+                          return (
+                            <Grid
+                              xs={12}
+                              container
+                              key={newPriceObj.price + index_newPrice}>
+                              <Grid xs={0} sm={2}></Grid>
+                              <Grid xs={12} sm={gridWidth}>
+                                <CustomTextInputFieldWithoutController
+                                  type="number"
+                                  disable={true}
+                                  value={item.newPrice[index_newPrice].price}
+                                  InputPropsText={{
+                                    startAdornment: (
+                                      <InputAdornment position="start">
+                                        <CurrencyRupeeIcon fontSize="small" />
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                  label={`${item.bedName} Price`}
+                                />
+                              </Grid>
+                              <Grid xs={12} sm={gridWidth}>
+                                <CustomTextInputFieldWithoutController
+                                  type="number"
+                                  value={item.newEmrPrice[index_newPrice].price}
+                                  disable={true}
+                                  InputPropsText={{
+                                    startAdornment: (
+                                      <InputAdornment position="start">
+                                        <CurrencyRupeeIcon fontSize="small" />
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                  label={`${item.bedName} Emr Price`}
+                                />
+                              </Grid>
+                              <Grid xs={12} sm={gridWidth}>
+                                <CustomDatePickerFieldWithoutController
+                                  value={new Date(newPriceObj.date)}
+                                  format="DD/MM/YYYY"
+                                  label={`${item.bedName} Effective From Date`}
+                                  disable={true}
+                                />
+                              </Grid>
+                              <Grid
+                                xs={12}
+                                sm={1}
+                                container
+                                justifyContent={"center"}
+                                alignItems={"center"}
+                                style={{ cursor: "pointer" }}>
+                                {newPriceObj.deleted ? (
+                                    <UndoIcon
+                                      fontSize="medium"
+                                      style={{ color: "#2e7d32" }}
+                                      onClick={() =>
+                                        deleteNewValuesOfBedType(index,index_newPrice,false)
+                                      }
+                                    />
+                                  ) : (
+                                    <>
+                                      <DeleteForeverIcon
+                                      onClick={() => deleteNewValuesOfBedType(index,index_newPrice,true)}
+                                      fontSize="medium"
+                                      style={{ color: "#e91e63" }}
+                                    />
+                                    </>
+                                  )}
+                                  <ArrowDropUpRoundedIcon
+                                    style={{ fontSize: "40px", opacity: 0 }}
+                                  />
+                              </Grid>
+                            </Grid>
+                          );
+                        })}
+                    </Grid>
+                    {console.log("this is items : ", item)}
                   </Grid>
                 );
               })
@@ -925,7 +1090,11 @@ function SocMaster() {
         title={"Soc Master"}
         buttonText={"Add Soc"}
         onClick={() => {
-          reset({ commonCheckBox:true,allDoctor:true,effectiveFromDate: new Date() });
+          reset({
+            commonCheckBox: true,
+            allDoctor: true,
+            effectiveFromDate: new Date(),
+          });
           setOpenModal(true);
           clearErrors();
         }}>

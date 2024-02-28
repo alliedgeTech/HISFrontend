@@ -24,7 +24,7 @@ import CustomButton from '../Button/Button';
   }) {
     return (
       <>
-        <Dialog maxWidth={maxWidth} fullWidth open={open} onClose={handleClose}   >
+        <Dialog  maxWidth={maxWidth} fullWidth open={open} onClose={(event,reason)=> { if(reason === 'backdropClick') return; handleClose(event,reason)}}   >
           <DialogTitle style={{fontWeight:550}}>{modalTitle} 
             <IconButton
             aria-label="close"
