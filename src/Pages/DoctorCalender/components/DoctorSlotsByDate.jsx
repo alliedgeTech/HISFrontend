@@ -418,10 +418,6 @@ function DoctorSlotsByDate() {
       console.log("let me  check step : 4")
   },[activeDaySlots]);
 
-  const timepassHola = useCallback(() => {
-    console.log("let me  check step 2.1 -> ",activeDaySlots);
-  },[activeDaySlots]);
-
   useEffect(() => {
     function onConnect() {
       console.log("socket is connected");
