@@ -1,6 +1,7 @@
 import React from 'react';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { styled } from '@mui/system';
+import Icon from "@mui/material/Icon";
 
 const CustomEditIcon = styled(EditOutlinedIcon)({
   // Add your custom styles here
@@ -11,9 +12,19 @@ const CustomEditIcon = styled(EditOutlinedIcon)({
   },
 });
 
-function CustomIconButton() {
+// Define custom styles for the icon
+const CustomIconWrapper = styled(Icon)(({ theme }) => ({
+  color: '#25396f',
+  cursor: 'pointer',
+  '&:hover': {
+    color: 'rgba(37, 57, 111, 0.8)', // Utilize theme palette for consistent styling
+  },
+}));
+
+
+function CustomIconButton({iconName='editOutlined',...rest}) {
   return (
-    <CustomEditIcon />
+      <Icon className="material-icons-outlined" {...rest}>{iconName}</Icon>
   );
 }
 

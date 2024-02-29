@@ -32,6 +32,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 import dayjs from 'dayjs';
 import CommonTable from '../../Components/CommonTable/CommonTable';
+import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
 
 
 function RegistrationMaster() {
@@ -85,6 +86,7 @@ function RegistrationMaster() {
           let thisData = {
             id: ++id,
             _id: element?._id,
+            image:element?.image || `https://api.dicebear.com/5.x/initials/svg?seed=${element?.pationName || 'Guest'}`,
             title:element?.title?.userTitle,
             pationName:element?.pationName,
             doctor:element?.doctor?.userName,
@@ -316,6 +318,9 @@ function RegistrationMaster() {
           headerName: "ID",
           width:"20"
         },
+        {field: "image",headerName: "Profile",rowHeight: 200, renderCell: (params) => (
+          <img src={params.row.image} style={{width:"50px",borderRadius:999999999999999999999,height:"50px" }} alt='' />
+        ), sortable: false, maxWidth:120,},
         { field: "_id", headerName: "", width: "0" },
         { field: "title", headerName: "userName",width:"130",renderCell:(params)=>`${params?.row?.title} ${params?.row?.pationName}` ,headerAlign: 'center'},
         {field:"doctor",headerName:"Doctor",width:"130",headerAlign: 'center',align: 'center'},
@@ -342,7 +347,7 @@ function RegistrationMaster() {
           align:'center',
           width: 100,
           renderCell: (params) => (
-            <>
+            <div style={{cursor:"pointer",display:"flex",gap:14,marginRight:10}}>
               <div
                 onClick={() => {
                   dispatch(setRegistrationEditData(params.row._id));
@@ -357,9 +362,9 @@ function RegistrationMaster() {
                   setAddAmountModal(true);
                 }}
               >
-               <CustomIconButton/>
+               <CustomIconButton iconName='currency_rupee_outlined'/>
               </div>
-            </>
+            </div>
           ),
         },
       ];
@@ -390,7 +395,7 @@ function RegistrationMaster() {
         setWebCamOpen(false);
       }
 
-      const watchDate = watch("dob");
+     const watchDate = watch("dob");
 
      async function submitAvailableAmount(data)
      {
