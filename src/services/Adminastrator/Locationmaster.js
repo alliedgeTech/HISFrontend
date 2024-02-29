@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import APIManager from "../../utils/ApiManager"
-import { setBranchCount, setBranchCountIncByOne, setBranchData, setBranchLoading } from "../../slices/branch.slice";
+import { setBranchCount, setBranchCountIncByOne, setBranchData, setBranchListLoading, setBranchLoading } from "../../slices/branch.slice";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useState } from "react";
@@ -9,24 +9,23 @@ const ApiManager = new APIManager();
 
 export const useBranchData = () => {
     const dispatch = useDispatch();
-    const {branchLoading:Loading,branchData,branchCount,branchPagination:paginationModel} = useSelector(state => state.branch);
-    const [ListLoading, setListLoading] = useState(false);
+    const {branchLoading:Loading,branchData,branchCount,branchPagination:paginationModel,branchListLoading:ListLoading} = useSelector(state => state.branch);
     const getBranchData = async (withLoading=false,page=paginationModel.page,pageSize=paginationModel.pagesize) => {
         if(withLoading)
         {
-            setListLoading(true);
+            dispatch(setBranchListLoading(true));
         }
         const resData = await ApiManager.get(`admin/locationMaster/getlocation?page=${page}&pageSize=${pageSize}`);
 
         if(!resData.error){
             dispatch(setBranchData(resData.data.data)); 
             dispatch(setBranchCount(resData.data.count));
-            withLoading && setListLoading(false);
+            withLoading && dispatch(setBranchListLoading(false));
             return true; 
         }
         if(withLoading)
         {
-            setListLoading(false);
+            dispatch(setBranchListLoading(false));
         }
         return false;
     }
