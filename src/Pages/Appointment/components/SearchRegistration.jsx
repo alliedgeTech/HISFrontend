@@ -8,6 +8,7 @@ import CustomAutoCompelete from '../../../Components/CustomAutoCompelete/CustomA
 import { Autocomplete, TextField } from '@mui/material'
 import CustomDatePickerField from '../../../Components/InputsFilelds/CustomDatePickerField';
 import dayjs from 'dayjs';
+import Typography from '@mui/material/Typography';
 
 function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,setFormDataBySearch,setSomeSearchDataInForm}) {
 
@@ -15,7 +16,8 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
         defaultValues: {
             searchBy:'doctor',
             searchValue:null,
-            date:''
+            date:'',
+            mobileNo:''
         },
         mode:'onTouched'
       });
@@ -87,7 +89,7 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
           date:''
         })
         setRegistrationOptions([]);
-      }
+    }
 
       const submitSearchData = async(data) => {
         setFormDataBySearch(data?.searchValue?._id);
@@ -170,6 +172,7 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
                         return  <Autocomplete
                         clearOnEscape
                         autoComplete
+                        loading={Loading}
                         // autoHighlight
                         blurOnSelect
                         clearOnBlur
@@ -208,8 +211,7 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
                       }}
                     > 
                     </Controller>
-
-                   
+                    <Typography mt={1} ml={1} variant="caption" display="block" gutterBottom>Please enter min 3 char</Typography>
                 </Grid>
 
                 

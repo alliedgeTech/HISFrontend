@@ -401,21 +401,14 @@ function DoctorSlotsByDate() {
     return nextDate;
   }
 
-  const gotIndu = useCallback((data) => {
-      console.log("let me  check step : 1",data)
+  const responceIndivisualBreakHandler = useCallback((data) => {
       let activeDaySlotsRef = activeDaySlots?.slotsmasters?.slot;
-      console.log("let me  check step 1.1 ->",activeDaySlotsRef,activeDaySlots)
       if(!Array.isArray(activeDaySlotsRef)) return; 
-      console.log("let me  check step : 2")
-      console.log("bhai bhai check karo",activeDaySlots)
-      const tempData = JSON.parse(JSON.stringify(activeDaySlots));
-      console.log("let me  check step : 3")
+      const tempData = {...activeDaySlots};
       tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
         return obj._id===data._id ? {...obj,break:data.value} : obj ;
       })
-      console.log("this is i mead a final obj : ",tempData);
       dispatch(setActiveDaySlots(tempData));
-      console.log("let me  check step : 4")
   },[activeDaySlots]);
 
   useEffect(() => {
@@ -502,12 +495,9 @@ function DoctorSlotsByDate() {
   }, []);
 
   useEffect(() => {
-    socket.on("responce_takeBreakIndivisual" ,gotIndu);
+    socket.on("responce_takeBreakIndivisual" ,responceIndivisualBreakHandler);
   },[activeDaySlots])
 
-  useEffect(() => {
-    console.log("let me  check step 1.2->",activeDaySlots);
-  },[activeDaySlots])
 
   function HandleSlotDataIndex(index) {
     console.log("this is index @: ", index);

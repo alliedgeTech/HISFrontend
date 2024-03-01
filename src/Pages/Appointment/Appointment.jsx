@@ -116,10 +116,6 @@ function Appointment() {
     return false;
   };
 
-  useEffect(() => {
-    console.log("@@@@@this is updated data : ",appointmentListLoading)
-  },[appointmentListLoading])
-
   const VisitTypeData = [
     { value: "firstVisit", shaw: "First Visit" },
     { value: "followUp", shaw: "Follow Up" },
