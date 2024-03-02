@@ -22,6 +22,7 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
         mode:'onTouched'
       });
     const watchSearchBy = watch('searchBy');
+    const watchSearchMobileNo = watch('mobileNo');
     const [RegistrationOptions, setRegistrationOptions] = useState([]);
     const [SearchRegistrationTempValue, setSearchRegistrationTempValue] = useState(false);
     const [Loading, setLoading] = useState(false)
@@ -56,6 +57,21 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
         setLoading(false);
       } 
 
+    const searchRegistrationByMobileNo = async() => {
+      setLoading(true);
+      const data = await ApiManager.get(`admin/frontOffice/registration/m/${watchSearchMobileNo}`);
+
+        if(!data.error)
+        {
+          console.log('this is data of search registration ',data?.data?.data);
+          setRegistrationOptions(data?.data?.data);
+
+        } 
+        setLoading(false);
+      } 
+
+
+
       useEffect(() => {
         let timeoutId;
         if(watchSearchBy === 'doctor')
@@ -79,6 +95,15 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
         }
       },[DateTempValue])
 
+      useEffect(()=> {
+        if (watchSearchMobileNo?.length > 2) {
+          const timeoutId = setTimeout(() => {
+            searchRegistrationByMobileNo();
+          }, 800);
+
+          return () => clearTimeout(timeoutId);
+        }
+      },[watchSearchMobileNo])
   
 
     const closeTheSearchModal = () => {
@@ -101,8 +126,13 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
      const SearchByChange = (value) => {
       if(value === 'doctor')
       {
-        setValue("date",'');        
-      } 
+        setValue("date",'');   
+        setValue("mobileNo",'');     
+      } else if(value === 'date') {
+        setValue("mobileNo",'');      
+      } else if(value === 'mobileNo') {
+        setValue("date",'');
+      }
      }
 
   return (
@@ -139,7 +169,7 @@ function SearchRegistration({SeachRegistrationModal,setSeachRegistrationModal,se
                         lable={"Select searchBy"}
                         value={value}
                         getOptionLabel={(option)=>option}
-                        options={['doctor','date']}
+                        options={['doctor','date','mobileNo']}
                         inputRef={ref}
                         hasError={error}
                         /> 
