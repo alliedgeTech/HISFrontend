@@ -1042,7 +1042,7 @@ function SocMaster() {
                               </Grid>
                               <Grid xs={12} sm={gridWidth}>
                                 <CustomDatePickerFieldWithoutController
-                                  value={new Date(newPriceObj.date)}
+                                  value={newPriceObj.date}
                                   format="DD/MM/YYYY"
                                   label={`${item.bedName} Effective From Date`}
                                   disable={true}
