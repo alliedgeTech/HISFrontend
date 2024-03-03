@@ -316,6 +316,7 @@ function SocMaster() {
       finalData.doctor = data.allDoctor ? null : data?.doctor?._id;
       finalData._id = data._id;
       finalData.id = data.id;
+      finalData.todayDate = new Date().setHours(0,0,0,0);
 
       console.log("this is final data : ", finalData);
       // return;
@@ -351,6 +352,7 @@ function SocMaster() {
         doctor: data?.doctor?._id,
         effectiveFromDate: tempDate,
         bedType: JSON.stringify(bedType),
+        todayDate:new Date().setHours(0,0,0,0),
       });
       if (temp) {
         CloseModal();
