@@ -277,16 +277,16 @@ function SocMaster() {
         }
       }
       deleteLength = deletedBedType.length;
-      //* remove JSON.stringify from deletedBedType
-      // finalData.deletedBed = JSON.stringify(deletedBedType);
-      finalData.deletedBed = deletedBedType;
+      finalData.deletedBed = JSON.stringify(deletedBedType);
       console.log("this is final data of filterdTempBedTypeData ", filterdTempBedTypeData);
       //* now we are start for edited data
       for (let i = 0; i < filterdTempBedTypeData.length; i++) {
         if (filterdTempBedTypeData[i].delete) continue;
 
         let tempEffectiveFromDate = new Date(data[`effectiveFromDate-${i}`]);
+        console.log("this is edited data 90 before setHours : ", tempEffectiveFromDate);
         tempEffectiveFromDate.setHours(0, 0, 0, 0);
+        console.log("this is edited data 90 after setHours : ", tempEffectiveFromDate);
         const deletedNewPrice = filterdTempBedTypeData[i].newPrice.filter((obj)=>obj.deleted);
         const deletedNewEmrPrice = filterdTempBedTypeData[i].newEmrPrice.filter((obj)=>obj.deleted);
         editedBedType.push({
@@ -303,10 +303,9 @@ function SocMaster() {
         });
       }
       editAndNewTotalLength += editedBedType.length;
-      // console.log("this is final data :  ", JSON.parse(JSON.stringify(editedBedType)));
-      //* remove JSON.stringify from editedBedType
-      // finalData.editedBed = JSON.stringify(editedBedType);
-      finalData.editedBed = editedBedType;
+      console.log("this is final data before json stringify : ", editedBedType)
+      console.log("this is final data :  ", JSON.parse(JSON.stringify(editedBedType)));
+      finalData.editedBed = JSON.stringify(editedBedType);
 
       if (editAndNewTotalLength === 0 && deleteLength > 0) {
         toast.error("Please select at least one bed type");
@@ -319,11 +318,11 @@ function SocMaster() {
       finalData.id = data.id;
 
       console.log("this is final data : ", finalData);
-      // // return;
-      // let temp = await updateSocMaster(finalData);
-      // if (temp) {
-      //   CloseModal();
-      // }
+      // return;
+      let temp = await updateSocMaster(finalData);
+      if (temp) {
+        CloseModal();
+      }
     } else {
       let bedType = [];
       let bedTypeLength = tempBedTypedata.length;
