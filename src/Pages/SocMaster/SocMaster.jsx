@@ -399,10 +399,12 @@ function SocMaster() {
         delete: false,
         newPrice: item.prices.newValues?.map((obj) => ({
           ...obj,
+          date: new Date(obj.date),
           deleted: false,
         })),
         newEmrPrice: item.emrPrices.newValues?.map((obj) => ({
           ...obj,
+          date: new Date(obj.date),
           deleted: false,
         })),
       };
