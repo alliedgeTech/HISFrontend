@@ -319,10 +319,10 @@ function SocMaster() {
 
       console.log("this is final data : ", finalData);
       // return;
-      let temp = await updateSocMaster(finalData);
-      if (temp) {
-        CloseModal();
-      }
+      // let temp = await updateSocMaster(finalData);
+      // if (temp) {
+      //   CloseModal();
+      // }
     } else {
       let bedType = [];
       let bedTypeLength = tempBedTypedata.length;
