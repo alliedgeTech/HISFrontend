@@ -277,7 +277,9 @@ function SocMaster() {
         }
       }
       deleteLength = deletedBedType.length;
-      finalData.deletedBed = JSON.stringify(deletedBedType);
+      //* remove JSON.stringify from deletedBedType
+      // finalData.deletedBed = JSON.stringify(deletedBedType);
+      finalData.deletedBed = deletedBedType;
       console.log("this is final data of filterdTempBedTypeData ", filterdTempBedTypeData);
       //* now we are start for edited data
       for (let i = 0; i < filterdTempBedTypeData.length; i++) {
@@ -301,8 +303,10 @@ function SocMaster() {
         });
       }
       editAndNewTotalLength += editedBedType.length;
-      console.log("this is final data :  ", JSON.parse(JSON.stringify(editedBedType)));
-      finalData.editedBed = JSON.stringify(editedBedType);
+      // console.log("this is final data :  ", JSON.parse(JSON.stringify(editedBedType)));
+      //* remove JSON.stringify from editedBedType
+      // finalData.editedBed = JSON.stringify(editedBedType);
+      finalData.editedBed = editedBedType;
 
       if (editAndNewTotalLength === 0 && deleteLength > 0) {
         toast.error("Please select at least one bed type");
@@ -315,11 +319,11 @@ function SocMaster() {
       finalData.id = data.id;
 
       console.log("this is final data : ", finalData);
-      // return;
-      let temp = await updateSocMaster(finalData);
-      if (temp) {
-        CloseModal();
-      }
+      // // return;
+      // let temp = await updateSocMaster(finalData);
+      // if (temp) {
+      //   CloseModal();
+      // }
     } else {
       let bedType = [];
       let bedTypeLength = tempBedTypedata.length;
