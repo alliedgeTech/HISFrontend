@@ -41,7 +41,11 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import { socket } from "../../socket";
 import { useDeferredValue } from "react";
 import CommonTable from "../../Components/CommonTable/CommonTable";
-import AddTaskOutlinedIcon from '@mui/icons-material/AddTaskOutlined';
+import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
+import { VisitTypeData } from "../../Constants/index.constant";
+import AddIcon from '@mui/icons-material/Add';
+
+const ApiManager = new APIManager();
 
 function Appointment() {
   const dispatch = useDispatch();
@@ -97,8 +101,7 @@ function Appointment() {
   const [showSlotSelect, setShowSlotSelect] = useState(false);
   const [LeftDrawer, setLeftDrawer] = useState(false);
   const [SearchValue, setSearchValue] = useState(null);
-  
-   
+
   const {
     appointmentListLoading,
     createAppointmentData,
@@ -106,101 +109,104 @@ function Appointment() {
     updateAppointmentData,
   } = useAppointmentData();
   const { getRegistrationData } = useFrontOfficeRegistration();
-  const MobileNumberWatch = watch("mobileNo");
-  const defferedMobileNumber = useDeferredValue(MobileNumberWatch);
   const DoctorWatch = watch("doctor");
-  const isValidMobileNumber = (number) => {
-    if (number?.length === 10 && !isNaN(number)) {
-      return true;
-    }
-    return false;
-  };
-
-  const VisitTypeData = [
-    { value: "firstVisit", shaw: "First Visit" },
-    { value: "followUp", shaw: "Follow Up" },
-  ];
-
-  const ApiManager = new APIManager();
-
+  const watchSlot = watch("time")
+  const defferedSlot = useDeferredValue(watchSlot );
   const setRegistrationModalData = async (tempData) => {
-    let url;
-    if (tempData) {
-      url = `admin/frontOffice/registration/m/${tempData}?type=id`;
-    } else {
-      console.log("this is from mobile No : ",defferedMobileNumber)
-      url = `admin/frontOffice/registration/m/${defferedMobileNumber}`;
-    }
+    let url = `admin/frontOffice/registration/m/${tempData}?type=id`;
 
     const data = await ApiManager.get(url);
 
-    if (!data.error) {
-      setNewRegistrationForm(true);
-      if (data?.data?.data) {
-        const tempData = {
-          ...data?.data?.data,
-          gender: { gender: data?.data?.data?.gender },
-        };
+    if (data.error) {
+      toast.error("Something went wrong!");
+      setNewRegistrationForm(false);
+      setRegistrationNumberFound(false);
+      return;
+    }
 
-        setRegistrationNumberFound(tempData?._id);
+    setNewRegistrationForm(true);
+    if (data?.data?.data) {
+      const tempData = {
+        ...data?.data?.data,
+        gender: { gender: data?.data?.data?.gender },
+      };
 
-        const fieldSet = [
-          "pationName",
-          "title",
-          "dob",
-          "age",
-          "gender",
-          "address",
-          "city",
-          "otherRemarks",
-          "email",
-        ];
-        for (let i of fieldSet) {
-          setValue(i, tempData[i]);
-        }
-      } else {
-        setRegistrationNumberFound(false);
-        const fieldSet = [
-          "pationName",
-          "dob",
-          "age",
-          "address",
-          "otherRemarks",
-          "email",
-        ];
-        for (let i of fieldSet) {
-          setValue(i, "");
-        }
-        const FieldSetNull = ["title", "gender", "city"];
-        for (let i of FieldSetNull) {
-          setValue(i, null);
-        }
+      setRegistrationNumberFound(tempData?._id);
+      console.log("this is temp data : ", tempData);
+
+      const fieldSet = [
+        "pationName",
+        "title",
+        "dob",
+        "age",
+        "gender",
+        "address",
+        "city",
+        "otherRemarks",
+        "email",
+        "mobileNo",
+        "doctor",
+      ];
+      for (let i of fieldSet) {
+        setValue(i, tempData[i]);
       }
     } else {
-      setNewRegistrationForm(false);
+      setRegistrationNumberFound(false);
+      const fieldSet = [
+        "pationName",
+        "dob",
+        "age",
+        "address",
+        "otherRemarks",
+        "email",
+        "mobileNo",
+      ];
+      for (let i of fieldSet) {
+        setValue(i, "");
+      }
+      const FieldSetNull = ["title", "gender", "city"];
+      for (let i of FieldSetNull) {
+        setValue(i, null);
+      }
     }
   };
 
-  useEffect(()=>{
-      socket.connect();
-      return () => {
-        socket.disconnect();
-      }
-  },[])
-
-  useEffect(() => {
-    if (isValidMobileNumber(defferedMobileNumber)) {
-      const timeoutId = setTimeout(() => {
-        setRegistrationModalData();
-      }, 500);
-
-      return () => clearTimeout(timeoutId);
+  function newRegistrationAddedOnNumber() {
+    setNewRegistrationForm(true);
+    setRegistrationNumberFound(false);
+    const fieldSet = [
+      "pationName",
+      "dob",
+      "age",
+      "address",
+      "otherRemarks",
+      "email",
+    ];
+    for (let i of fieldSet) {
+      setValue(i, "");
     }
-  }, [defferedMobileNumber]);
+    const FieldSetNull = ["title", "gender", "city"];
+    for (let i of FieldSetNull) {
+      setValue(i, null);
+    }
+  }
 
   useEffect(() => {
-    console.log("this is modal : ", SeachRegistrationModal);
-  }, [SeachRegistrationModal]);
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   if (isValidMobileNumber(defferedMobileNumber)) {
+  //     const timeoutId = setTimeout(() => {
+  //       setRegistrationModalData();
+  //     }, 500);
+
+  //     return () => clearTimeout(timeoutId);
+  //   }
+  // }, [defferedMobileNumber]);
 
   useEffect(() => {
     if (DoctorWatch) {
@@ -211,25 +217,43 @@ function Appointment() {
   }, [DoctorWatch]);
 
   function FetchTheNewList(value) {
-    dispatch(setAppointmentpagination({ page: 0, pageSize: paginationModel.pageSize }));
-    getAppintmentData(false,0,undefined,'conName',undefined,undefined,undefined,value)
+    dispatch(
+      setAppointmentpagination({ page: 0, pageSize: paginationModel.pageSize })
+    );
+    getAppintmentData(
+      false,
+      0,
+      undefined,
+      "conName",
+      undefined,
+      undefined,
+      undefined,
+      value
+    );
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     let timeout;
-    if(SearchValue)
-    {
-      console.log("We calling api set timeout ")
-      timeout = setTimeout(()=>{
-          console.log("now api calling")
-          FetchTheNewList(SearchValue)
-        },300)
-    } else if(SearchValue=='') {
-      getAppintmentData(false,0,undefined,'date',undefined,undefined,undefined,undefined)
+    if (SearchValue) {
+      console.log("We calling api set timeout ");
+      timeout = setTimeout(() => {
+        console.log("now api calling");
+        FetchTheNewList(SearchValue);
+      }, 300);
+    } else if (SearchValue == "") {
+      getAppintmentData(
+        false,
+        0,
+        undefined,
+        "date",
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      );
     }
     return () => clearTimeout(timeout);
-  },[SearchValue])
-
+  }, [SearchValue]);
 
   const closeTheModal = () => {
     setModalOpen(false);
@@ -270,12 +294,7 @@ function Appointment() {
   };
 
   const setSomeSearchDataInForm = (data) => {
-    const temp = getValues();
-    if (!temp.doctor) {
-      console.log("this is data  doctor ", data.doctor);
-      setValue("doctor", data.doctor);
-    }
-    setValue("mobileNo", data.mobileNo);
+    setRegistrationModalData(data._id);
   };
 
   const submitData = async (data) => {
@@ -382,7 +401,7 @@ function Appointment() {
         mobileNo: element?.registration?.mobileNo,
         bloodGroup: element?.registration?.bloodGroup,
         city: element?.registration?.city?.cityName,
-        jwt:element?.jwt,
+        jwt: element?.jwt,
       };
       array.push(thisData);
     });
@@ -419,30 +438,35 @@ function Appointment() {
   //   );
   // }
 
-  function GenrateJwtToken({_id,userId,checkDate}){
-    console.log("this is id : ",_id,userId);
-    console.log("this is check date : ",checkDate,dayjs().format("YYYY-MM-DD"))
-    if(checkDate?.slice(0,10)!=dayjs().format("YYYY-MM-DD"))
-    {
+  function GenrateJwtToken({ _id, userId, checkDate }) {
+    console.log("this is id : ", _id, userId);
+    console.log(
+      "this is check date : ",
+      checkDate,
+      dayjs().format("YYYY-MM-DD")
+    );
+    if (checkDate?.slice(0, 10) != dayjs().format("YYYY-MM-DD")) {
       toast.error("Please can genrate jwt token only for today appointment");
       return;
     }
-    socket.emit("genrateJwtToken",{_id,userId,date:dayjs().format("YYYY-MM-DD")},(data)=>{
-        if(Array.isArray(appointmentData))
-        {
+    socket.emit(
+      "genrateJwtToken",
+      { _id, userId, date: dayjs().format("YYYY-MM-DD") },
+      (data) => {
+        if (Array.isArray(appointmentData)) {
           let tempData = structuredClone(appointmentData);
-          let ansIndex =  tempData.findIndex((obj)=>obj._id==_id);
-          if(ansIndex>-1)
-          {
+          let ansIndex = tempData.findIndex((obj) => obj._id == _id);
+          if (ansIndex > -1) {
             tempData[ansIndex].jwt = data;
             dispatch(setAppointmentData(tempData));
           }
         }
-    })
+      }
+    );
   }
   const tempData = structuredClone(appointmentData);
-  console.log("temp Data:",tempData)
-  
+  console.log("temp Data:", tempData);
+
   const columns = [
     {
       field: "_id",
@@ -496,11 +520,25 @@ function Appointment() {
       flex: 1,
     },
     {
-      field:"jwt",
-      headerName:"JWT",
-      width:120,
-      renderCell:(params) => ( params.row.jwt ? params.row.jwt : <div style={{cursor:"pointer"}} onClick={()=>GenrateJwtToken({_id:params?.row?._id,userId:params?.row?.doctor?._id,checkDate:params?.row?.appointmentDate})}><AddTaskOutlinedIcon/></div>
-       ),
+      field: "jwt",
+      headerName: "JWT",
+      width: 120,
+      renderCell: (params) =>
+        params.row.jwt ? (
+          params.row.jwt
+        ) : (
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() =>
+              GenrateJwtToken({
+                _id: params?.row?._id,
+                userId: params?.row?.doctor?._id,
+                checkDate: params?.row?.appointmentDate,
+              })
+            }>
+            <AddTaskOutlinedIcon />
+          </div>
+        ),
     },
     {
       field: "appointmentDate",
@@ -547,7 +585,6 @@ function Appointment() {
   ];
 
   function CustomHeader() {
-
     return (
       <div className={TableClasses["tableMainHeader-container"]}>
         <div
@@ -574,7 +611,11 @@ function Appointment() {
                   onBlur={onBlur}
                   size="medium"
                   error={!!error}
-                  onChange={(e,p)=> {console.log({e,p});setSearchValue(e.target.value);onChange(e,p);}}
+                  onChange={(e, p) => {
+                    console.log({ e, p });
+                    setSearchValue(e.target.value);
+                    onChange(e, p);
+                  }}
                   value={value}
                   fullWidth
                   placeholder="Search"
@@ -648,11 +689,16 @@ function Appointment() {
         dispatch(setStartDate(newStartDate));
         dispatch(setEndDate(newEndDate));
         dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
-        dispatch(setAppointmentpagination({ page: 0, pageSize: paginationModel.pageSize }));
+        dispatch(
+          setAppointmentpagination({
+            page: 0,
+            pageSize: paginationModel.pageSize,
+          })
+        );
         const innerResData = await getAppintmentData(
           true,
           0,
-          undefined, 
+          undefined,
           undefined,
           newStartDate,
           newEndDate,
@@ -700,7 +746,6 @@ function Appointment() {
                     onChange={onChange}
                     lable={"Select Doctor"}
                     disableClearable={true}
-                    
                     value={value}
                     getOptionLabel={(option) =>
                       ` ${option?.userName} / ${option?.speciality?.speciality}`
@@ -740,8 +785,7 @@ function Appointment() {
         </Grid>
       </Box>
     );
-
-  },[doctorAppointmentList,control,appointmentListLoading])  ;
+  }, [doctorAppointmentList, control, appointmentListLoading]);
 
   // if (!doctorAppointmentList) {
   //   return (
@@ -861,7 +905,7 @@ function Appointment() {
 
             <Grid xs={12} sm={4}>
               <CustomTextInputField
-              key="appointmentMobileNO"
+                key="appointmentMobileNO"
                 name={"mobileNo"}
                 type={"number"}
                 control={control}
@@ -909,28 +953,34 @@ function Appointment() {
                 }}></Controller>
             </Grid>
 
-            <Grid xs={12} sm={4}>
-              {!appointmentEditData && (
-                <CustomButton
-                  fullWidth
-                  buttonText={"Search Registration"}
-                  startIcon={<SearchIcon />}
-                  onClick={() =>
-                    setSeachRegistrationModal(true)
-                  }></CustomButton>
-              )}
-            </Grid>
+            {!appointmentEditData && (
+              <>
+                <Grid xs={12} sm={4}>
+                  <CustomButton
+                    fullWidth
+                    buttonText={"Search Registration"}
+                    startIcon={<SearchIcon />}
+                    onClick={() =>
+                      setSeachRegistrationModal(true)
+                    }></CustomButton>
+                </Grid>
 
-            <Grid xs={12} sm={4}>
-              {!appointmentEditData && (
-                <CustomButton
-                  disabled={!showSlotSelect}
-                  fullWidth
-                  buttonText={"Select Slot"}
-                  startIcon={<AlarmOutlinedIcon />}
-                  onClick={() => setSelectSlotModal(true)}></CustomButton>
-              )}
-            </Grid>
+                <Grid xs={12} sm={4}>
+                  <CustomButton
+                    disabled={!showSlotSelect}
+                    color={ defferedSlot ? "rgb(76, 175, 80)" : undefined}
+                    hoverColor={ defferedSlot ? "rgb(76, 175, 80, 0.85)" : undefined}
+                    fullWidth
+                    buttonText={"Select Slot"}
+                    startIcon={<AlarmOutlinedIcon />}
+                    onClick={() => setSelectSlotModal(true)}></CustomButton>
+                </Grid>
+
+                <Grid xs={12} sm={4}>
+                  <CustomButton fullWidth buttonText={'New Registration'} startIcon={<AddIcon />} onClick={newRegistrationAddedOnNumber}></CustomButton>
+                </Grid>
+              </>
+            )}
 
             {newRegistrationForm && (
               <>
@@ -1154,9 +1204,7 @@ function Appointment() {
         open={LeftDrawer}
         onClose={toggleDrawer(false)}
         onOpen={toggleDrawer(true)}>
-        {
-          <LeftSideDrawerList />
-        }
+        {<LeftSideDrawerList />}
       </SwipeableDrawer>
 
       <SearchRegistration
@@ -1168,22 +1216,33 @@ function Appointment() {
 
       <SelectSlotModal
         key={selectSlotModal}
-        defaultValue={{date:getValues("appointmentDate"),time:getValues("time")}}
+        defaultValue={{
+          date: getValues("appointmentDate"),
+          time: getValues("time"),
+        }}
         open={selectSlotModal}
         setSelectSlotModal={setSelectSlotModal}
         doctor={DoctorWatch}
         setValueFormSelectSlot={setValueFormSelectSlot}
       />
 
-      <TableMainBox customHeader={CustomHeader() }>
-          { console.log("this is time to render again") }
+      <TableMainBox customHeader={CustomHeader()}>
+        {console.log("this is time to render again")}
         {appointmentListLoading ? (
           <>
             <LinearProgress />
             <TableSkeleton />
           </>
         ) : Array.isArray(rowData) && rowData.length > 0 ? (
-         <CommonTable columns={columns} count={appointmentCount} activeInActiveNeeded={false} paginationModel={paginationModel} customHeight="248px" rowData={rowData} onPaginationChange={onPaginationChange} />
+          <CommonTable
+            columns={columns}
+            count={appointmentCount}
+            activeInActiveNeeded={false}
+            paginationModel={paginationModel}
+            customHeight="248px"
+            rowData={rowData}
+            onPaginationChange={onPaginationChange}
+          />
         ) : (
           <EmptyData />
         )}
