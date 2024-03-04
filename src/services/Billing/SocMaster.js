@@ -1,7 +1,7 @@
 import APIManager from "../../utils/ApiManager";
 import { useEffect, useState } from "react";
 import { useDispatch,useSelector } from "react-redux";
-import { setBedTypeData, setSocCount, setSocCountIncByOne, setSocData, setSocLoading } from "../../slices/soc.slice";
+import { setBedTypeData, setSocCount, setSocCountIncByOne, setSocData, setSocListLoading, setSocLoading } from "../../slices/soc.slice";
 import toast from 'react-hot-toast';
 
 const ApiManager = new APIManager();
@@ -9,10 +9,9 @@ const ApiManager = new APIManager();
 export const useSocMasterData = () => {
     const { socData,socPagination:paginationModal } = useSelector(state => state.soc)   
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
 
     async function getSocMasterData(withLoading=false,page=paginationModal.page,pageSize=paginationModal.pageSize) {
-        withLoading && setLoading(true);
+        withLoading && dispatch(setSocListLoading(true));
 
         const promiseResData = ApiManager.get(`admin/billing/soc?page=${page}&pageSize=${pageSize}`);
         const promiseBedTypeData = ApiManager.get("admin/addMaster/bedtype");
@@ -30,11 +29,11 @@ export const useSocMasterData = () => {
         if(!resData.error){
             dispatch(setSocData(resData.data.data));
             dispatch(setSocCount(resData.data.count));
-            withLoading && setLoading(false);
+            withLoading && dispatch(setSocListLoading(false));
             return true;
         }
 
-        withLoading && setLoading(false);
+        withLoading && dispatch(setSocListLoading(false));
         return false;
     }
 
@@ -104,7 +103,6 @@ export const useSocMasterData = () => {
     },[]);
 
     return {
-        listLoading:loading,
         getSocMasterData,
         createSocMaster,
         updateSocMaster,

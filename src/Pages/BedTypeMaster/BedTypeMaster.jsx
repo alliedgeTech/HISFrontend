@@ -5,8 +5,8 @@ import { setBedTypeEditData, setBedTypePagination } from '../../slices/bedtype.s
 import { useDispatch, useSelector } from "react-redux";
 
 function BedTypeMaster() {
-        const { ListLoading,createBedType,getBedTypeData,updateBedType } = useBedType();
-        const { bedTypeData,bedTypeLoading,editBedTypeData,bedTypeCount,bedTypePagination:paginationModel } = useSelector(state => state.bedType)
+        const { createBedType,getBedTypeData,updateBedType } = useBedType();
+        const { bedTypeData,bedTypeLoading,editBedTypeData,bedTypeCount,bedTypePagination:paginationModel,bedTypeListLoading:ListLoading } = useSelector(state => state.bedType)
         const dispatch =  useDispatch();
   return (
     <CommonMaster 

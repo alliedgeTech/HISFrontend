@@ -6,6 +6,7 @@ const initialState = {
     editUserTitleData: null,
     userTitleCount:null,
     userTitlePaginaiton:{page:0,pageSize:10},
+    userTitleListLoading:true
 }
 
 const userTitleSlice = createSlice({
@@ -30,10 +31,13 @@ const userTitleSlice = createSlice({
         },
         setUserTitleCountIncByOne: (state, action) => {
             state.userTitleCount = state.userCount + 1;
+        },
+        setUserTitleListLoading: (state,action) => {
+            state.userTitleListLoading = action.payload
         }
     }
 });
 
-export const  { setUserTitleCount,setUserTitleCountIncByOne,setUserTitleData,setUserTitleEditData,setUserTitleLoading,setUserTitlePagination }  = userTitleSlice.actions;
+export const  { setUserTitleCount,setUserTitleCountIncByOne,setUserTitleData,setUserTitleEditData,setUserTitleLoading,setUserTitlePagination,setUserTitleListLoading }  = userTitleSlice.actions;
 
 export default userTitleSlice.reducer;

@@ -2,10 +2,10 @@ import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
     categoryData: null,
-    listLoading: true,
     categoryEditData: null,
     actionLoading: false,
     categoryCount: null,
+    categoryListLoading:true,
     categoryPagination: { page: 0, pageSize: 10 },
 }
 
@@ -17,8 +17,8 @@ const categorySlice = createSlice({
         setCategoryData: (state, action) => {
             state.categoryData = action.payload
         },
-        setListLoading: (state, action) => {
-            state.listLoading = action.payload
+        setCategoryListLoading: (state, action) => {
+            state.categoryListLoading = action.payload
         },
         setCategoryEditData: (state, action) => {
             state.categoryEditData = action.payload
@@ -35,11 +35,12 @@ const categorySlice = createSlice({
         },
         setCategoryCountIncByOne: (state, action) => {
             state.categoryCount = state.categoryCount + 1;
-        }
+        },
+      
     }
 
 })
 
-export const { setCategoryData,setListLoading,setCategoryEditData,setActionLoading,setCategoryCount,setCategoryPagination,setCategoryCountIncByOne } = categorySlice.actions;
+export const { setCategoryData,setCategoryEditData,setActionLoading,setCategoryCount,setCategoryPagination,setCategoryCountIncByOne,setCategoryListLoading } = categorySlice.actions;
 
 export default categorySlice.reducer;

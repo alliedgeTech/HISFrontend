@@ -44,7 +44,7 @@ function ServiceMaster() {
     mode: "onTouched",
   });
 
-const { listLoading, createService, getServiceData, updateServiceData } =
+const {  createService, getServiceData, updateServiceData } =
     useServiceData();
   const [OpenModal, setOpenModal] = useState(false);
   const dispatch = useDispatch();
@@ -54,6 +54,7 @@ const { listLoading, createService, getServiceData, updateServiceData } =
     editServiceData,
     serviceCount,
     servicePagination:paginationModel,
+    serviceListLoading:listLoading,
   } = useSelector((state) => state.service);
 
   const IOSSwitch = styled((props) => (

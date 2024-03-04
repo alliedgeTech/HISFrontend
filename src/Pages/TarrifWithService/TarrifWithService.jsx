@@ -31,8 +31,8 @@ function TarrifWithService() {
       });
 
     const [openModal, setOpenModal] = useState(false);
-    const { createTarrifWithServiceData,getTarrifWithServiceData,listLoading,updateTarrifWithServiceData } = useTarrifWithServiceData()
-    const { tarrifWithServiceData,editTarrifWithServiceData,tarrifWithServiceCount,tarrifWithServicePagination:paginationModel,tarrifWithServiceLoading } = useSelector(state => state.tarrif);
+    const { createTarrifWithServiceData,getTarrifWithServiceData,updateTarrifWithServiceData } = useTarrifWithServiceData()
+    const { tarrifWithServiceData,editTarrifWithServiceData,tarrifWithServiceCount,tarrifWithServicePagination:paginationModel,tarrifWithServiceLoading,tarrifWithServiceListLoading:listLoading } = useSelector(state => state.tarrif);
     const dispatch = useDispatch();
 
     const IOSSwitch = styled((props) => (

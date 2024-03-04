@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setBedTypeCount, setBedTypeCountIncByOne, setBedTypeData, setBedTypeLoading } from "../../slices/bedtype.slice";
+import { setBedTypeCount, setBedTypeCountIncByOne, setBedTypeData, setBedTypeListLoading, setBedTypeLoading } from "../../slices/bedtype.slice";
 import APIManager from "../../utils/ApiManager";
 import toast from 'react-hot-toast'
 const ApiManager = new APIManager();
 
 export const useBedType = () => {
-  const [ListLoading, setListLoading] = useState(false);
   const dispatch = useDispatch();
   const { bedTypeData, bedTypePagination: paginationModel } = useSelector(
     (state) => state.bedType
@@ -18,7 +17,7 @@ export const useBedType = () => {
     pageSize = paginationModel.pageSize
   ) => {
     if (withLoading) {
-      setListLoading(true);
+      dispatch(setBedTypeListLoading(true));
     }
     const data = await ApiManager.get(
       `admin/addMaster/bedtype?page=${page}&pageSize=${pageSize}`
@@ -26,11 +25,11 @@ export const useBedType = () => {
     if (!data.error) {
       dispatch(setBedTypeCount(data?.data?.count));
       dispatch(setBedTypeData(data?.data?.data));
-      withLoading && setListLoading(false);
+      withLoading && dispatch(setBedTypeListLoading(false));
       return true;
     }
     if (withLoading) {
-      setListLoading(false);
+      dispatch(setBedTypeListLoading(false));
     }
     return false;
   };
@@ -87,7 +86,6 @@ export const useBedType = () => {
   },[])
 
   return {
-    ListLoading,
     getBedTypeData,
     createBedType,
     updateBedType

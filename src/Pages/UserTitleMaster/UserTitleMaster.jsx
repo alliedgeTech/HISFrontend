@@ -5,8 +5,8 @@ import { setUserTitleEditData, setUserTitlePagination } from '../../slices/userT
 import { useDispatch,useSelector } from 'react-redux';
 
 function UserTitleMaster() {
-    const { listLoading,createUserTitleData,getUserTitleData,updateUserTitleData } = useUserTitleMasterData();
-    const  { userTitleData,userTitleLoading,editUserTitleData,userTitleCount,userTitlePaginaiton } = useSelector(state => state.userTitle);
+    const { createUserTitleData,getUserTitleData,updateUserTitleData } = useUserTitleMasterData();
+    const  { userTitleData,userTitleLoading,editUserTitleData,userTitleCount,userTitlePaginaiton,userTitleListLoading:listLoading } = useSelector(state => state.userTitle);
     const dispatch = useDispatch();
 
   return (

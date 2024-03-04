@@ -6,6 +6,7 @@ const initialState = {
     editBedTypeData: null,
     bedTypeCount:null,
     bedTypePagination : {page:0,pageSize:10},
+    bedTypeListLoading:true,
 }
 
 const bedTypeSlice = createSlice({
@@ -30,10 +31,13 @@ const bedTypeSlice = createSlice({
         },
         setBedTypeCountIncByOne: (state, action) => { 
             state.bedTypeCount = state.bedTypeCount + 1;
+        },
+        setBedTypeListLoading: (state,action) => {
+            state.bedTypeListLoading = action.payload;
         }
     }
 })
 
-export const { setBedTypeData,setBedTypeLoading,setBedTypeEditData,setBedTypeCount,setBedTypePagination,setBedTypeCountIncByOne } = bedTypeSlice.actions;
+export const { setBedTypeData,setBedTypeLoading,setBedTypeEditData,setBedTypeCount,setBedTypePagination,setBedTypeCountIncByOne,setBedTypeListLoading } = bedTypeSlice.actions;
 
 export default bedTypeSlice.reducer;

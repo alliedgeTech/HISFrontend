@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useSelector,useDispatch } from 'react-redux';
 import APIManager from "../../utils/ApiManager";
-import { setActionLoading, setCategoryCount, setCategoryCountIncByOne, setCategoryData, setListLoading } from "../../slices/category.slice";
+import { setActionLoading, setCategoryCount, setCategoryCountIncByOne, setCategoryData, setCategoryListLoading } from "../../slices/category.slice";
 import toast from "react-hot-toast";
 
 const ApiManaget = new APIManager();
@@ -14,7 +14,7 @@ export const useCategoryMaster = () => {
     const getCategoryData = async(withLoading=false,page,pageSize) => {
         if(withLoading)
         {
-            dispatch(setListLoading(true));
+            dispatch(setCategoryListLoading(true));
         
         }
         const resData = await ApiManaget.get(`admin/addMaster/category?page=${page}&pageSize=${pageSize}`);
@@ -23,13 +23,13 @@ export const useCategoryMaster = () => {
         {
             dispatch(setCategoryData(resData?.data?.data));
             dispatch(setCategoryCount(resData?.data?.count));
-            withLoading && dispatch(setListLoading(false));
+            withLoading && dispatch(setCategoryListLoading(false));
             return true;
         }
 
         if(withLoading)
         {
-            dispatch(setListLoading(false));
+            dispatch(setCategoryListLoading(false));
         }
         return false;
     }

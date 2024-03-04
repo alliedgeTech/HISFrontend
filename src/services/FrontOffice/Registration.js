@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setRegistrationCount, setRegistrationCountIncByOne, setRegistrationData, setRegistrationLoading } from "../../slices/registration.slice";
+import { setRegistrationCount, setRegistrationCountIncByOne, setRegistrationData, setRegistrationListLoading, setRegistrationLoading } from "../../slices/registration.slice";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import APIManager from "../../utils/ApiManager";
@@ -7,7 +7,6 @@ import APIManager from "../../utils/ApiManager";
 const ApiManager = new APIManager();
 
 export const  useFrontOfficeRegistration = () => {
-    const [ListLoading, setListLoading] = useState(false);
 
     const dispatch = useDispatch();
   const { registrationData,registrationPagination} = useSelector(State => State.registration);
@@ -15,7 +14,7 @@ export const  useFrontOfficeRegistration = () => {
   const getRegistrationData = async (withLoading=false,page=registrationPagination.page,pageSize=registrationPagination.pageSize) => {
         if(withLoading)
         {
-            setListLoading(true);
+            dispatch(setRegistrationListLoading(true));
         }
         const data = await ApiManager.get(`admin/frontOffice/registration?page=${page}&pageSize=${pageSize}`);
         if(!data.error)
@@ -23,12 +22,12 @@ export const  useFrontOfficeRegistration = () => {
             console.log("this is count data : ",data);
             dispatch(setRegistrationCount(data?.data?.count));
             dispatch(setRegistrationData(data?.data?.data));  
-            withLoading && setListLoading(false);
+            withLoading && dispatch(setRegistrationListLoading(false));
             return true; 
         }
         if(withLoading)
         {
-            setListLoading(false);
+            dispatch(setRegistrationListLoading(false));
         }
         return false;
     }
@@ -179,7 +178,6 @@ export const  useFrontOfficeRegistration = () => {
         createRegistration,
         updateRegistration,
         updateStateAndAmount: updateActiveStateAndAmount,
-        ListLoading
     }
 
 }

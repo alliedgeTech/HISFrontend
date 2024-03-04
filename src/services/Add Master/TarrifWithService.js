@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setTarrifWithServiceCount, setTarrifWithServiceCountIncByOne, setTarrifWithServiceData, setTarrifWithServiceLoading } from "../../slices/tarrif.slice";
+import { setTarrifWithServiceCount, setTarrifWithServiceCountIncByOne, setTarrifWithServiceData, setTarrifWithServiceListLoading, setTarrifWithServiceLoading } from "../../slices/tarrif.slice";
 import { useEffect, useState } from "react";
 import APIManager from "../../utils/ApiManager";
 import toast from 'react-hot-toast';
@@ -10,18 +10,17 @@ export const useTarrifWithServiceData = () => {
 
     const  { tarrifWithServiceData,tarrifWithServicePagination:paginationModel } =  useSelector(state => state.tarrif);
     const dispatch = useDispatch();
-    const [listLoading, setListLoading] = useState(false);
     const getTarrifWithServiceData = async (withLoading=false,page=paginationModel.page,pageSize=paginationModel.pageSize) => {
-            withLoading && setListLoading(true);
+            withLoading && dispatch(setTarrifWithServiceListLoading(true));
             const resData = await ApiManager.get(`admin/addMaster/tarrifWithService?page=${page}&pageSize=${pageSize}`);     
 
             if(!resData.error){
                 dispatch(setTarrifWithServiceData(resData.data.data)); 
                 dispatch(setTarrifWithServiceCount(resData.data.count));
-                withLoading && setListLoading(false);
+                withLoading && dispatch(setTarrifWithServiceListLoading(false));
                 return true; 
             }
-            withLoading && setListLoading(false);
+            withLoading && dispatch(setTarrifWithServiceListLoading(false));
             return false;
     }
 
@@ -71,13 +70,12 @@ export const useTarrifWithServiceData = () => {
     }
 
     useEffect(() => {
-        !tarrifWithServiceData && getTarrifWithServiceData();
+        !tarrifWithServiceData && getTarrifWithServiceData(true);
     },[]);
 
     return {
         getTarrifWithServiceData,
         createTarrifWithServiceData,
         updateTarrifWithServiceData,
-        listLoading
     }
 }

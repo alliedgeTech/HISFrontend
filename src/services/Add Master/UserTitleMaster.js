@@ -1,4 +1,4 @@
-import { setUserTitleCount, setUserTitleCountIncByOne, setUserTitleData, setUserTitleLoading } from "../../slices/userTitle.slice";
+import { setUserTitleCount, setUserTitleCountIncByOne, setUserTitleData, setUserTitleListLoading, setUserTitleLoading } from "../../slices/userTitle.slice";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
 import toast from 'react-hot-toast'
@@ -9,7 +9,6 @@ const ApiManager = new APIManager();
 
 export const useUserTitleMasterData = () => {
 
-    const [listLoading, setListLoading] = useState(false);
     const  { userTitleData,userTitlePaginaiton:paginationModal } =  useSelector(state => state.userTitle);
     const dispatch = useDispatch();
 
@@ -17,7 +16,7 @@ export const useUserTitleMasterData = () => {
             
             if(withLoading)
             {
-                setListLoading(true);
+                dispatch(setUserTitleListLoading(true));
             }
     
             const resData = await ApiManager.get(`admin/addMaster/title?page=${page}&pageSize=${pageSize}`);
@@ -25,13 +24,13 @@ export const useUserTitleMasterData = () => {
             if(!resData.error){
                 dispatch(setUserTitleData(resData.data.data)); 
                 dispatch(setUserTitleCount(resData.data.count));
-                withLoading && setListLoading(false);
+                withLoading && dispatch(setUserTitleListLoading(false));
                 return true; 
             }
     
             if(withLoading)
             {
-                setListLoading(false);
+                dispatch(setUserTitleListLoading(false));
             }
     
             return false;
@@ -88,7 +87,6 @@ export const useUserTitleMasterData = () => {
     },[])
 
     return {
-        listLoading,
         updateUserTitleData,
         createUserTitleData,
         getUserTitleData

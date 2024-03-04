@@ -35,7 +35,6 @@ function SocMaster() {
   const {
     createSocMaster,
     getSocMasterData,
-    listLoading,
     updateSocMaster,
     getSocMasterDataById,
   } = useSocMasterData();
@@ -45,6 +44,7 @@ function SocMaster() {
     editSocData,
     socCount,
     socPagination: paginationModel,
+    socListLoading:listLoading,
     bedTypeData,
   } = useSelector((state) => state.soc);
   var {

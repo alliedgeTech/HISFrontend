@@ -2,7 +2,7 @@ import APIManager from "../../utils/ApiManager"
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from 'react-hot-toast'
-import { setFacilityCount, setFacilityCountIncByOne, setFacilityData, setFacilityLoading } from "../../slices/facility.slice";
+import { setFacilityCount, setFacilityCountIncByOne, setFacilityData, setFacilityListLoading, setFacilityLoading } from "../../slices/facility.slice";
 
 const ApiManager = new APIManager();
 
@@ -10,21 +10,20 @@ export const useFacilityData = () => {
 
     const dispatch = useDispatch();
     const {facilityData,facilityPagination:paginationModel} = useSelector(state => state.facility);
-    const [ListLoading, setListLoading] = useState(false);
 
     const getFacilityData = async (withLoading=false,page=paginationModel?.page,pageSize=paginationModel?.pageSize) => {
-            withLoading && setListLoading(true);
+            withLoading && dispatch(setFacilityListLoading(true));
 
             const resData = await ApiManager.get(`admin/facilityMaster?page=${page}&pageSize=${pageSize}`);
 
             if(!resData.error) {
                 dispatch(setFacilityData(resData.data.data));
                 dispatch(setFacilityCount(resData.data.count));
-                withLoading && setListLoading(false);
+                withLoading && dispatch(setFacilityListLoading(false));
                 return true;
             }
 
-            withLoading && setListLoading(false);
+            withLoading && dispatch(setFacilityListLoading(false));
             return false;
     }
 
@@ -72,7 +71,6 @@ export const useFacilityData = () => {
     },[])
 
     return {
-        ListLoading,
         getFacilityData,
         createFacilityData,
         updateFacilityData

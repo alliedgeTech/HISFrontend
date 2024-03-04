@@ -1,6 +1,6 @@
 import APIManager from "../../utils/ApiManager"
 import { useDispatch, useSelector } from "react-redux";
-import { setCityCount, setCityCountIncByOne, setCityData, setCityLoading, setCountryCount, setCountryCountIncByOne, setCountryData, setCountryLoading, setStateCount, setStateCountIncByOne, setStateData, setStateLoading } from "../../slices/region.slice";
+import { setCityCount, setCityCountIncByOne, setCityData, setCityListLoading, setCityLoading, setCountryCount, setCountryCountIncByOne, setCountryData, setCountryListLoading, setCountryLoading, setStateCount, setStateCountIncByOne, setStateData, setStateListLoading, setStateLoading } from "../../slices/region.slice";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { setUserData } from "../../slices/user.slice";
@@ -11,11 +11,11 @@ const ApiManager = new APIManager();
 
 export const useRegionData = () => {
     const dispatch = useDispatch();
-    const { countryLoading,countryData,countryEditData,countryPagination,countryCount,stateData,stateLoading,stateEditData,statePagintion,stateCount,cityData,cityLoading,cityEditData,cityPagination,cityCount } = useSelector((state) => state.region);
+    const { countryLoading,countryData,countryEditData,countryPagination,countryCount,stateData,stateLoading,stateEditData,statePagintion,stateCount,cityData,cityLoading,cityEditData,cityPagination,cityCount,countryListLoading:ListLoadingCountry,stateListLoading:ListLoadingState,cityListLoading:ListLoadingCity } = useSelector((state) => state.region);
 
-    const [ListLoadingCountry, setListLoadingCountry] = useState(false);
-    const [ListLoadingState, setListLoadingState] = useState(false);
-    const [ListLoadingCity, setListLoadingCity] = useState(false);
+    // const [ListLoadingCountry, setListLoadingCountry] = useState(false);
+    // const [ListLoadingState, setListLoadingState] = useState(false);
+    // const [ListLoadingCity, setListLoadingCity] = useState(false);
 
     const createCountry = async (data) => {
         dispatch(setCountryLoading(true));
@@ -39,7 +39,7 @@ export const useRegionData = () => {
     const getAllCountry = async (withLoading=false,page=countryPagination?.page,pageSize=countryPagination?.pageSize) => {
         if(withLoading) 
         {
-            setListLoadingCountry(true);
+            dispatch(setCountryListLoading(true));
         }
         const resData = await ApiManager.get(`admin/regionMaster/country?page=${page}&pageSize=${pageSize}`);
         if(!resData?.error)
@@ -47,11 +47,11 @@ export const useRegionData = () => {
             console.log('this is count : resData',resData)
             dispatch(setCountryData(resData?.data?.data));
             dispatch(setCountryCount(resData?.data?.count));
-            if(withLoading) {setListLoadingCountry(false)};
+            if(withLoading) {dispatch(setCountryListLoading(false))};
             return true;    
         }
         if(withLoading){
-            setListLoadingCountry(false);
+            dispatch(setCountryListLoading(false));
         }
         return false;
     }
@@ -144,8 +144,7 @@ export const useRegionData = () => {
     const getAllState = async (withLoading=false,page=statePagintion?.page,pageSize=statePagintion?.pageSize) => {
         if(withLoading) 
         {
-            setListLoadingState(true);
-            dispatch(setStateLoading(true));
+            dispatch(setStateListLoading(true));
         }
         const resData = await ApiManager.get(`admin/regionMaster/state?page=${page}&pageSize=${pageSize}`);
 
@@ -154,15 +153,13 @@ export const useRegionData = () => {
             dispatch(setStateData(resData?.data?.data));
             dispatch(setStateCount(resData?.data?.count));
             if(withLoading) {
-                setListLoadingState(false);
-                dispatch(setStateLoading(false))
+                dispatch(setStateListLoading(false));
             };
                 return true;
         }
 
         if(withLoading){
-            setListLoadingState(false);
-            dispatch(setStateLoading(false));
+            dispatch(setStateListLoading(false));
         }
         return false;
     }
@@ -170,8 +167,7 @@ export const useRegionData = () => {
     const getAllCity = async (withLoading=false,page=cityPagination?.page,pageSize=cityPagination?.pageSize) => {
         if(withLoading) 
         {
-            dispatch(setCityLoading(true));
-            setListLoadingCity(true);
+            dispatch(setCityListLoading(true));
         }
         const resData = await ApiManager.get(`admin/regionMaster/city?page=${page}&pageSize=${pageSize}`);
 
@@ -180,14 +176,12 @@ export const useRegionData = () => {
             dispatch(setCityData(resData?.data?.data));
             dispatch(setCityCount(resData?.data?.count));
             if(withLoading) {
-                dispatch(setCityLoading(false));
-                setListLoadingCity(false);
+                dispatch(setCityListLoading(false));
             };
             return true;
         }
         if(withLoading) {
-            dispatch(setCityLoading(false))
-            setListLoadingCity(false);
+            dispatch(setCityListLoading(false));
         };
         return false;
     }

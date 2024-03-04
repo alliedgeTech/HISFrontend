@@ -7,6 +7,7 @@ const initialState = {
     socCount:null,
     socPagination : {page:0,pageSize:10},
     bedTypeData: null,
+    socListLoading:true,
 }
 
 const roleSlice = createSlice({
@@ -34,11 +35,14 @@ const roleSlice = createSlice({
         },
         setSocCountIncByOne: (state, action) => { 
             state.socCount = state.roleCount + 1;
+        },
+        setSocListLoading: (state,action) => {
+            state.socListLoading = action.payload
         }
     }
 
 })
 
-export const { setSocCountIncByOne,setSocCount,setSocData,setSocEditData,setSocLoading,setSocPagination,setBedTypeData } = roleSlice.actions;
+export const { setSocCountIncByOne,setSocCount,setSocData,setSocEditData,setSocLoading,setSocPagination,setBedTypeData,setSocListLoading } = roleSlice.actions;
 
 export default roleSlice.reducer;

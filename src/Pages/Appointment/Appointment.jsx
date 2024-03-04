@@ -147,6 +147,7 @@ function Appointment() {
         "mobileNo",
         "doctor",
       ];
+      clearErrors();
       for (let i of fieldSet) {
         setValue(i, tempData[i]);
       }
@@ -172,6 +173,7 @@ function Appointment() {
   };
 
   function newRegistrationAddedOnNumber() {
+   
     setNewRegistrationForm(true);
     setRegistrationNumberFound(false);
     const fieldSet = [

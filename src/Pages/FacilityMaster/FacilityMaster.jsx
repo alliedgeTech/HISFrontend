@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setFacilityPagination, setfacilityEditData } from '../../slices/facility.slice';
 
 function FacilityMaster() {
-    const { ListLoading,createFacilityData,getFacilityData,updateFacilityData } = useFacilityData();
-    const {facilityData,facilityPagination:paginationModel,facilityLoading,editFacilityData,facilityCount } = useSelector(state => state.facility);
+    const { createFacilityData,getFacilityData,updateFacilityData } = useFacilityData();
+    const {facilityData,facilityPagination:paginationModel,facilityLoading,editFacilityData,facilityCount,facilityListLoading:ListLoading } = useSelector(state => state.facility);
     const dispatch = useDispatch();
 
   return (

@@ -37,7 +37,6 @@ function ServiceTypeMaster() {
   });
 
   const {
-    ListLoading,
     createServiceType,
     getServiceTypeData,
     updateServiceTypeData,
@@ -50,6 +49,7 @@ function ServiceTypeMaster() {
     editServiceTypeData,
     serviceTypeCount,
     serviceTypePagination: paginationModel,
+    serviceTypeListLoading:ListLoading
   } = useSelector((state) => state.serviceType);
 
   const IOSSwitch = styled((props) => (

@@ -6,6 +6,7 @@ const initialState = {
     editFacilityData: null,
     facilityCount:null,
     facilityPagination : {page:0,pageSize:10},
+    facilityListLoading:true,
 }
 
 const facilitySlice = createSlice({
@@ -31,11 +32,14 @@ const facilitySlice = createSlice({
         },
         setFacilityCountIncByOne: (state, action) => { 
             state.facilityCount = state.facilityCount + 1;
+        },
+        setFacilityListLoading:(state,action) => {
+            state.facilityListLoading = action.payload;
         }
     }
 
 });
 
-export const { setFacilityData,setFacilityLoading,setfacilityEditData,setFacilityCount,setFacilityPagination,setFacilityCountIncByOne } = facilitySlice.actions;
+export const { setFacilityData,setFacilityLoading,setfacilityEditData,setFacilityCount,setFacilityPagination,setFacilityCountIncByOne,setFacilityListLoading } = facilitySlice.actions;
 
 export default facilitySlice.reducer;

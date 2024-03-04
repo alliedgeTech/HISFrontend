@@ -6,7 +6,7 @@ import CommonMaster from '../CommonMaster/CommonMaster';
 
 function CategoryMaster() {
 
-      const { categoryData,listLoading,categoryEditData,actionLoading,categoryCount,categoryPagination:paginationModel } = useSelector(state => state.category);
+      const { categoryData,categoryEditData,actionLoading,categoryCount,categoryPagination:paginationModel,categoryListLoading:listLoading } = useSelector(state => state.category);
 
       const dispatch = useDispatch();
 

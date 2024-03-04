@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { setTarrifCount, setTarrifCountIncByOne, setTarrifData, setTarrifLoading } from "../../slices/tarrif.slice";
+import { setTarrifCount, setTarrifCountIncByOne, setTarrifData, setTarrifListLoading, setTarrifLoading } from "../../slices/tarrif.slice";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
 import toast from 'react-hot-toast'
@@ -9,13 +9,12 @@ export const useTarrifData = () => {
 
     const {tarrifData,tarrifPagination:paginationModel} = useSelector(state => state.tarrif);
     const dispatch = useDispatch();
-    const [listLoading, setListLoading] = useState(false);
 
     const getTarrifData = async (withLoading=false,page=paginationModel.page,pageSize=paginationModel.pageSize) => {
 
         if(withLoading)
         {
-            setListLoading(true);
+            dispatch(setTarrifListLoading(true));
         }
 
         const resData = await ApiManager.get(`admin/addMaster/tarrifMaster?page=${page}&pageSize=${pageSize}`);
@@ -23,13 +22,13 @@ export const useTarrifData = () => {
         if(!resData.error){
             dispatch(setTarrifData(resData.data.data)); 
             dispatch(setTarrifCount(resData.data.count));
-            withLoading && setListLoading(false);
+            withLoading && dispatch(setTarrifListLoading(false));
             return true; 
         }
 
         if(withLoading)
         {
-            setListLoading(false);
+            dispatch(setTarrifListLoading(false));
         }
 
         return false;
@@ -79,7 +78,6 @@ export const useTarrifData = () => {
     },[])
 
     return {
-        listLoading,
         updateTarrifData,
         createTarrifData,
         getTarrifData

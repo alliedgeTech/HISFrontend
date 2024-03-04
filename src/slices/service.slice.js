@@ -6,6 +6,7 @@ const initialState = {
     editServiceData: null,
     serviceCount:null,
     servicePagination: {page:0,pageSize:10},
+    serviceListLoading:true,
 }
 
 const serviceSlice = createSlice({
@@ -34,10 +35,13 @@ const serviceSlice = createSlice({
         setServiceEmptyData : (state,action ) =>{
             state.serviceData = null;
             state.serviceCount = null;
+        },
+        setServiceListLoading: (state,action )=>{
+            state.serviceListLoading = action.payload
         }
     }
 })
 
-export const  { setServiceData,setEditServiceData,setServiceCount,setServiceLoading,setServicePagination,setServiceCountIncByOne,setServiceEmptyData } = serviceSlice.actions;
+export const  { setServiceData,setEditServiceData,setServiceCount,setServiceLoading,setServicePagination,setServiceCountIncByOne,setServiceEmptyData,setServiceListLoading } = serviceSlice.actions;
 
 export default serviceSlice.reducer;

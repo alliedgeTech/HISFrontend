@@ -5,6 +5,7 @@ const initialState = {
   tarrifLoading: false,
   editTarrifData: null,
   tarrifCount: null,
+  tarrifListLoading:true,
   tarrifPagination: {
     page: 0,
     pageSize: 10,
@@ -13,6 +14,7 @@ const initialState = {
   tarrifWithServiceLoading: false,
   editTarrifWithServiceData: null,
   tarrifWithServiceCount: null,
+  tarrifWithServiceListLoading:true,
   tarrifWithServicePagination: {
     page: 0,
     pageSize: 10,
@@ -39,6 +41,9 @@ const tarrifSlice = createSlice({
       state.tarrifPagination.page = action.payload.page;
       state.tarrifPagination.pageSize = action.payload.pageSize;
     },
+    setTarrifListLoading: (state,action) => {
+      state.tarrifListLoading = action.payload;
+    },
     setTarrifCountIncByOne: (state, action) => {
       state.tarrifCount = state.tarrifCount + 1;
     },
@@ -53,6 +58,9 @@ const tarrifSlice = createSlice({
     },
     setTarrifWithServiceCount: (state, action) => {
       state.tarrifWithServiceCount = action.payload;
+    },
+    setTarrifWithServiceListLoading: (state,action) => {
+      state.tarrifWithServiceListLoading = action.payload;
     },
     setTarrifWithServicePagination: (state, action) => {
       state.tarrifWithServicePagination.page = action.payload.page;
@@ -71,13 +79,15 @@ export const {
   setTarrifCount,
   setTarrifPagination,
   setTarrifCountIncByOne,
+  setTarrifListLoading,
 
   setTarrifWithServiceCount,
   setTarrifWithServiceCountIncByOne,
   setTarrifWithServiceData,
   setTarrifWithServiceEditData,
   setTarrifWithServiceLoading,
-  setTarrifWithServicePagination
+  setTarrifWithServicePagination,
+  setTarrifWithServiceListLoading
 } = tarrifSlice.actions;
 
 export default tarrifSlice.reducer;

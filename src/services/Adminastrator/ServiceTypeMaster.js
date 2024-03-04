@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
-import { setServiceTypeCount, setServiceTypeCountIncByOne, setServiceTypeData, setServiceTypeLoading } from "../../slices/servicetype.slice";
+import { setServiceListLoading, setServiceTypeCount, setServiceTypeCountIncByOne, setServiceTypeData, setServiceTypeLoading } from "../../slices/servicetype.slice";
 import toast from 'react-hot-toast'
 import { setServiceData, setServiceEmptyData } from "../../slices/service.slice";
 
@@ -10,24 +10,23 @@ const ApiManager = new APIManager();
 export const useServiceTypeData = () => {
     const dispatch = useDispatch();
     const {serviceTypeData,serviceTypePagination:paginationModel} = useSelector(state => state.serviceType);
-    const [ListLoading, setListLoading] = useState(false);
 
     const getServiceTypeData = async (withLoading=false,page=paginationModel.page,pageSize=paginationModel.pageSize) => {
         if(withLoading)
         {
-            setListLoading(true);
+            dispatch(setServiceListLoading(true));
         }
         const resData = await ApiManager.get(`admin/serviceTypeMaster?page=${page}&pageSize=${pageSize}`);
 
         if(!resData.error){
             dispatch(setServiceTypeData(resData.data.data)); 
             dispatch(setServiceTypeCount(resData.data.count));
-            withLoading && setListLoading(false);
+            withLoading && dispatch(setServiceListLoading(false));
             return true; 
         }
         if(withLoading)
         {
-            setListLoading(false);
+            dispatch(setServiceListLoading(false));
         }
         return false;
     }
@@ -88,6 +87,5 @@ export const useServiceTypeData = () => {
         getServiceTypeData,
         updateServiceTypeData,
         createServiceType,
-        ListLoading
     }
 }

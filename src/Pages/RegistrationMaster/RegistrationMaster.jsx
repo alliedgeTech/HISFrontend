@@ -44,7 +44,7 @@ function RegistrationMaster() {
     const webcamRef = useRef(null);
 
 
-    const { registrationData,registrationLoading,registrationEditData,registrationPagination:paginationModel,registrationCount} = useSelector(State => State.registration);
+    const { registrationData,registrationLoading,registrationEditData,registrationPagination:paginationModel,registrationCount,registrationListLoading:ListLoading } = useSelector(State => State.registration);
     const dispatch = useDispatch();
     const { handleSubmit, formState: { errors },reset,control,clearErrors,getValues,watch} = useForm({
       defaultValues:{
@@ -77,7 +77,7 @@ function RegistrationMaster() {
       mode:"onTouched"
     }); 
 
-    const  { getRegistrationData,createRegistration,updateRegistration,updateStateAndAmount,ListLoading,getRegistrationFindById } = useFrontOfficeRegistration();
+    const  { getRegistrationData,createRegistration,updateRegistration,updateStateAndAmount,getRegistrationFindById } = useFrontOfficeRegistration();
 
     function setRowDataRegistration(data){
         var id = paginationModel.page * paginationModel.pageSize;

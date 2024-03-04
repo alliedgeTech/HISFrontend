@@ -5,8 +5,8 @@ import CommonMaster from '../CommonMaster/CommonMaster';
 import { setTarrifEditData, setTarrifPagination } from '../../slices/tarrif.slice';
 
 function TarrifMaster() {
-    const  { createTarrifData,getTarrifData,listLoading,updateTarrifData } = useTarrifData();
-    const {tarrifData,tarrifPagination:paginationModel,tarrifCount,tarrifLoading,editTarrifData} = useSelector(state => state.tarrif);
+    const  { createTarrifData,getTarrifData,updateTarrifData } = useTarrifData();
+    const {tarrifData,tarrifPagination:paginationModel,tarrifCount,tarrifLoading,editTarrifData,tarrifListLoading:listLoading} = useSelector(state => state.tarrif);
     const dispatch = useDispatch();
 
   return (

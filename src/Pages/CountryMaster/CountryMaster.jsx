@@ -20,8 +20,8 @@ import CommonTable from '../../Components/CommonTable/CommonTable';
 
 
 function CountryMaster() {
-    const { countryData,countryEditData,countryLoading,countryPagination,createCountry,updateCountry,ListLoadingCountry,getAllCountry,handleSwitch,countryCount } = useRegionData();
-     
+    const { countryData,countryEditData,countryLoading,countryPagination,createCountry,updateCountry,getAllCountry,handleSwitch,countryCount } = useRegionData();
+    
     var { handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
         defaultValues:{
             isActive:"true",
