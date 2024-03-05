@@ -404,12 +404,24 @@ function DoctorSlotsByDate() {
   const responceIndivisualBreakHandler = useCallback((data) => {
       let activeDaySlotsRef = activeDaySlots?.slotsmasters?.slot;
       if(!Array.isArray(activeDaySlotsRef)) return; 
-      const tempData = {...activeDaySlots};
+      const tempData = JSON.parse(JSON.stringify(activeDaySlots));
       tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
         return obj._id===data._id ? {...obj,break:data.value} : obj ;
       })
       dispatch(setActiveDaySlots(tempData));
   },[activeDaySlots]);
+
+  const update_slotHandler = (data) => {
+    let activeDaySlotsRef = activeDaySlots?.slotsmasters?.slot;
+    if(!Array.isArray(activeDaySlotsRef)) return; 
+    const tempData = JSON.parse(JSON.stringify(activeDaySlots));
+    console.log('@12 before updated : ',tempData.slotsmasters.slot);
+    tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
+      return obj._id===data._id ? {...obj,...data} : obj ;
+    })
+    console.log('@12 after updated : ',tempData.slotsmasters.slot);
+    dispatch(setActiveDaySlots(tempData));
+  }
 
   useEffect(() => {
     function onConnect() {
@@ -495,7 +507,8 @@ function DoctorSlotsByDate() {
   }, []);
 
   useEffect(() => {
-    socket.on("responce_takeBreakIndivisual" ,responceIndivisualBreakHandler);
+    // socket.on("responce_takeBreakIndivisual" ,responceIndivisualBreakHandler);
+    socket.on("update_slot",update_slotHandler)
   },[activeDaySlots])
 
 

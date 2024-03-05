@@ -18,7 +18,6 @@ import EmptyData from '../../Components/NoData/EmptyData';
 import CommonTable from '../../Components/CommonTable/CommonTable';
 
 
-
 function CountryMaster() {
     const { countryData,countryEditData,countryLoading,countryPagination,createCountry,updateCountry,getAllCountry,handleSwitch,countryCount,ListLoadingCountry  } = useRegionData();
     
