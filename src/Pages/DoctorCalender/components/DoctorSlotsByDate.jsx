@@ -5,6 +5,7 @@ import { setSocketConnected } from "../../../slices/socket.slice";
 import {
   setActiveDaySlotIndex,
   setActiveDaySlots,
+  setActiveDaySlotsUpdate,
   setDoctorCalenderEditData,
   setDoctorCalenderLoading,
   setLeveRoomDate,
@@ -411,18 +412,6 @@ function DoctorSlotsByDate() {
       dispatch(setActiveDaySlots(tempData));
   },[activeDaySlots]);
 
-  const update_slotHandler = (data) => {
-    let activeDaySlotsRef = activeDaySlots?.slotsmasters?.slot;
-    if(!Array.isArray(activeDaySlotsRef)) return; 
-    const tempData = JSON.parse(JSON.stringify(activeDaySlots));
-    console.log('@12 before updated : ',tempData.slotsmasters.slot);
-    tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
-      return obj._id===data._id ? {...obj,...data} : obj ;
-    })
-    console.log('@12 after updated : ',tempData.slotsmasters.slot);
-    dispatch(setActiveDaySlots(tempData));
-  }
-
   useEffect(() => {
     function onConnect() {
       console.log("socket is connected");
@@ -489,6 +478,10 @@ function DoctorSlotsByDate() {
         toast.error("Something went wronge in socket");
       }
     });
+    socket.on("update_slot",(data)=>{
+      if(!data) return;
+      dispatch(setActiveDaySlotsUpdate(data))
+    })
     socket.on("soltsData", (data) => {
       dispatch(setActiveDaySlots(data));
       console.log("slotData", data);
@@ -500,16 +493,12 @@ function DoctorSlotsByDate() {
       socket.off("disconnect", onDisconnect);
       socket.off("soltsData");
       socket.off("doctorCalenderData");
+      socket.off("update_slot");
       socket.emit("leaveRoom",leaveRoomDate + doctor?._id + "_slots");
       disconnect();
       console.log("component is unmounted");
     };
   }, []);
-
-  useEffect(() => {
-    // socket.on("responce_takeBreakIndivisual" ,responceIndivisualBreakHandler);
-    socket.on("update_slot",update_slotHandler)
-  },[activeDaySlots])
 
 
   function HandleSlotDataIndex(index) {

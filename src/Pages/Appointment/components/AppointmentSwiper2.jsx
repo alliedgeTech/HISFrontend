@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { socket } from '../../../socket';
 import EmptyData from '../../../Components/NoData/EmptyData';
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { setAppointmentJwtData } from '../../../slices/appointment.slice';
+import { setAppointmentJwtData, setNewDataAppointmentJwtData, setRemovedAppointmentJwtData, setUpdatedAppointmentJwtData } from '../../../slices/appointment.slice';
 import TableSkeleton from '../../../Skeleton/TableSkeleton';
 import { LinearProgress } from '@mui/material';
 import TableClasses from '../../../Components/TableMainBox/TableMainBox.module.css'
@@ -51,6 +51,26 @@ function AppointmentSwiper2() {
         dispatch(setAppointmentJwtData(data));
         setLoading(false);
     });
+
+    socket.on("generatedJWtToken_listAppointment",(data) => {
+      console.log(`generatedJWtToken_listAppointment data : `,data);
+      if(!data || !data.data ) return;
+      console.log("data type : ",data.type,data.type === "add");
+      switch (data.type) {
+        case "add":
+          console.log("i am dispatching the new data : ",data.data)
+          dispatch(setNewDataAppointmentJwtData(data.data));
+          break;
+        case "update":
+          dispatch(setUpdatedAppointmentJwtData(data.data))
+          break;
+        case "remove":
+          dispatch(setRemovedAppointmentJwtData(data.data))
+          break;
+        default:
+          break;
+      }
+    })
     
     function onDisconnect() {
       console.log("socket disconnedted");
@@ -68,10 +88,10 @@ function AppointmentSwiper2() {
     connect();
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
-   
 
    
     return () => {
+      socket.off("generatedJWtToken_listAppointment");
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.emit("leaveRoom", GetTodayDate()+doctorAppointmentList?._id+"_jwt");
@@ -88,7 +108,10 @@ function AppointmentSwiper2() {
         date:GetTodayDate(),
       }
 
-      socket.emit("appointment_inTime",tempData);
+      socket.emit("appointment_inTime",tempData,()=>{
+        console.log("whljdkajklsdksjdfsjsl;ajkflsa;fjk;asdjf")
+        toast.error("Something went wrong");
+      });
       console.log("this is in time we have to send : ",tempData);
   }
 
@@ -101,7 +124,9 @@ function AppointmentSwiper2() {
       outTime:GetHourAndMin(),
       date:GetTodayDate(),
     }
-    socket.emit("appointment_outTime",tempData);
+    socket.emit("appointment_outTime",tempData,() =>{
+      toast.error("Something went wrong");
+    });
   }
 
   const columns = [
@@ -260,6 +285,7 @@ function AppointmentSwiper2() {
                 py: "22px",
               },
             }}
+            getRowClassName={(params) => !params?.row?.startTime && "inactive-row"}
             disableRowSelectionOnClick={true}
             columns={columns}
             rows={rowData}

@@ -146,27 +146,38 @@ function SelectSlotModal({
   // },[])
 
   useEffect(() => {
-    console.log("this is watch on the loading : ", loading);
-  }, [loading]);
-
-  useEffect(() => {
-    function onConnect() {
-      console.log("@@this is solts data socket is connected");
-      // socket.emit('joinRoom',`${roomId}_slots`,"admin");
-    }
-
-    function onDisconnect() {
-      console.log("@@this is solts data socket is disconnected");
-    }
 
     socket.connect();
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
     socket.on("soltsData", (data) => {
       setSlotsData(data);
       setLoading(false);
-      console.log("this is solts data : ", data);
     });
+    return () => {
+      socket.off("soltsData");
+      socket.off("update_slot")
+      socket.disconnect();
+    }
+  }, []);
+
+  useEffect(() => {
+    socket.on("update_slot",(data) => {
+      let activeDaySlotsRef = slotsData?.slotsmasters?.slot;
+    console.log("from there 1")
+    if (!Array.isArray(activeDaySlotsRef)) return;
+    console.log("from there")
+    const tempData = JSON.parse(JSON.stringify(slotsData));
+    tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
+      return obj._id === data._id ? { ...obj, ...data } : obj;
+    });
+    setSlotsData(tempData);
+    });
+
+    return () => {
+      socket.off("update_slot")
+    }
+  },[slotsData])
+
+  useEffect(() => {
     if (watchDate && doctor) {
       console.log(
         "this is watch date : ",
@@ -188,41 +199,16 @@ function SelectSlotModal({
     }
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      console.log("@@ disconnected");
-      socket.off("soltsData");
       if (doctor) {
         socket.emit(
           "leaveRoom",
           `${dayjs(watchDate?.$d).format("YYYY-MM-DD")}${doctor?._id}_slots`
         );
       }
-      socket.disconnect();
     };
   }, [watchDate]);
 
-  useEffect(() => {
-    // socket.on("responce_takeBreakIndivisual", (data) => {
-    //   let activeDaySlotsRef = slotsData?.slotsmasters?.slot;
-    //   if (!Array.isArray(activeDaySlotsRef)) return;
-    //   const tempData = JSON.parse(JSON.stringify(slotsData));
-    //   tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
-    //     return obj._id === data._id ? { ...obj, break: data.value } : obj;
-    //   });
-    //   setSlotsData(tempData);
-    // });
-    socket.on("update_slot",(data) => {
-      let activeDaySlotsRef = slotsData?.slotsmasters?.slot;
-      if (!Array.isArray(activeDaySlotsRef)) return;
-      const tempData = JSON.parse(JSON.stringify(slotsData));
-      tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
-        return obj._id === data._id ? { ...obj, ...data } : obj;
-      });
-      setSlotsData(tempData);
-    })
-  }, [slotsData]);
-
+  
   return (
     <AddEditModal
       maxWidth="lg"

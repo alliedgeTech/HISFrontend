@@ -56,10 +56,36 @@ const appointmentSlice = createSlice({
         },
         setAppointmentListLoading : (state,action) => { 
             state.appointmentListLoading = action.payload;   
-        }
+        },
+        setAppointmentUpdatedData:(state,action) => {
+            let newData  = action.payload;
+            if(Array.isArray(state.appointmentData)) {
+               state.appointmentData = state.appointmentData.map((data) => (
+                    data._id === newData._id ?  {...data,...newData} : data
+                ))
+            }
+        },
+        setNewDataAppointmentJwtData: (state,action) => {
+            console.log("this is am updaing the new things :  ",state.appointmentData,action.payload)
+            if(Array.isArray(state.appointmentJwtData)) {
+                state.appointmentJwtData.push(action.payload);
+            }
+        },
+        setUpdatedAppointmentJwtData:(state,action) => {
+            if(Array.isArray(state.appointmentJwtData)) {
+                state.appointmentJwtData = state.appointmentJwtData.map((data) => (
+                    data._id === action.payload._id ?  {...data,...action.payload} : data
+                ))
+            }
+        },
+        setRemovedAppointmentJwtData:(state,action) => {
+            if(Array.isArray(state.appointmentJwtData)) {
+                state.appointmentJwtData = state.appointmentJwtData.filter((data) => data._id !== action.payload)
+            }
+        },
     }
 }) 
 
-export const { setAppointmentCount,setAppointmentData,setAppointmentEditData,setAppointmentLoading,setAppointmentpagination,setStartDate,setEndDate,setShowDoctorAppointment,setAppointmentJwtData,setAppointmentOutTimeData,setAppointmentStep,setAppointmentListLoading } = appointmentSlice.actions;
+export const { setAppointmentCount,setAppointmentData,setAppointmentEditData,setAppointmentLoading,setAppointmentpagination,setStartDate,setEndDate,setShowDoctorAppointment,setAppointmentJwtData,setAppointmentOutTimeData,setAppointmentStep,setAppointmentListLoading,setAppointmentUpdatedData,setNewDataAppointmentJwtData,setUpdatedAppointmentJwtData,setRemovedAppointmentJwtData } = appointmentSlice.actions;
 
 export default appointmentSlice.reducer;

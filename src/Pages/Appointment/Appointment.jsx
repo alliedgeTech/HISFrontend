@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setAppointmentData,
   setAppointmentEditData,
+  setAppointmentUpdatedData,
   setAppointmentpagination,
   setEndDate,
   setShowDoctorAppointment,
@@ -195,8 +196,16 @@ function Appointment() {
 
   useEffect(() => {
     socket.connect();
+
+    socket.on('generatedJWtToken',(data)=>{
+      if(data?._id && Number.isInteger(data?.jwt)) {
+        dispatch(setAppointmentUpdatedData(data));
+      }
+    })
+    
     return () => {
       socket.disconnect();
+      socket.off('generatedJWtToken');
     };
   }, []);
 
@@ -451,20 +460,7 @@ function Appointment() {
       toast.error("Please can genrate jwt token only for today appointment");
       return;
     }
-    socket.emit(
-      "genrateJwtToken",
-      { _id, userId, date: dayjs().format("YYYY-MM-DD") },
-      (data) => {
-        if (Array.isArray(appointmentData)) {
-          let tempData = structuredClone(appointmentData);
-          let ansIndex = tempData.findIndex((obj) => obj._id == _id);
-          if (ansIndex > -1) {
-            tempData[ansIndex].jwt = data;
-            dispatch(setAppointmentData(tempData));
-          }
-        }
-      }
-    );
+    socket.emit("generateJwtToken",{ _id, userId, date: dayjs().format("YYYY-MM-DD") });
   }
   const tempData = structuredClone(appointmentData);
   console.log("temp Data:", tempData);

@@ -134,7 +134,7 @@ function MainAppointment() {
         variant="fullWidth"
       >
         <Tab label="all appointments" {...a11yProps(0)} style={{fontWeight:"bold",color: appointmentStep!==0 ? "#6c757d" : "rgb(37,57,111)"}}/>
-        <Tab label="Jwt appointments " {...a11yProps(1)} style={{fontWeight:"bold",color: appointmentStep!==1 ? "#6c757d" : "rgb(37,57,111)"}}/>
+        <Tab label="Token generated appointments " {...a11yProps(1)} style={{fontWeight:"bold",color: appointmentStep!==1 ? "#6c757d" : "rgb(37,57,111)"}}/>
         <Tab label="compeleted appointments" {...a11yProps(2)} style={{fontWeight:"bold",color: appointmentStep!==2 ? "#6c757d" : "rgb(37,57,111)"}}/>
       </Tabs>
     </AppBar>
