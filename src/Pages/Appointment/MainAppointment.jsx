@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import HandleStepOneClasses from "../DoctorCalender/components/handleStepOne.module.css";
 import { Typography, Box, Grid, Tab, Tabs, AppBar } from "@mui/material";
 import { useAppointmentData } from '../../services/Consultant Dashboard/Appointment';
-import { setAppointmentStep, setShowDoctorAppointment } from '../../slices/appointment.slice';
+import { setAppointmentCurrentSocketRooms, setAppointmentStep, setShowDoctorAppointment } from '../../slices/appointment.slice';
 import CustomButton from '../../Components/Button/Button';
 import { useForm,Controller } from 'react-hook-form';
 import CustomAutoCompelete from '../../Components/CustomAutoCompelete/CustomAutoCompelete';
@@ -35,7 +35,7 @@ function TabPanel(props) {
 }
 
 function MainAppointment() {
-    const { appointmentStep,doctorAppointmentList } = useSelector(state=>state.appointment);
+    const { appointmentStep,doctorAppointmentList,startDate,endDate } = useSelector(state=>state.appointment);
     const { getAppintmentData } = useAppointmentData();
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -45,6 +45,17 @@ function MainAppointment() {
         },
         mode:"onTouched"
     })
+
+    useEffect(() => {
+
+      if(doctorAppointmentList) {
+        dispatch(setAppointmentCurrentSocketRooms({startDate,endDate,doctorId:doctorAppointmentList?._id}));
+      }
+
+      return () => {
+        dispatch(setAppointmentCurrentSocketRooms());
+      }
+    },[doctorAppointmentList])
 
     function setDoctorAppointmentListDoctor(data) {
         console.log("this is selected doctor ", data);

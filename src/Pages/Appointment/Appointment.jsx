@@ -1,11 +1,13 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  setAppointmentCurrentSocketRooms,
   setAppointmentData,
   setAppointmentEditData,
   setAppointmentUpdatedData,
   setAppointmentpagination,
   setEndDate,
+  setNewAppointmentData,
   setShowDoctorAppointment,
   setStartDate,
 } from "../../slices/appointment.slice";
@@ -120,7 +122,7 @@ function Appointment() {
 
     if (data.error) {
       toast.error("Something went wrong!");
-      setNewRegistrationForm(false);
+      setNewRegistrationForm(false);  
       setRegistrationNumberFound(false);
       return;
     }
@@ -196,14 +198,23 @@ function Appointment() {
 
   useEffect(() => {
 
-    socket.on('generatedJWtToken',(data)=>{
-      if(data?._id && Number.isInteger(data?.jwt)) {
-        dispatch(setAppointmentUpdatedData(data));
+    socket.on('allAppointmentListing',(data)=>{
+      let tempData = data.data;
+      switch(data.type) {
+        case "update":
+          if(tempData?._id) {
+            dispatch(setAppointmentUpdatedData(tempData));
+          }
+        case "add":
+          if(tempData) {
+            dispatch(setNewAppointmentData(tempData))
+          }
       }
+      
     })
     
     return () => {
-      socket.off('generatedJWtToken');
+      socket.off('allAppointmentListing');
     };
   }, []);
 
@@ -218,6 +229,7 @@ function Appointment() {
   // }, [defferedMobileNumber]);
 
   useEffect(() => {
+    setValue("time",null);
     if (DoctorWatch) {
       setShowSlotSelect(true);
     } else {
@@ -411,6 +423,7 @@ function Appointment() {
         bloodGroup: element?.registration?.bloodGroup,
         city: element?.registration?.city?.cityName,
         jwt: element?.jwt,
+        inTime: element?.inTime,
       };
       array.push(thisData);
     });
@@ -558,6 +571,7 @@ function Appointment() {
       renderCell: (params) => (
         <>
           <div
+           style={{cursor:"pointer"}}
             onClick={() => {
               setModalOpen(true);
               clearErrors();
@@ -575,6 +589,15 @@ function Appointment() {
             }}>
             <CustomIconButton />
           </div>
+          {
+            !params.row.inTime && <div
+            style={{marginLeft:"20px",cursor:"pointer"}}
+            onClick={() => null }>
+            <CustomIconButton iconName="cancelOutlinedIcon" />
+          </div>
+          }
+
+
         </>
       ),
     },
@@ -705,7 +728,7 @@ function Appointment() {
           return;
         }
       }
-
+      dispatch(setAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data.doctorAppointmentList._id}));
       setLeftDrawer(false);
     };
     return (
@@ -781,7 +804,7 @@ function Appointment() {
         </Grid>
       </Box>
     );
-  }, [doctorAppointmentList, control, appointmentListLoading]);
+  }, [doctorAppointmentList, control, appointmentListLoading,startDate,endDate]);
 
   // if (!doctorAppointmentList) {
   //   return (

@@ -58,7 +58,6 @@ export const useAppointmentData = () => {
 
         if(!resData.error)
         {
-            getAppintmentData();
             dispatch(setAppointmentLoading(false));
             toast.success("Appointment Created Successfully");
             return true;
