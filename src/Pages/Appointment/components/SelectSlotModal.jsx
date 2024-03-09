@@ -3,12 +3,12 @@ import AddEditModal from "../../../Components/AddEditModal/AddEditModal";
 import { useForm } from "react-hook-form";
 import CustomDatePickerField from "../../../Components/InputsFilelds/CustomDatePickerField";
 import Grid from "@mui/material/Unstable_Grid2";
-import { socket } from "../../../socket";
 import dayjs from "dayjs";
 import BoxCalsses from "../../DoctorCalender/components/handleStepOne.module.css";
 import toast from "react-hot-toast";
 import SlotsSkeleton from "../../../Skeleton/SlotsSkeleton";
 import EmptyData from "../../../Components/NoData/EmptyData";
+import socket from "../../../socket";
 
 const dataColorSow = [
   {
@@ -147,29 +147,29 @@ function SelectSlotModal({
 
   useEffect(() => {
 
-    socket.connect();
     socket.on("soltsData", (data) => {
       setSlotsData(data);
       setLoading(false);
     });
     return () => {
       socket.off("soltsData");
-      socket.off("update_slot")
-      socket.disconnect();
     }
   }, []);
 
   useEffect(() => {
     socket.on("update_slot",(data) => {
+  
       let activeDaySlotsRef = slotsData?.slotsmasters?.slot;
-    console.log("from there 1")
-    if (!Array.isArray(activeDaySlotsRef)) return;
-    console.log("from there")
-    const tempData = JSON.parse(JSON.stringify(slotsData));
-    tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
-      return obj._id === data._id ? { ...obj, ...data } : obj;
-    });
-    setSlotsData(tempData);
+
+      if (!Array.isArray(activeDaySlotsRef)) return;
+
+      const tempData = slotsData;
+      tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
+        return obj._id === data._id ? { ...obj, ...data } : obj;
+      });
+      setSlotsData((_pres) => {
+        return {...tempData };
+      });
     });
 
     return () => {
@@ -188,6 +188,7 @@ function SelectSlotModal({
         socket.emit("leaveRoom", previousJoinRoomDate);
       }
       setLoading(true);
+      console.log("this is start to join the room : ")
       socket.emit(
         "joinRoom",
         [`${dayjs(watchDate.$d).format("YYYY-MM-DD")}${doctor?._id}_slots`],

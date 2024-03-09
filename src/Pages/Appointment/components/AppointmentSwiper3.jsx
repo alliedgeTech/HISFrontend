@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import { socket } from '../../../socket';
 import EmptyData from '../../../Components/NoData/EmptyData';
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { setAppointmentOutTimeData } from '../../../slices/appointment.slice';
+import { setAppointmentOutTimeData, setNewAppointmentOutTimeData } from '../../../slices/appointment.slice';
 import TableSkeleton from '../../../Skeleton/TableSkeleton';
 import { LinearProgress } from '@mui/material';
 import TableMainBox from '../../../Components/TableMainBox/TableMainBox';
 import TableClasses from '../../../Components/TableMainBox/TableMainBox.module.css'
+import socket from '../../../socket';
 
 
 function CustomHeader() {
@@ -28,41 +28,30 @@ function AppointmentSwiper3() {
     const [Loading, setLoading] = useState(true);
 
   useEffect(() => {
-    function onConnect() {
-      console.log("socket is connected");
-      socket.emit("joinRoom", [GetTodayDate()+doctorAppointmentList?._id+"_outTime"], "appointment_outTime");
-    }
+    socket.emit("joinRoom", [GetTodayDate()+doctorAppointmentList?._id+"_outTime"], "appointment_outTime");
 
     socket.on("appointment_outTime", (data) => {
         console.log("appointment_outTime", data);
         dispatch(setAppointmentOutTimeData(data));
         setLoading(false);
     });
-    
-    function onDisconnect() {
-      console.log("socket disconnedted");
-    }
 
-    function connect() {
-      console.log("this function run ");
-      socket.connect();
-    }
-
-    function disconnect() {
-      socket.disconnect();
-    }
-
-    connect();
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-   
+    socket.on("outTime_listAppointment",(data) => {
+      switch (data.type) {
+        case "add":
+          dispatch(setNewAppointmentOutTimeData(data.data));
+          break;
+      
+        default:
+          break;
+      }
+    })   
 
    
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
+      socket.off("outTime_listAppointment");
+      socket.off("appointment_outTime");
       socket.emit("leaveRoom", GetTodayDate()+doctorAppointmentList?._id+"_outTime");
-      disconnect();
     };
   }, []);
 

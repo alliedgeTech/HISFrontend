@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import { socket } from '../../../socket';
 import EmptyData from '../../../Components/NoData/EmptyData';
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { setAppointmentJwtData, setNewDataAppointmentJwtData, setRemovedAppointmentJwtData, setUpdatedAppointmentJwtData } from '../../../slices/appointment.slice';
@@ -11,6 +10,7 @@ import TableMainBox from '../../../Components/TableMainBox/TableMainBox';
 import toast from 'react-hot-toast';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import AlarmOnOutlinedIcon from '@mui/icons-material/AlarmOnOutlined';
+import socket from '../../../socket';
 
 function AppointmentSwiper2() {
     const  { doctorAppointmentList,appointmentJwtData } = useSelector((state) => state.appointment);
@@ -41,10 +41,7 @@ function AppointmentSwiper2() {
     const [Loading, setLoading] = useState(true);
 
   useEffect(() => {
-    function onConnect() {
-      console.log("socket is connected");
-      socket.emit("joinRoom", [GetTodayDate()+doctorAppointmentList?._id+"_jwt"], "appointment_jwt");
-    }
+    socket.emit("joinRoom", [GetTodayDate()+doctorAppointmentList?._id+"_jwt"], "appointment_jwt");
 
     socket.on("appointment_jwt", (data) => {
         console.log("appointment_jwt", data);
@@ -53,9 +50,7 @@ function AppointmentSwiper2() {
     });
 
     socket.on("generatedJWtToken_listAppointment",(data) => {
-      console.log(`generatedJWtToken_listAppointment data : `,data);
       if(!data || !data.data ) return;
-      console.log("data type : ",data.type,data.type === "add");
       switch (data.type) {
         case "add":
           console.log("i am dispatching the new data : ",data.data)
@@ -71,32 +66,12 @@ function AppointmentSwiper2() {
           break;
       }
     })
-    
-    function onDisconnect() {
-      console.log("socket disconnedted");
-    }
-
-    function connect() {
-      console.log("this function run ");
-      socket.connect();
-    }
-
-    function disconnect() {
-      socket.disconnect();
-    }
-
-    connect();
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
 
    
     return () => {
+      socket.off("appointment_jwt");
       socket.off("generatedJWtToken_listAppointment");
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
       socket.emit("leaveRoom", GetTodayDate()+doctorAppointmentList?._id+"_jwt");
-      disconnect();
-      console.log("component is unmounted");
     };
   }, []);
 
@@ -109,7 +84,6 @@ function AppointmentSwiper2() {
       }
 
       socket.emit("appointment_inTime",tempData,()=>{
-        console.log("whljdkajklsdksjdfsjsl;ajkflsa;fjk;asdjf")
         toast.error("Something went wrong");
       });
       console.log("this is in time we have to send : ",tempData);

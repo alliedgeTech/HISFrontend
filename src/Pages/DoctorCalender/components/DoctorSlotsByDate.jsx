@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { socket } from "../../../socket";
 import { useDispatch, useSelector } from "react-redux";
 import { setSocketConnected } from "../../../slices/socket.slice";
 import {
@@ -34,6 +33,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import toast from "react-hot-toast";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
+import socket from "../../../socket";
 
 const dataColorSow = [
   {
@@ -413,34 +413,13 @@ function DoctorSlotsByDate() {
   },[activeDaySlots]);
 
   useEffect(() => {
-    function onConnect() {
-      console.log("socket is connected");
-      dispatch(setSocketConnected(true));
-      dispatch(
-        setLeveRoomDate(new Date().toLocaleDateString("en-CA").toString())
-      );
-      socket.emit("joinRoom", [roomId, roomId + "_slots"], "doctor_slots");
+   
+    dispatch(setSocketConnected(true));
+    dispatch(setLeveRoomDate(new Date().toLocaleDateString("en-CA").toString())
+    );
+    socket.emit("joinRoom", [roomId, roomId + "_slots"], "doctor_slots");
       // socket.emit('joinRoom',`${roomId}_slots`,"admin");
-    }
 
-    function onDisconnect() {
-      console.log("socket disconnedted");
-      dispatch(setSocketConnected(false));
-    }
-
-    function connect() {
-      console.log("this function run ");
-      socket.connect();
-    }
-
-    function disconnect() {
-      socket.emit("leaveRoom", roomId);
-      socket.disconnect();
-    }
-
-    connect();
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
     socket.on("doctorCalenderData", (data) => {
       dispatch(setDoctorCalenderLoading(true));
       console.log("this is data from socket yeyeyeyyeye: ", data);
@@ -478,25 +457,25 @@ function DoctorSlotsByDate() {
         toast.error("Something went wronge in socket");
       }
     });
+
     socket.on("update_slot",(data)=>{
       if(!data) return;
       dispatch(setActiveDaySlotsUpdate(data))
     })
+
     socket.on("soltsData", (data) => {
       dispatch(setActiveDaySlots(data));
       console.log("slotData", data);
     });
     
     return () => {
+      dispatch(setSocketConnected(false));
       dispatch(setActiveDaySlotIndex(0));
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
+      // socket.emit("leaveRoom", roomId)
       socket.off("soltsData");
       socket.off("doctorCalenderData");
       socket.off("update_slot");
       socket.emit("leaveRoom",leaveRoomDate + doctor?._id + "_slots");
-      disconnect();
-      console.log("component is unmounted");
     };
   }, []);
 
@@ -522,8 +501,7 @@ function DoctorSlotsByDate() {
       socket.emit("joinRoom", [`${getRoomId(date)}_slots`], "slots");
       dispatch(setLeveRoomDate(date));
     } else {
-      socket.connect();
-      toast.error("Please refresh the page");
+      toast.error("Please reload the page");
     }
   }
 

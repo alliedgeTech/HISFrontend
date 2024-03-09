@@ -39,12 +39,12 @@ import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import Divider from "@mui/material/Divider";
 import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import { socket } from "../../socket";
 import { useDeferredValue } from "react";
 import CommonTable from "../../Components/CommonTable/CommonTable";
 import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import { VisitTypeData } from "../../Constants/index.constant";
 import AddIcon from '@mui/icons-material/Add';
+import socket from "../../socket";
 
 const ApiManager = new APIManager();
 
@@ -195,7 +195,6 @@ function Appointment() {
   }
 
   useEffect(() => {
-    socket.connect();
 
     socket.on('generatedJWtToken',(data)=>{
       if(data?._id && Number.isInteger(data?.jwt)) {
@@ -204,7 +203,6 @@ function Appointment() {
     })
     
     return () => {
-      socket.disconnect();
       socket.off('generatedJWtToken');
     };
   }, []);

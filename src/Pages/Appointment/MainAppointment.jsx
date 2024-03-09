@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Appointment from './Appointment';
 import { useDispatch, useSelector } from "react-redux";
 import HandleStepOneClasses from "../DoctorCalender/components/handleStepOne.module.css";
@@ -12,6 +12,7 @@ import AppointmentSwiper2 from './components/AppointmentSwiper2';
 import AppointmentSwiper3 from './components/AppointmentSwiper3';
 import { useTheme } from '@emotion/react';
 import SwipeableViews from "react-swipeable-views";
+import TableSkeleton from '../../Skeleton/TableSkeleton';
 
 
 function TabPanel(props) {

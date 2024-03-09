@@ -68,6 +68,7 @@ const appointmentSlice = createSlice({
         setNewDataAppointmentJwtData: (state,action) => {
             console.log("this is am updaing the new things :  ",state.appointmentData,action.payload)
             if(Array.isArray(state.appointmentJwtData)) {
+                !state.appointmentJwtData.find((data) => data._id === action.payload._id) && 
                 state.appointmentJwtData.push(action.payload);
             }
         },
@@ -83,9 +84,15 @@ const appointmentSlice = createSlice({
                 state.appointmentJwtData = state.appointmentJwtData.filter((data) => data._id !== action.payload)
             }
         },
+        setNewAppointmentOutTimeData:(state,action) => {
+            if(action.payload && Array.isArray(state.appointmentOutTimeData)){
+                !state.appointmentOutTimeData.find((obj) => obj._id === action.payload._id) &&
+                state.appointmentOutTimeData.push(action.payload);
+            }
+        }
     }
 }) 
 
-export const { setAppointmentCount,setAppointmentData,setAppointmentEditData,setAppointmentLoading,setAppointmentpagination,setStartDate,setEndDate,setShowDoctorAppointment,setAppointmentJwtData,setAppointmentOutTimeData,setAppointmentStep,setAppointmentListLoading,setAppointmentUpdatedData,setNewDataAppointmentJwtData,setUpdatedAppointmentJwtData,setRemovedAppointmentJwtData } = appointmentSlice.actions;
+export const { setAppointmentCount,setAppointmentData,setAppointmentEditData,setAppointmentLoading,setAppointmentpagination,setStartDate,setEndDate,setShowDoctorAppointment,setAppointmentJwtData,setAppointmentOutTimeData,setAppointmentStep,setAppointmentListLoading,setAppointmentUpdatedData,setNewDataAppointmentJwtData,setUpdatedAppointmentJwtData,setRemovedAppointmentJwtData,setNewAppointmentOutTimeData } = appointmentSlice.actions;
 
 export default appointmentSlice.reducer;
