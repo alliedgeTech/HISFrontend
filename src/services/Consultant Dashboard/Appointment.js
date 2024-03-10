@@ -51,7 +51,6 @@ export const useAppointmentData = () => {
     }
 
     const createAppointmentData = async (data) => {
-
         dispatch(setAppointmentLoading(true));
 
         const resData = await ApiManager.post("admin/consultant/appointment",data);
@@ -67,14 +66,44 @@ export const useAppointmentData = () => {
         return false;
     }
 
-    useEffect(()=>{
-        console.log("this is updated data in side hook :",appointmentListLoading)
-    },[appointmentListLoading])
+    const cancelAppointment = async (data) => {
+        if(!data) return toast.error("Please provide a appointment _id");
+        dispatch(setAppointmentLoading(true));
+
+        const resData = await ApiManager.patch(`admin/consultant/appointment/cancel`,{appointmentId:data});
+
+        if(!resData.error)
+        {
+            toast.success("Appointment Cancelled Successfully");
+            dispatch(setAppointmentLoading(false));
+            return true;
+        } 
+        dispatch(setAppointmentLoading(false));
+        return false;
+    
+    }
+
+    const rescheduleAppointment = async (data) => {
+        dispatch(setAppointmentLoading(true));
+
+        const resData = await ApiManager.patch(`admin/consultant/appointment/reschedule`,data);
+        if(!resData.error)
+        {
+            toast.success("Appointment Rescheduled Successfully");
+            dispatch(setAppointmentLoading(false));
+            return true;
+        } 
+        dispatch(setAppointmentLoading(false));
+        return false;
+
+    }
 
     return {
         appointmentListLoading,
         getAppintmentData,
         updateAppointmentData,
-        createAppointmentData
+        createAppointmentData,
+        cancelAppointment,
+        rescheduleAppointment
     }
 }

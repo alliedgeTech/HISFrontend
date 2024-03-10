@@ -8,6 +8,8 @@ import {
   setAppointmentpagination,
   setEndDate,
   setNewAppointmentData,
+  setRemoveAppointmentData,
+  setRemovedAppointmentJwtData,
   setShowDoctorAppointment,
   setStartDate,
 } from "../../slices/appointment.slice";
@@ -104,12 +106,16 @@ function Appointment() {
   const [showSlotSelect, setShowSlotSelect] = useState(false);
   const [LeftDrawer, setLeftDrawer] = useState(false);
   const [SearchValue, setSearchValue] = useState(null);
+  const [appointmentReschedule, setAppointmentReschedule] = useState(null);
+  const [appointmentRescheduleData, setAppointmentRescheduleData] = useState(null);
 
   const {
     appointmentListLoading,
     createAppointmentData,
     getAppintmentData,
     updateAppointmentData,
+    cancelAppointment,
+    rescheduleAppointment
   } = useAppointmentData();
   const { getRegistrationData } = useFrontOfficeRegistration();
   const DoctorWatch = watch("doctor");
@@ -148,7 +154,7 @@ function Appointment() {
         "otherRemarks",
         "email",
         "mobileNo",
-        "doctor",
+        // "doctor",
       ];
       clearErrors();
       for (let i of fieldSet) {
@@ -208,6 +214,11 @@ function Appointment() {
         case "add":
           if(tempData) {
             dispatch(setNewAppointmentData(tempData))
+          }
+        case "remove":
+          if(tempData) {
+            console.log("this is temp data for remove the slot : ", tempData)
+            dispatch(setRemoveAppointmentData(tempData))
           }
       }
       
@@ -424,11 +435,26 @@ function Appointment() {
         city: element?.registration?.city?.cityName,
         jwt: element?.jwt,
         inTime: element?.inTime,
+        time:element?.time
       };
       array.push(thisData);
     });
     return array;
   };
+
+  const responceRescheduleAppointment = async (data) => {
+    console.log("this is reschedule slot data responce data : ", data);
+    if(data?.slot && data?.date) {
+      let tempObj = {
+        appointmentId:appointmentRescheduleData._id,
+        newSlotId:data.slot,
+        newSlotDate:data.date,
+      }      
+      console.log('toasjkflj;lasjfdjaskf',tempObj)
+      await rescheduleAppointment(tempObj);
+      setAppointmentRescheduleData(null);
+    }
+  }
 
   const setValueFormSelectSlot = (data) => {
     console.log("this is date @", data);
@@ -536,7 +562,7 @@ function Appointment() {
         params.row.jwt ? (
           params.row.jwt
         ) : (
-          <div
+         params.row.time &&  <div
             style={{ cursor: "pointer" }}
             onClick={() =>
               GenrateJwtToken({
@@ -570,7 +596,7 @@ function Appointment() {
       width: 150,
       renderCell: (params) => (
         <>
-          <div
+         { params.row.time && <div
            style={{cursor:"pointer"}}
             onClick={() => {
               setModalOpen(true);
@@ -588,12 +614,19 @@ function Appointment() {
               dispatch(setAppointmentEditData(true));
             }}>
             <CustomIconButton />
-          </div>
+          </div>}
           {
-            !params.row.inTime && <div
+            !params.row.inTime && params.row.time && <div
             style={{marginLeft:"20px",cursor:"pointer"}}
-            onClick={() => null }>
+            onClick={() => cancelAppointment(params.row._id) }>
             <CustomIconButton iconName="cancelOutlinedIcon" />
+          </div>
+          }
+          {
+            params.row.jwt === 0 && params.row.time && <div
+            style={{marginLeft:"20px",cursor:"pointer"}}
+            onClick={() => {setAppointmentReschedule(true);setAppointmentRescheduleData(params.row)} }>
+            <CustomIconButton iconName="R" />
           </div>
           }
 
@@ -727,8 +760,8 @@ function Appointment() {
           setLeftDrawer(true);
           return;
         }
+        dispatch(setAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data.doctorAppointmentList._id}));
       }
-      dispatch(setAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data.doctorAppointmentList._id}));
       setLeftDrawer(false);
     };
     return (
@@ -1245,6 +1278,19 @@ function Appointment() {
         setValueFormSelectSlot={setValueFormSelectSlot}
       />
 
+      <SelectSlotModal
+        key={appointmentReschedule}
+        buttonText={"Reschedule Appointment"}
+        defaultValue={{
+          date: appointmentRescheduleData?.appointmentDate,
+          time: appointmentRescheduleData?.time,
+        }}
+        open={appointmentReschedule}
+        setSelectSlotModal={setAppointmentReschedule}
+        doctor={appointmentRescheduleData?.doctor}
+        setValueFormSelectSlot={responceRescheduleAppointment}
+      />
+
       <TableMainBox customHeader={CustomHeader()}>
         {console.log("this is time to render again")}
         {appointmentListLoading ? (
@@ -1256,10 +1302,11 @@ function Appointment() {
           <CommonTable
             columns={columns}
             count={appointmentCount}
-            activeInActiveNeeded={false}
+            activeInActiveNeeded={true}
             paginationModel={paginationModel}
             customHeight="248px"
             rowData={rowData}
+            getRowClassName={(params) => !params.row.time && 'inactive-row' }
             onPaginationChange={onPaginationChange}
           />
         ) : (

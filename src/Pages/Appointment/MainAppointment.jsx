@@ -47,15 +47,11 @@ function MainAppointment() {
     })
 
     useEffect(() => {
-
-      if(doctorAppointmentList) {
-        dispatch(setAppointmentCurrentSocketRooms({startDate,endDate,doctorId:doctorAppointmentList?._id}));
-      }
-
+      
       return () => {
         dispatch(setAppointmentCurrentSocketRooms());
       }
-    },[doctorAppointmentList])
+    },[])
 
     function setDoctorAppointmentListDoctor(data) {
         console.log("this is selected doctor ", data);
@@ -69,6 +65,7 @@ function MainAppointment() {
           undefined,
           data.doctorAppointmentList
         );
+        dispatch(setAppointmentCurrentSocketRooms({startDate,endDate,doctorId:data.doctorAppointmentList?._id}));
       }
 
     if (!doctorAppointmentList) {

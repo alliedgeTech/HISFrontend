@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
 
-function CommonTable({ paginationModel, columns, rowData, count, activeInActiveNeeded=true,onPaginationChange=()=>null, customHeight="173px"}) {
+function CommonTable({ paginationModel, columns, rowData, count, activeInActiveNeeded=true,onPaginationChange=()=>null, customHeight="173px",getRowClassName = (params) => !params?.row?.isActive && activeInActiveNeeded && "inactive-row"}) {
     console.log("this is time to render again inside &&",paginationModel?.pageSize);
   return (
     <DataGrid
@@ -41,7 +41,7 @@ function CommonTable({ paginationModel, columns, rowData, count, activeInActiveN
             getRowHeight={(_data) => "auto"}
             classes={{ cellContent: "cellContent" }}
             paginationModel={paginationModel}
-            getRowClassName={(params) => !params?.row?.isActive && activeInActiveNeeded && "inactive-row"}
+            getRowClassName={getRowClassName}
             onPaginationModelChange={(data) => onPaginationChange(data)}
             rowCount={count}
             pagination

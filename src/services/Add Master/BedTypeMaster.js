@@ -35,7 +35,7 @@ export const useBedType = () => {
   };
 
   const createBedType = async (data,resetAll) => {
-    const toastId = toast.loading("Loading...");
+    const toastId = toast.promise("Loading...");
     dispatch(setBedTypeLoading(true));
     const resData = await ApiManager.post("admin/addMaster/bedtype",data);
 
@@ -50,7 +50,7 @@ export const useBedType = () => {
         resetAll();
         toast.success(resData.message);
         dispatch(setBedTypeLoading(false));
-        toast.dismiss(toastId);
+        toast.success(toastId);
         return true;
     }
     dispatch(setBedTypeLoading(false));

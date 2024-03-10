@@ -96,6 +96,7 @@ function SelectSlotModal({
   doctor,
   setValueFormSelectSlot,
   defaultValue,
+  buttonText="Select Slot"
 }) {
   const [slotsData, setSlotsData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -218,7 +219,7 @@ function SelectSlotModal({
       open={open}
       modalTitle={`Select Slot's of ${doctor?.userName} `}
       isEdit={false}
-      ButtonText={"Select Slot"}>
+      ButtonText={buttonText}>
       {loading ? (
         <SlotsSkeleton />
       ) : (
