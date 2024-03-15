@@ -47,23 +47,31 @@ const appointmentSlice = createSlice({
         if(Array.isArray(state.appointmentData)) {
              if( state.appointmentData.length < state.appointmentPagination.pageSize ){
                 if(state.appointmentData.findIndex((obj) => obj._id === action.payload._id) === -1) {
-                  state.appointmentData.push(action.payload);
                   state.appointmentCount += 1;
+                  state.appointmentData.push(action.payload);                  
                 }
              } else {
-                state.appointmentCount += 1;
-             }
+                state.appointmentCount = state.appointmentCount + 1;
+             }  
                  
         } else {
             state.appointmentData = [action.payload];
-        }   
+            state.appointmentCount = 1;
+        }     
     },
     setRemoveAppointmentData: (state, action) => {
       if(Array.isArray(state.appointmentData) && state.appointmentData.length > 0) {
-        state.appointmentData = state.appointmentData.filter((obj) => obj._id !== action.payload);
-      }
+        state.appointmentData = state.appointmentData.filter((obj) => obj._id !== action.payload.data);
+      } 
       if(state.appointmentData.length === 0) {
-        state.appointmentData = null;
+        if(state.appointmentPagination.page >= 1) {
+          let count = state.appointmentPagination.page;
+          state.appointmentCount -= 1;
+          typeof action.payload.getAppintmentData === 'function' && queueMicrotask(()=> action.payload.getAppintmentData(true,count-1))
+        } else {
+          state.appointmentData = null;
+          state.appointmentCount = 0;
+        }
       } else {
         state.appointmentCount -= 1;
       }

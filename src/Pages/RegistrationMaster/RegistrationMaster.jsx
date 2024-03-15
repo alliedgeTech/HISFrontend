@@ -509,12 +509,12 @@ function RegistrationMaster() {
                         <Controller
                             name="title"
                             control={control}
-                            rules={{ required:{value:true,message:"Patition Title is required"} }}
+                            rules={{ required:{value:true,message:"Patient Title is required"} }}
                             render={({ field,fieldState:{error} }) => {
                                 const {onChange,value,ref} = field; 
                             return <CustomAutoCompelete 
                             onChange={onChange}
-                            lable={"Select Patition Title"}
+                            lable={"Select Patient Title"}
                             value={value}
                             getOptionLabel={(option)=>option?.userTitle}
                             url={"admin/addMaster/title"}
@@ -528,7 +528,7 @@ function RegistrationMaster() {
                             </Controller>
 
                             {
-                                errors.title && <Typography variant="caption" color="error">Patition Title is required</Typography> 
+                                errors.title && <Typography variant="caption" color="error">Patient Title is required</Typography> 
                             }
                     </Grid>
 
@@ -606,21 +606,21 @@ function RegistrationMaster() {
                         /> 
                     </Grid>
 
-                    <Grid xs={12} sm={3}>
+                    {/* <Grid xs={12} sm={3}>
                         <CustomDateTimePickerField 
                           name={"regDateTime"}
                           control={control}
                           label={"Registration Date Time"}
                           rules={{valueAsDate:true,required:{value:true,message:"Registration date&time is required"}}}
                           />
-                    </Grid>
+                    </Grid> */}
 
                     <Grid xs={12} sm={3}>
                         <CustomTextInputField 
                             name={"pationName"}
                             control={control}
-                            label={"Patition Name"}
-                            rules={{required:{value:true,message:"Patiton Name is required"}}}
+                            label={"Patient Name"}
+                            rules={{required:{value:true,message:"Patient Name is required"}}}
                         /> 
                     </Grid>
 

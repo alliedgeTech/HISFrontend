@@ -22,13 +22,14 @@ import UserTitleMaster from './Pages/UserTitleMaster/UserTitleMaster';
 import TarrifWithService from './Pages/TarrifWithService/TarrifWithService';
 import MainTarrif from './Pages/MainTarrif/MainTarrifMaster';
 import SocMaster from './Pages/SocMaster/SocMaster';
+import MainSecretoryAppointment from './Pages/Appointment2/MainSecretoryAppointment';
 
 function App() {
   return (
     <NavigationScroll>
       <Routes>
         <Route path='/' element={<MainLayout/>} >
-          <Route path='/' element={null} />
+          <Route path='/' element={<MainSecretoryAppointment />} />
           <Route path='/rolemaster' element={<RoleMaster/>} />
           <Route path='/usermaster' element={<UserMaster/>} />
           <Route path='/locationmaster' element={<BranchMaster/>} />

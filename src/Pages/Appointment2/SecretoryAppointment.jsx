@@ -1,69 +1,56 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setAppointmentCurrentSocketRooms,
-  setAppointmentData,
-  setAppointmentEditData,
-  setAppointmentUpdatedData,
-  setAppointmentpagination,
-  setEndDate,
-  setNewAppointmentData,
-  setRemoveAppointmentData,
-  setRemovedAppointmentJwtData,
-  setShowDoctorAppointment,
-  setStartDate,
-} from "../../slices/appointment.slice";
-import { useAppointmentData } from "../../services/Consultant Dashboard/Appointment";
-import CustomIconButton from "../../Components/CustomeIcons/CustomEditIcons";
-import AddEditModal from "../../Components/AddEditModal/AddEditModal";
-import { CustomTextInputField } from "../../Components/InputsFilelds/CustomTextInputField";
-import CustomAutoCompelete from "../../Components/CustomAutoCompelete/CustomAutoCompelete";
-import TableMainBox from "../../Components/TableMainBox/TableMainBox";
-import TableSkeleton from "../../Skeleton/TableSkeleton";
-import EmptyData from "../../Components/NoData/EmptyData";
 import { useForm, Controller } from "react-hook-form";
 import { Box, LinearProgress, Typography } from "@mui/material";
-import CustomDatePickerField from "../../Components/InputsFilelds/CustomDatePickerField";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Grid from "@mui/material/Unstable_Grid2";
-import APIManager from "../../utils/ApiManager";
-import { useFrontOfficeRegistration } from "../../services/FrontOffice/Registration";
 import SearchIcon from "@mui/icons-material/Search";
-import CustomButton from "../../Components/Button/Button";
-import SearchRegistration from "./components/SearchRegistration";
 import dayjs from "dayjs";
-import SelectSlotModal from "./components/SelectSlotModal";
 import AlarmOutlinedIcon from "@mui/icons-material/AlarmOutlined";
 import toast from "react-hot-toast";
-import TableClasses from "../../Components/TableMainBox/TableMainBox.module.css";
-import CustomAddIcons from "../../Components/CustomeIcons/CustomAddIcons";
-import HandleStepOneClasses from "../DoctorCalender/components/handleStepOne.module.css";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import Divider from "@mui/material/Divider";
 import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import { useDeferredValue } from "react";
-import CommonTable from "../../Components/CommonTable/CommonTable";
 import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
-import { VisitTypeData } from "../../Constants/index.constant";
 import AddIcon from '@mui/icons-material/Add';
+import APIManager from "../../utils/ApiManager";
+import { useSecretoryAppointmentData } from "../../services/Consultant Dashboard/secretoryAppointment";
+import TableClasses from "../../Components/TableMainBox/TableMainBox.module.css";
+import { useFrontOfficeRegistration } from "../../services/FrontOffice/Registration";
+import { setDoctorSecretoryAppointmentList, setNewSecretoryAppointmentData, setRemoveSecretoryAppointmentData, setSecretoryAppointmentCurrentSocketRooms, setSecretoryAppointmentEditData, setSecretoryAppointmentPagination, setSecretoryAppointmentUpdatedData, setSecretoryEndDate, setSecretoryStartDate } from "../../slices/secretoryappointment.slice";
+import AddEditModal from "../../Components/AddEditModal/AddEditModal";
+import CustomButton from "../../Components/Button/Button";
+import CustomAutoCompelete from "../../Components/CustomAutoCompelete/CustomAutoCompelete";
+import CustomDatePickerField from "../../Components/InputsFilelds/CustomDatePickerField";
+import { CustomTextInputField } from "../../Components/InputsFilelds/CustomTextInputField";
+import SearchRegistration from "../Appointment/components/SearchRegistration";
+import SelectSlotModal from "../Appointment/components/SelectSlotModal";
+import TableMainBox from "../../Components/TableMainBox/TableMainBox";
+import TableSkeleton from "../../Skeleton/TableSkeleton";
+import CommonTable from "../../Components/CommonTable/CommonTable";
+import EmptyData from "../../Components/NoData/EmptyData";
 import socket from "../../socket";
+import { VisitTypeData } from "../../Constants/index.constant";
+import CustomIconButton from "../../Components/CustomeIcons/CustomEditIcons";
+import CustomAddIcons from "../../Components/CustomeIcons/CustomAddIcons";
+
 
 const ApiManager = new APIManager();
 
-function Appointment() {
+function SecretoryAppointment() {
   const dispatch = useDispatch();
   const {
-    appointmentData,
-    appointmentLoading,
-    appointmentEditData,
-    appointmentCount,
-    appointmentPagination: paginationModel,
-    startDate,
-    endDate,
-    doctorAppointmentList,
-  } = useSelector((state) => state.appointment);
+    secretoryAppointmentData,
+    secretoryAppointmentLoading,
+    secretoryAppointmentEditData,
+    secretoryAppointmentCount,
+    secretoryAppointmentPagination: paginationModel,
+    secretoryStartDate,
+    secretoryEndDate,
+    doctorSecretoryAppointmentList,
+  } = useSelector((state) => state.secretoryAppointment);
   var {
     handleSubmit,
     formState: { errors },
@@ -91,9 +78,9 @@ function Appointment() {
       otherRemarks: "",
       time: "",
       email: "",
-      startDate: startDate,
-      endDate: endDate,
-      doctorAppointmentList: doctorAppointmentList,
+      startDate: secretoryStartDate,
+      endDate: secretoryEndDate,
+      doctorAppointmentList: doctorSecretoryAppointmentList,
     },
     mode: "onTouched",
   });
@@ -110,17 +97,18 @@ function Appointment() {
   const [appointmentRescheduleData, setAppointmentRescheduleData] = useState(null);
 
   const {
-    appointmentListLoading,
+    secretoryAppointmentListLoading,
     createAppointmentData,
-    getAppintmentData,
+    getAppointmentData,
     updateAppointmentData,
     cancelAppointment,
     rescheduleAppointment
-  } = useAppointmentData();
+  } = useSecretoryAppointmentData();
   const { getRegistrationData } = useFrontOfficeRegistration();
   const DoctorWatch = watch("doctor");
   const watchSlot = watch("time")
   const defferedSlot = useDeferredValue(watchSlot );
+
   const setRegistrationModalData = async (tempData) => {
     let url = `admin/frontOffice/registration/m/${tempData}?type=id`;
 
@@ -181,10 +169,6 @@ function Appointment() {
     }
   };
 
-  useEffect(() => {
-    console.log("this is new count incr : but step 2",appointmentCount);
-  },[appointmentCount])
-
   function newRegistrationAddedOnNumber() {
    
     setNewRegistrationForm(true);
@@ -213,37 +197,27 @@ function Appointment() {
       switch(data.type) {
         case "update":
           if(tempData?._id) {
-            dispatch(setAppointmentUpdatedData(tempData));
+            dispatch(setSecretoryAppointmentUpdatedData(tempData));
           }
           break;
         case "add":
           if(tempData) {
-            dispatch(setNewAppointmentData(tempData))
+            dispatch(setNewSecretoryAppointmentData(tempData))
           }
           break;
         case "remove":
           if(tempData) {
-            dispatch(setRemoveAppointmentData({data:tempData,getAppintmentData}))
+            console.log("this is temp data for remove the slot : ", tempData)
+            dispatch(setRemoveSecretoryAppointmentData({data:tempData,getAppointmentData}))
           }
           break;
       }
-      
     })
     
     return () => {
       socket.off('allAppointmentListing');
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (isValidMobileNumber(defferedMobileNumber)) {
-  //     const timeoutId = setTimeout(() => {
-  //       setRegistrationModalData();
-  //     }, 500);
-
-  //     return () => clearTimeout(timeoutId);
-  //   }
-  // }, [defferedMobileNumber]);
 
   useEffect(() => {
     setValue("time",null);
@@ -256,9 +230,9 @@ function Appointment() {
 
   function FetchTheNewList(value) {
     dispatch(
-      setAppointmentpagination({ page: 0, pageSize: paginationModel.pageSize })
+      setSecretoryAppointmentPagination({ page: 0, pageSize: paginationModel.pageSize })
     );
-    getAppintmentData(
+    getAppointmentData(
       false,
       0,
       undefined,
@@ -279,7 +253,7 @@ function Appointment() {
         FetchTheNewList(SearchValue);
       }, 300);
     } else if (SearchValue == "") {
-      getAppintmentData(
+      getAppointmentData(
         false,
         0,
         undefined,
@@ -297,7 +271,7 @@ function Appointment() {
     setModalOpen(false);
     setRegistrationNumberFound(false);
     setNewRegistrationForm(false);
-    dispatch(setAppointmentEditData(false));
+    dispatch(setSecretoryAppointmentEditData(false));
     reset({
       doctor: null,
       appointmentType: "walkin",
@@ -327,7 +301,6 @@ function Appointment() {
     ) {
       return;
     }
-    console.log("we are seted this : ", open);
     setLeftDrawer(open);
   };
 
@@ -343,7 +316,7 @@ function Appointment() {
       return;
     }
 
-    if (appointmentEditData) {
+    if (secretoryAppointmentEditData) {
       const tempData = await updateAppointmentData({
         ...data,
         AppointmentId: data?._id,
@@ -404,18 +377,18 @@ function Appointment() {
       pageSize !== paginationModel.pageSize
     ) {
       const recentData = structuredClone(paginationModel);
-      dispatch(setAppointmentpagination({ page, pageSize }));
+      dispatch(setSecretoryAppointmentPagination({ page, pageSize }));
 
       if (page !== recentData.page) {
-        const resData = await getAppintmentData(true, page, pageSize);
+        const resData = await getAppointmentData(true, page, pageSize);
         if (!resData) {
-          dispatch(setAppointmentpagination(recentData));
+          dispatch(setSecretoryAppointmentPagination(recentData));
         }
       } else {
-        const resData = await getAppintmentData(true, 0, pageSize);
+        const resData = await getAppointmentData(true, 0, pageSize);
 
         if (!resData) {
-          dispatch(setAppointmentpagination(recentData));
+          dispatch(setSecretoryAppointmentPagination(recentData));
         }
       }
     }
@@ -449,14 +422,14 @@ function Appointment() {
   };
 
   const responceRescheduleAppointment = async (data) => {
-    console.log("this is reschedule slot data responce data : ", data);
+
     if(data?.slot && data?.date) {
       let tempObj = {
         appointmentId:appointmentRescheduleData._id,
         newSlotId:data.slot,
         newSlotDate:data.date,
       }      
-      console.log('toasjkflj;lasjfdjaskf',tempObj)
+      console.log("this is reschedule slot data responce data : ", data,tempObj);
       await rescheduleAppointment(tempObj);
     }
     setAppointmentRescheduleData(null);
@@ -470,27 +443,13 @@ function Appointment() {
 
   const rowData = useMemo(() => {
     if (
-      appointmentData &&
-      Array.isArray(appointmentData) &&
-      appointmentListLoading === false
+      secretoryAppointmentData &&
+      Array.isArray(secretoryAppointmentData) &&
+      secretoryAppointmentListLoading === false
     ) {
-      return setRows(appointmentData);
+      return setRows(secretoryAppointmentData);
     }
-  }, [appointmentData, appointmentListLoading]);
-
-  // function setDoctorAppointmentListDoctor(data) {
-  //   console.log("this is selected doctor ", data);
-  //   dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
-  //   getAppintmentData(
-  //     true,
-  //     undefined,
-  //     undefined,
-  //     undefined,
-  //     undefined,
-  //     undefined,
-  //     data.doctorAppointmentList
-  //   );
-  // }
+  }, [secretoryAppointmentData, secretoryAppointmentListLoading]);
 
   function GenrateJwtToken({ _id, userId, checkDate }) {
     console.log("this is id : ", _id, userId);
@@ -505,7 +464,8 @@ function Appointment() {
     }
     socket.emit("generateJwtToken",{ _id, userId, date: dayjs().format("YYYY-MM-DD") });
   }
-  const tempData = structuredClone(appointmentData);
+
+  const tempData = structuredClone(secretoryAppointmentData);
   console.log("temp Data:", tempData);
 
   const columns = [
@@ -617,7 +577,7 @@ function Appointment() {
                   paginationModel.page * paginationModel.pageSize -
                   1,
               });
-              dispatch(setAppointmentEditData(true));
+              dispatch(setSecretoryAppointmentEditData(true));
             }}>
             <CustomIconButton />
           </div>}
@@ -670,7 +630,6 @@ function Appointment() {
                   size="medium"
                   error={!!error}
                   onChange={(e, p) => {
-                    console.log({ e, p });
                     setSearchValue(e.target.value);
                     onChange(e, p);
                   }}
@@ -730,11 +689,11 @@ function Appointment() {
       let newStartDate = dayjs(data.startDate).format("YYYY-MM-DD");
       let newEndDate = dayjs(data.endDate).format("YYYY-MM-DD");
 
-      if (doctorAppointmentList?._id !== data.doctorAppointmentList?._id) {
+      if (doctorSecretoryAppointmentList?._id !== data.doctorAppointmentList?._id) {
         dataChanged = true;
-      } else if (startDate !== newStartDate) {
+      } else if (secretoryStartDate !== newStartDate) {
         dataChanged = true;
-      } else if (endDate != newEndDate) {
+      } else if (secretoryEndDate != newEndDate) {
         dataChanged = true;
       }
 
@@ -743,17 +702,17 @@ function Appointment() {
           toast.error("please select end date bigger then start date");
           return;
         }
-
-        dispatch(setStartDate(newStartDate));
-        dispatch(setEndDate(newEndDate));
-        dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
+        console.log("this is date i am sending tot he backend : ", newStartDate, newEndDate);
+        dispatch(setSecretoryStartDate(newStartDate));
+        dispatch(setSecretoryEndDate(newEndDate));
+        dispatch(setDoctorSecretoryAppointmentList(data.doctorAppointmentList));
         dispatch(
-          setAppointmentpagination({
+          setSecretoryAppointmentPagination({
             page: 0,
             pageSize: paginationModel.pageSize,
           })
         );
-        const innerResData = await getAppintmentData(
+        const innerResData = await getAppointmentData(
           true,
           0,
           undefined,
@@ -766,7 +725,7 @@ function Appointment() {
           setLeftDrawer(true);
           return;
         }
-        dispatch(setAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data.doctorAppointmentList._id}));
+        dispatch(setSecretoryAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data?.doctorAppointmentList?._id}));
       }
       setLeftDrawer(false);
     };
@@ -836,63 +795,14 @@ function Appointment() {
           <Grid sm={12}>
             <CustomButton
               fullWidth={true}
-              loading={appointmentListLoading}
+              loading={secretoryAppointmentListLoading}
               type={"submit"}
               buttonText={"Save"}></CustomButton>
           </Grid>
         </Grid>
       </Box>
     );
-  }, [doctorAppointmentList, control, appointmentListLoading,startDate,endDate]);
-
-  // if (!doctorAppointmentList) {
-  //   return (
-  //     <div className={HandleStepOneClasses.container}>
-  //       <div className={HandleStepOneClasses.Box}>
-  //         <Typography className={HandleStepOneClasses.cusTypogrphy}>
-  //           Select Doctor
-  //         </Typography>
-  //         <Box
-  //           width={"100%"}
-  //           component="form"
-  //           onSubmit={handleSubmit(setDoctorAppointmentListDoctor)}
-  //           p={1}>
-  //           <Grid
-  //             container
-  //             width={"100%"}
-  //             // columns={{ xs: 4, sm: 8, md: 12 }}
-  //             justifyContent="center"
-  //             alignItems="center">
-  //             <Grid sm={12}>
-  //               <Controller
-  //                 name="doctorAppointmentList"
-  //                 control={control}
-  //                 render={({ field, fieldState: { error } }) => {
-  //                   const { onChange, value, ref } = field;
-  //                   return (
-  //                     <CustomAutoCompelete
-  //                       onChange={onChange}
-  //                       lable={"Select Doctor"}
-  //                       value={value}
-  //                       getOptionLabel={(option) =>
-  //                         ` ${option?.userName} / ${option?.speciality?.speciality}`
-  //                       }
-  //                       url={`admin/userMaster/user/doctor`}
-  //                       inputRef={ref}
-  //                       hasError={error}
-  //                     />
-  //                   );
-  //                 }}></Controller>
-  //             </Grid>
-  //           </Grid>
-  //           <div className={HandleStepOneClasses.btnContainer}>
-  //             <CustomButton buttonText={"Next"} type={"submit"} />
-  //           </div>
-  //         </Box>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  }, [doctorSecretoryAppointmentList, control, secretoryAppointmentListLoading,secretoryStartDate,secretoryEndDate]);
 
   return (
     <>
@@ -902,10 +812,10 @@ function Appointment() {
         handleSubmit={handleSubmit(submitData)}
         open={ModalOpen}
         modalTitle={
-          appointmentEditData ? `Update Appointment` : `Add Appointment`
+          secretoryAppointmentEditData ? `Update Appointment` : `Add Appointment`
         }
-        isEdit={!!appointmentEditData}
-        Loading={appointmentLoading}>
+        isEdit={!!secretoryAppointmentEditData}
+        Loading={secretoryAppointmentLoading}>
         <Box component="form" onSubmit={handleSubmit(submitData)} p={3}>
           <Grid
             container
@@ -930,7 +840,7 @@ function Appointment() {
                       }
                       url={"admin/userMaster/user/doctor"}
                       inputRef={ref}
-                      disable={appointmentEditData}
+                      disable={secretoryAppointmentEditData}
                       hasError={error}
                       isOptionEqualToValue={(op, val) => {
                         return op._id == (val || val?._id);
@@ -986,7 +896,7 @@ function Appointment() {
                     message: "Please enter the valid mobile number",
                   },
                 }}
-                disable={appointmentEditData}
+                disable={secretoryAppointmentEditData}
               />
             </Grid>
 
@@ -1011,7 +921,7 @@ function Appointment() {
                 }}></Controller>
             </Grid>
 
-            {!appointmentEditData && (
+            {!secretoryAppointmentEditData && (
               <>
                 <Grid xs={12} sm={4}>
                   <CustomButton
@@ -1299,7 +1209,7 @@ function Appointment() {
 
       <TableMainBox customHeader={CustomHeader()}>
         {console.log("this is time to render again")}
-        {appointmentListLoading ? (
+        {secretoryAppointmentListLoading ? (
           <>
             <LinearProgress />
             <TableSkeleton />
@@ -1307,7 +1217,7 @@ function Appointment() {
         ) : Array.isArray(rowData) && rowData.length > 0 ? (
           <CommonTable
             columns={columns}
-            count={appointmentCount}
+            count={secretoryAppointmentCount}
             activeInActiveNeeded={true}
             paginationModel={paginationModel}
             customHeight="248px"
@@ -1323,4 +1233,4 @@ function Appointment() {
   );
 }
 
-export default Appointment;
+export default SecretoryAppointment;
