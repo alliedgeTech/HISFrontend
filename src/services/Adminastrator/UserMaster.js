@@ -33,6 +33,11 @@ export const useUserData = () => {
         return false;
     }
 
+    const getAllRoleData = async () => {
+        const data = await ApiManager.get(`admin/RoleMaster/getrole`);
+        return data?.data?.data
+    }
+
     const getUserFindById = async (id) => {
         const toastId = toast.loading("Loading...");
         dispatch(setUserLoading(true))
@@ -173,6 +178,7 @@ export const useUserData = () => {
         getUserFindById,
         updateUSer,
         addUser,
+        getAllRoleData,
         Loading,
         assignRoleToUser,
         userCount,

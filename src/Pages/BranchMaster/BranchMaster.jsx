@@ -18,6 +18,8 @@ import EmptyData from '../../Components/NoData/EmptyData';
 import Switch from '@mui/material/Switch';
 import { styled } from '@mui/material/styles';
 import { setBranchPagination } from '../../slices/branch.slice';
+import CommonTable from '../../Components/CommonTable/CommonTable';
+import { ipRegex, numericRegex } from '../../Constants/index.constant';
 
 function BranchMaster() {
     var { handleSubmit, formState: { errors },reset,control,clearErrors } = useForm({
@@ -29,6 +31,8 @@ function BranchMaster() {
           AdPort:"",
           AdDomainName:"",
           AdDomainType:"",
+          bedTypes:[],
+          maxBedCount:"",
           city:null
         },
         mode:'onTouched'
@@ -102,14 +106,14 @@ function BranchMaster() {
             AdPort:"",
             AdDomainName:"",
             AdDomainType:"",
+            bedTypes:[],
+            maxBedCount:"",
             city:null,
         });
       }
 
     const validateIP = (ip) => {
         // Regular expression for a basic IP address format
-        const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
-      
         if (ipRegex.test(ip)) {
           // Additional check for valid octets (0 to 255)
           const octets = ip.split(".");
@@ -154,6 +158,97 @@ function BranchMaster() {
 
     const LocationData = useSelector(state => state.branch?.branchData);
 
+    // function randomDataFeed(){
+      
+    //  let obj = { 
+    //   location:Math.random(),
+    //   locationCode:"243234",
+    //   isActive:"true",
+    //   AdIpAddress:"192.168.3.4",
+    //   AdPort:"4500",
+    //   AdDomainName:"domain name",
+    //   AdDomainType:"domain type",
+    //   bedTypes:[
+    //     {
+    //     "_id": "65b64cffe9fe2d3a0100a7d5",
+    //     "bedName": "Genreal",
+    //     "isActive": true,
+    //     "__v": 0
+    //     },
+    //     {
+    //     "_id": "65c9606e7bd8f8082465fe1e",
+    //     "bedName": "Semi Private AC room",
+    //     "isActive": true,
+    //     "__v": 0
+    //     },
+    //     {
+    //     "_id": "65ed7607a4ebe7640a7dbbd7",
+    //     "bedName": "Twin Sharing",
+    //     "isActive": true,
+    //     "__v": 0
+    //     },
+    //     {
+    //     "_id": "65c960607bd8f8082465fe18",
+    //     "bedName": "Suite",
+    //     "isActive": true,
+    //     "__v": 0
+    //     },
+    //     {
+    //     "_id": "65ed760da4ebe7640a7dbbdb",
+    //     "bedName": "Single",
+    //     "isActive": true,
+    //     "__v": 0
+    //     },
+    //     {
+    //     "_id": "65ec95d7e065e50bfd56a811",
+    //     "bedName": "Daycare",
+    //     "isActive": true,
+    //     "__v": 0
+    //     },
+    //     {
+    //     "_id": "65b64cf4e9fe2d3a0100a7cc",
+    //     "bedName": "Delux",
+    //     "isActive": true,
+    //     "__v": 0
+    //     },
+    //     {
+    //     "_id": "65ed7652a4ebe7640a7dbbec",
+    //     "bedName": "ICU",
+    //     "isActive": true,
+    //     "__v": 0
+    //     },
+    //     {
+    //     "_id": "65ed764ea4ebe7640a7dbbe8",
+    //     "bedName": "Super Deluxe",
+    //     "isActive": true,
+    //     "__v": 0
+    //     }
+    //     ],
+    //   maxBedCount:"100",
+    //   city:{
+    //       "_id": "65fa1eca97884a1b779488b1",
+    //       "cityName": "Ahmedabad",
+    //       "isActive": true,
+    //       "stateId": {
+    //         "_id": "65fa1eb497884a1b779488a5",
+    //         "stateName": "Gujrat",
+    //         "isActive": true,
+    //         "isParentActive": true,
+    //         "countryId": {
+    //           "_id": "65fa1ea897884a1b7794889d",
+    //           "countryName": "india",
+    //           "isActive": true,
+    //           "__v": 0
+    //         },
+    //         "__v": 0
+    //       },
+    //       "countryId": "65fa1ea897884a1b7794889d",
+    //       "isParentActive": true,
+    //       "__v": 0
+    //   }}
+    //   reset(obj);
+    // }
+
     var submitData = async(data) => {
         console.log(" form data", data);
         if(!validateIP(data.AdIpAddress))
@@ -161,24 +256,33 @@ function BranchMaster() {
           toast.error("Please enter valid IP Address")
           return ;
         }
-        const tempData = {...data,city:data?.city?._id}
-        if(editData)
+
+        let bedTypes;
+        
+        try {
+          data.bedTypes = data.bedTypes.map((item) => item._id)
+          bedTypes = JSON.stringify(data.bedTypes);  
+        } catch (error) {
+          bedTypes = [];
+        }
+        
+
+        const tempData = {...data,city:data?.city?._id,bedTypes}
+        if(Number.isInteger(editData))
         { 
-          let temp = await updateBranchData(tempData,paginationModel.page,paginationModel.pageSize);
+          let temp = await updateBranchData({...tempData,id:editData},paginationModel.page,paginationModel.pageSize);
           if(temp){
-            setEditData('');
-            setOpenModal(false);
+            CloseModal();
           }
-         
         }
         else
         {
+          console.log('this is data i have see the add time : ' ,tempData);
           let temp = await addBranchData(tempData,paginationModel.page,paginationModel.pageSize);
 
           if(temp)
           {
-            setOpenModal(false);
-            setEditData('');
+            CloseModal();
           }
         }
         }
@@ -199,9 +303,10 @@ function BranchMaster() {
           { field: "adport", headerName: "Add Port", flex: 1, headerAlign: "center", align: "center",minWidth:150},
           { field: "addomainname", headerName: "Add Domain Name", flex: 1, headerAlign: "center", align: "center",minWidth:180 },
           { field: "adddomaintype", headerName: "Add Domain Type", flex: 1, headerAlign: "center", align: "center",minWidth:180 },
-          { field: "IsActive", headerName: "Is Active", flex: 1, headerAlign: "center", align: "center",minWidth:100,
+          { field: "maxBedCount", headerName: "Max Bed Count", flex: 1, headerAlign: "center", align: "center",minWidth:180 },
+          { field: "isActive", headerName: "is Active", flex: 1, headerAlign: "center", align: "center",minWidth:100,
               renderCell: (params) => {
-                  return <IOSSwitch checked={params.row.IsActive} onChange={(e) => updateBranchData({ _id: LocationData[params.row.id - (paginationModel.page * paginationModel.pageSize) - 1]?._id, isActive: e.target.checked }, paginationModel.page, paginationModel.pageSize)}></IOSSwitch>
+                  return <IOSSwitch checked={params.row.isActive} onChange={(e) => updateBranchData({ _id: LocationData[params.row.id - (paginationModel.page * paginationModel.pageSize) - 1]?._id,id:params.row.id - (paginationModel.page * paginationModel.pageSize) - 1, isActive: e.target.checked }, paginationModel.page, paginationModel.pageSize)}></IOSSwitch>
               }
           },
           {
@@ -210,14 +315,14 @@ function BranchMaster() {
               sortable: false,
               headerAlign: "center", align: "center",
               renderCell: (params) => (
-                  <>
-                      <div
+                 params.row.isActive ? <>
+                      <div   
                           className="btn btn-sm"
-                          onClick={() => { setEditData(params.row.id - (paginationModel.page * paginationModel.pageSize)); setOpenModal(true) }}
+                          onClick={() => { setEditData(params.row.id - (paginationModel.page * paginationModel.pageSize)-1); setOpenModal(true);console.log("this is information :" , params.row.id,paginationModel.page,paginationModel.pageSize,params.row.id - (paginationModel.page * paginationModel.pageSize)-1) }}
                       >
                           <CustomIconButton />
                       </div>
-                  </>
+                  </> : null
               ),
           },
       ];
@@ -233,11 +338,13 @@ function BranchMaster() {
                     location: element?.location,
                     locationcode: element?.locationCode,
                     AddIpAddress: element?.AdIpAddress,
-                    IsActive: element?.isActive ,
+                    isActive: element?.isActive ,
                     adport: element?.AdPort,
                     addomainname: element?.AdDomainName,
                     adddomaintype:element?.AdDomainType,
                     city:element?.city,
+                    bedTypes:element?.bedTypes,
+                    maxBedCount:element?.maxBedCount
                 };
                 array.push(thisData);
         });
@@ -251,9 +358,9 @@ function BranchMaster() {
       },[LocationData,ListLoading])
 
       useEffect(()=>{
-        if(editData)
+        if(Number.isInteger(editData))
         {
-          reset({...LocationData[editData-1],isActive:LocationData[editData-1]?.isActive?.toString()});
+          reset({...LocationData[editData],isActive:LocationData[editData]?.isActive?.toString()});
         }
       },[editData])
     
@@ -265,8 +372,8 @@ function BranchMaster() {
           handleClose={CloseModal}
           handleSubmit={handleSubmit(submitData)}
           open={OpenModal}
-          modalTitle={editData ? "Update Branch" : "Add Branch"}
-          isEdit={!!editData}
+          modalTitle={Number.isInteger(editData) ? "Update Branch" : "Add Branch"}
+          isEdit={Number.isInteger(editData)}
           Loading={Loading}
         >
           <Box
@@ -303,6 +410,7 @@ function BranchMaster() {
                             hasError={error}
                             onBlur={onBlur}
                             getOptionLabel={(option)=>option?.cityName}
+                            isOptionEqualToValue={(option, value) => option._id === value._id}
                             url={"admin/regionMaster/city"}
                             filterOnActive={true}
                             inputRef={ref}
@@ -339,18 +447,17 @@ function BranchMaster() {
                         name={"locationCode"}
                         control={control}
                         label={"Location Code"}
-                        rules={{required:{value:true,message:"Location Code is required"}}}
+                        rules={{required:{value:true,message:"Location Code is required"},pattern:{ value:numericRegex,message:"Please enter valid location code"},maxLength: { value:6, message:"Location code can be max 6 length" },minLength: { value:6, message:"Location code can be min 6 length" },valueAsNumber:true}}
                         /> 
                  </Grid>
 
                  <Grid xs={12} sm={3}>
                     <CustomTextInputField 
-                        type="number"
                         name={"AdPort"}
                         control={control}
                         label={"Add Port"}
                         rules={{required:{value:true,message:"port is required"},pattern:{
-                            value:/^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$/,message:"Please enter valid port"}}}
+                            value:/^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$/,message:"Please enter valid port"}, valueAsNumber:true}}
                         /> 
                  </Grid>
                  
@@ -382,8 +489,44 @@ function BranchMaster() {
                     <CustomTextInputField 
                         name={"AdDomainName"}
                         control={control}
-                        label={"Add Domain Name"}
+                        label={"Add domain name"}
                         rules={{required:{value:true,message:"Domain Name is required"}}}
+                        /> 
+                 </Grid>
+
+                 <Grid item xs={12} md={3}>
+                        <Controller
+                            name="bedTypes"
+                            control={control}
+                            render={({ field,fieldState:{error} }) => {
+                                const {onChange,value,ref,onBlur} = field; 
+                            return <CustomAutoCompelete 
+                            onChange={onChange}
+                            lable={"Select BedTypes"}
+                            value={value}
+                            multiple={true}
+                            hasError={error}
+                            onBlur={onBlur}
+                            getOptionLabel={(option)=>option?.bedName}
+                            isOptionEqualToValue={(option, value) => option._id === value._id}
+                            url={"admin/addMaster/bedtype"}
+                            filterOnActive={true}
+                            inputRef={ref}
+                            /> 
+                            }}
+                            > 
+                        </Controller>
+                            {
+                                errors.bedTypes && <Typography variant="caption" color="error">BedType is required</Typography> 
+                            }
+                    </Grid>
+
+                <Grid xs={12} sm={3}>
+                    <CustomTextInputField 
+                        name={"maxBedCount"}
+                        control={control}
+                        label={"Enter max bed count"}
+                        rules={{required:{value:true,message:"max bed count is required"},min:{ value:0,message:"min value is 0"},pattern:{ value:numericRegex,message:"Please enter valid bed type" },valueAsNumber:true}}
                         /> 
                  </Grid>
 
@@ -399,44 +542,15 @@ function BranchMaster() {
         >
             {
                 ListLoading ? <><LinearProgress /><TableSkeleton/></> : Array.isArray(rowData) && rowData.length > 0 ? (
-                    <DataGrid
-                    style={{maxHeight:"calc(100vh - 173px)"}}
-                    initialState={{ pagination: { paginationModel: { pageSize: paginationModel.pageSize,page:paginationModel.page } } , 
-                    columns: {
-                      columnVisibilityModel: {
-                        _id: false,
-                      },
-                    },
-                  
-                  }}
-                    sx={{
-                        "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                            outline: "none !important",
-                         },
-                      '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
-                      '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
-                      '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
-                    }}
-                      disableRowSelectionOnClick={true}
-                      columns={columns}
-                      rows={rowData}
-                      slots={{ toolbar: GridToolbar }}
-                      getRowHeight={(_data) => 'auto'}  
-                      getRowClassName={(params) => !params?.row?.IsActive && "inactive-row"}
-                      classes={{cellContent:"cellContent"}}
-                      paginationModel={paginationModel}
-                      onPaginationModelChange={(data) => onPaginationChange(data)}
-                      rowCount={branchCount} 
-                      pagination
-                      pageSizeOptions={[10,30,50,100]}
-                      paginationMode="server"
-                    />
+                  <CommonTable columns={columns} count={branchCount} paginationModel={paginationModel} rowData={rowData} onPaginationChange={onPaginationChange}/>
                   ) : (
                     <EmptyData />
                   )
             }
 
         </TableMainBox>
+
+
     </>
   )
 }

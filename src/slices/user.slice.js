@@ -34,7 +34,8 @@ const userSlice = createSlice({
         },
         setUserListLoading: (state, action) => {
             state.userListLoading = action.payload
-        }
+        },
+     
     }
 
 })

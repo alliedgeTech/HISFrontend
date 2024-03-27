@@ -33,6 +33,7 @@ import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
 import dayjs from 'dayjs';
 import CommonTable from '../../Components/CommonTable/CommonTable';
 import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
+import { getYearsOrBirthDate } from '../../utils/Common';
 
 
 function RegistrationMaster() {
@@ -43,11 +44,11 @@ function RegistrationMaster() {
     const [addAmountModal, setAddAmountModal] = useState(false);
     const webcamRef = useRef(null);
 
-
     const { registrationData,registrationLoading,registrationEditData,registrationPagination:paginationModel,registrationCount,registrationListLoading:ListLoading } = useSelector(State => State.registration);
     const dispatch = useDispatch();
-    const { handleSubmit, formState: { errors },reset,control,clearErrors,getValues,watch} = useForm({
+    const { handleSubmit, formState: { errors },reset,control,clearErrors,setValue,watch} = useForm({
       defaultValues:{
+        branch: null,
         title:null,
         doctor:null,
         age:"",
@@ -55,7 +56,6 @@ function RegistrationMaster() {
         passportNo:"",
         pincode:"",
         otherRemarks:"",
-        regDateTime:"",
         pationName:"",
         guardianName:"",
         gender:null,
@@ -70,12 +70,12 @@ function RegistrationMaster() {
         city:null,
         bloodGroup:null,
         pationType:null,
-        rfid:null,  
         availableAmount:"",
         newAvailableAmount:""
       },
       mode:"onTouched"
-    }); 
+    });
+
 
     const  { getRegistrationData,createRegistration,updateRegistration,updateStateAndAmount,getRegistrationFindById } = useFrontOfficeRegistration();
 
@@ -166,7 +166,6 @@ function RegistrationMaster() {
         passportNo:"",
         pincode:"",
         otherRemarks:"",
-        regDateTime:"",
         pationName:"",
         guardianName:"",
         gender:null,
@@ -181,18 +180,21 @@ function RegistrationMaster() {
         city:null,
         bloodGroup:null,
         pationType:null,
-        rfid:null,  
+        branch: null,
         });
         setFile(undefined);
         setPreviewUrl(null);
       }
 
       async function submitData(data) {
-        console.log("this@ is reg date",dayjs(data.dob.$d).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"));
-        let newData = { ...data,bloodGroup:data?.bloodGroup?.value,city:data?.city?._id,gender:data?.gender?.gender,pationType:data?.pationType?.value,rfid:data?.rfid?.show,title:data?.title?._id,doctor:data?.doctor?._id,refDoctore:data?.refDoctore?._id,dob:dayjs(data?.dob?.$d)?.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")}
 
-        if(registrationEditData || registrationEditData===0)
+        let newData = { ...data,bloodGroup:data?.bloodGroup?.value,city:data?.city?._id,gender:data?.gender?.gender,pationType:data?.pationType?.value,title:data?.title?._id,doctor:data?.doctor?._id,refDoctore:data?.refDoctore?._id,dob:data.dob}
+
+        delete newData?.regDateTime;
+
+        if(registrationEditData)
         {
+          delete newData.branch; 
           newData={...newData,registrationId:data?._id}
             const temp = await updateRegistration(newData,DFile);
     
@@ -201,7 +203,10 @@ function RegistrationMaster() {
             } 
     
         } else {
+
+          newData["branchCode"] = newData["branch"].locationCode;
           delete newData._id;
+          delete newData.branch; 
           newData = {...newData,image:DFile};
           const temp = await createRegistration(newData);
     
@@ -238,21 +243,15 @@ function RegistrationMaster() {
             if(data)
             {
               setPreviewUrl(data?.image);
-              console.log('this is blood group : ',data?.bloodGroup);
-              let newData = { ...data,bloodGroup:data?.bloodGroup ? {value:data?.bloodGroup } : null,gender:{gender:data?.gender},pationType:{value:data?.pationType},rfid:{...[{value:null,show:"NA"},{show:"Duplicate",value:"123"}].find((data)=>data.rfid===data?.rfid)},dob:new Date(data?.dob).toISOString().split('T')[0],isActive:data?.isActive?.toString()}
-                reset(newData);
-                setModalOpen(true);
+              let newData = { ...data,bloodGroup:data?.bloodGroup ? {value:data?.bloodGroup } : null,gender:{gender:data?.gender},pationType:{value:data?.pationType},dob:new Date(data?.dob).toISOString().split('T')[0],isActive:data?.isActive?.toString()}
+              reset(newData);
+              setModalOpen(true);
             } else { 
               toast.error("Something went wrong");
             }
           }
-        if(registrationEditData==0 || registrationEditData )
+        if(registrationEditData)
         {
-          // let data = registrationData[registrationEditData];
-          // setPreviewUrl(data?.image);
-          // let newData = { ...data,bloodGroup:{value:data?.bloodGroup?.value},gender:{gender:data?.gender},pationType:{value:data?.pationType},rfid:{...[{value:null,show:"NA"},{show:"Duplicate",value:"123"}].find((data)=>data.rfid===data?.rfid)},dob:new Date(data?.dob).toISOString().split('T')[0],isActive:data?.isActive?.toString()}
-          //   reset(newData);
-
           GetdataById();
         }
     },[registrationEditData]);
@@ -395,11 +394,8 @@ function RegistrationMaster() {
         setWebCamOpen(false);
       }
 
-     const watchDate = watch("dob");
-
      async function submitAvailableAmount(data)
      {
-        console.log('data.availableAmount',data.availableAmount,typeof data.availableAmount,'data.newAvailableAmount',data.newAvailableAmount,typeof data.newAvailableAmount)
         data.availableAmount += Number(data.newAvailableAmount)
         const resData = await updateStateAndAmount(data);
         if(resData) {
@@ -412,8 +408,19 @@ function RegistrationMaster() {
         reset({
           availableAmount:"",
           newAvailableAmount:"",
-          id:""
+          id:"" 
         });
+     }
+
+     function onDobValueChange(val){
+      let year = getYearsOrBirthDate(val?.$d);
+      setValue("age",year);
+     }
+
+     function  onAgeValueChange(val){
+      if(!Number.isInteger(parseInt(val))) return;
+      let date = getYearsOrBirthDate(val);
+      setValue("dob",date);
      }
 
   return (
@@ -489,7 +496,7 @@ function RegistrationMaster() {
       handleClose={closeTheModal}
       handleSubmit={handleSubmit(submitData)}
       open={ModalOpen}
-      modalTitle={registrationEditData===0 || registrationEditData ? "Update Registration" : "Add Registration"}
+      modalTitle={registrationEditData ? "Update Registration" : "Add Registration"}
       isEdit={!!registrationEditData}
       Loading={registrationLoading} 
       >
@@ -564,6 +571,7 @@ function RegistrationMaster() {
                             type={"number"}
                             control={control}
                             label={"Age"}
+                            onChange={(val) => onAgeValueChange(val)}
                             rules={{required:{value:true,message:"Please enter the age"}}}
                         /> 
                     </Grid>
@@ -606,15 +614,6 @@ function RegistrationMaster() {
                         /> 
                     </Grid>
 
-                    {/* <Grid xs={12} sm={3}>
-                        <CustomDateTimePickerField 
-                          name={"regDateTime"}
-                          control={control}
-                          label={"Registration Date Time"}
-                          rules={{valueAsDate:true,required:{value:true,message:"Registration date&time is required"}}}
-                          />
-                    </Grid> */}
-
                     <Grid xs={12} sm={3}>
                         <CustomTextInputField 
                             name={"pationName"}
@@ -623,6 +622,36 @@ function RegistrationMaster() {
                             rules={{required:{value:true,message:"Patient Name is required"}}}
                         /> 
                     </Grid>
+
+                     { !registrationEditData &&
+                      <Grid item xs={12} md={3}>
+                      <Controller
+                          name="branch"
+                          control={control}
+                          rules={{ required: {value: !!registrationEditData,message:'Branch is required'}}}
+                          render={({ field,fieldState:{error} }) => {
+                              const {onChange,value,ref,onBlur} = field; 
+                          return <CustomAutoCompelete 
+                          onChange={onChange}
+                          lable={"Select current Branch"}
+                          value={value}
+                          hasError={error}
+                          onBlur={onBlur}
+                          getOptionLabel={(option)=>option?.location}
+                          isOptionEqualToValue={(option, value) => option._id === value._id}
+                          url={"admin/locationMaster/getlocation"}
+                          filterOnActive={true}
+                          inputRef={ref}
+                          /> 
+                          }}
+                          > 
+                      </Controller>
+
+                          {
+                              errors.branch && <Typography variant="caption" color="error">Branch is required</Typography> 
+                          }
+                      </Grid>
+                    }
 
                     <Grid xs={12} sm={3}>
                         <CustomTextInputField 
@@ -743,6 +772,7 @@ function RegistrationMaster() {
                           control={control}
                           label={"Date of birth"}
                           rules={{valueAsDate:true,required:{value:true,message:"Please enter the dob"}}}
+                          onChange={(val) => onDobValueChange(val)}
                           maxDate={TodayDate}
                           />
                     </Grid>
@@ -850,26 +880,6 @@ function RegistrationMaster() {
                             {
                                 errors.pationType && <Typography variant="caption" color="error">Patient Type is required</Typography> 
                             }
-                    </Grid>
-
-                    <Grid xs={12} sm={3}>
-                        <Controller
-                            name="rfid"
-                            control={control}
-                            render={({ field }) => {
-                                const {onChange,value,ref} = field; 
-                            return <CustomAutoCompelete 
-                            onChange={onChange}
-                            lable={"Select RFID"}
-                            value={value}
-                            getOptionLabel={(option)=>option?.show}
-                            inputRef={ref}
-                            options={[{value:null,show:"NA"},{show:"Duplicate",value:"123"}]}
-                            /> 
-                            }}
-
-                            > 
-                        </Controller>
                     </Grid>
 
                     <Grid item xs={12} md={3}>

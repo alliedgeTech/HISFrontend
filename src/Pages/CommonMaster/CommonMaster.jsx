@@ -182,14 +182,14 @@ const onPaginationChange = async({page,pageSize}) => {
         headerName: "Actions",
         sortable:false,
         width: 150,
-        renderCell: (params) => ( <>
+        renderCell: (params) => ( params.row.isActive ? <>
             <div
               onClick={() => { setModalOpen(true);clearErrors(); reset({...params.row,isActive:params?.row?.isActive?.toString(),id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1});setEditData(true);}}
               >
               <CustomIconButton />
             </div>  
 
-          </>
+          </> : null
         ),
       }]
 

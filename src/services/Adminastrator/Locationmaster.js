@@ -43,7 +43,10 @@ export const useBranchData = () => {
 
         if(!resData.error)
         {
-            getBranchData(false,page,pageSize);
+            let tempdata = structuredClone(branchData);
+            console.log("asdfaksdiofjsaji",data?.id)
+            tempdata[data?.id] = resData.data.data;
+            dispatch(setBranchData(tempdata));
             dispatch(setBranchLoading(false));
             toast.dismiss(toastId)
             toast.success(resData.message);

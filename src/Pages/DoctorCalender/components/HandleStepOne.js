@@ -87,7 +87,7 @@ function HandleStepOne() {
                     disable={!!!watchCity}
                     inputRef={ref}
                     getOptionLabel={(option)=> option.location }
-                    url={`admin/locationMaster/getlocation/d?city=${watchCity?._id}`}
+                    url={`admin/locationMaster/getlocation`}
                     /> 
                   }}
                     />

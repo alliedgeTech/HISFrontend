@@ -38,6 +38,7 @@ export const useRoleData = () => {
     }
 
     const updateRole = async (data,resetAll) => {
+        const toastId = toast.loading("Loading...");
         dispatch(setRoleLoading(true));
         const resData = await ApiManager.patch(`admin/RoleMaster/updaterole/${data._id}`,data);
         
@@ -48,17 +49,17 @@ export const useRoleData = () => {
             temp[data?.id] = resData.data.data;
             dispatch(setRoleData(temp));
             toast.success(resData.message);
+            toast.dismiss(toastId)
             dispatch(setRoleLoading(false));
             return true;
         }
-
+        toast.dismiss(toastId)
         dispatch(setRoleLoading(false));
         return false;
     }
 
 
     const addRole = async (data,resetAll) => {
-        // setLoading(true);
         dispatch(setRoleLoading(true));
         const resData = await ApiManager.post("admin/RoleMaster/addrole",data);
 

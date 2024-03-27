@@ -27,20 +27,18 @@ import Switch from '@mui/material/Switch';
 import { setUserPagination } from '../../slices/user.slice';
 import toast from 'react-hot-toast';
 import CommonTable from '../../Components/CommonTable/CommonTable';
+import { emailRegex, numericRegex, panNoRegex } from '../../Constants/index.constant';
+import userMasterClasses from './usermaster.module.css'
 
 function UserMaster() {
     const { userListLoading,userData:UserData} = useSelector((state) => state.user);
-    const { updateUSer, addUser, Loading, assignRoleToUser,getUserData,userCount,paginationModel,getUserFindById } =
+    const { updateUSer, addUser, Loading, assignRoleToUser,getUserData,userCount,paginationModel,getUserFindById,getAllRoleData } =
   useUserData();
   var {
     handleSubmit,
     formState: { errors },
     reset,
     control,
-    watch,
-    setValue,
-    clearErrors,
-    getValues
   } = useForm({
     defaultValues: {
       name: "",
@@ -49,7 +47,7 @@ function UserMaster() {
       password: "",
       linkEmployee: "",
       mobilenumber: "",
-      primarylocation: null,
+      branches: [],
       address: "",
       pincode: "",
       isActive: "true",
@@ -60,8 +58,6 @@ function UserMaster() {
       designation:null,
       speciality:null,
       department:null,
-      country:null,
-      state:null,
       city:null,
       employeeCategory:null,
       gender:null,
@@ -71,33 +67,13 @@ function UserMaster() {
       title:null,
       virtualConsultation:null,
       languageSpoken:"",
-      branch:null
     },
     mode: "onTouched",
   });
 
-  const watchCity = watch("city");
-
-  useLayoutEffect(() => {
-    console.time('end');
-  },[]);
-
-  useEffect(() =>{ 
-    if(watchCity)
-    {
-      setValue("state",watchCity?.stateId)
-      setValue("country",watchCity?.stateId?.countryId)
-
-    } else {
-      setValue("state",null)
-      setValue("country",null)
-    }
-  },[watchCity])
-
 const dispatch = useDispatch();
-const RoleHook = useRoleData(); //* this is for if data is not fetched for role master then call the api 
-const RoleData = useSelector((state) => state.role?.roleData);  
 const [editData, setEditData] = useState("");
+const [RoleData, setRoleData] = useState(null)
 const [RoleId, setRoleId] = useState("");
 const [ModalOpen, setModalOpen] = useState(false);
 const [previewUrl, setPreviewUrl] = useState(null);
@@ -105,13 +81,13 @@ const [File, setFile] = useState(null);
 const [fileError, setFileError] = useState(null);
 const [RoleAssignModel, setRoleAssignModel] = useState(false);
 
-
 const handleCheck = (checked, roleInfo) => {
     assignRoleToUser({ value: checked, roleId: roleInfo._id, userId: RoleId });
   };
 
   var submitData = async(data) => {
-    data =  { ...data,primarylocationId:data.primarylocation._id,designation:data.designation._id,speciality:data.speciality._id,department:data.department._id,country:data.country._id,state:data.state._id,city:data.city._id,employeeCategory:data.employeeCategory._id,gender:data.gender.gender,title:data.title._id,virtualConsultation:data.virtualConsultation.value};
+    console.log('this is how we data get when user submit the form : ',data);
+    data =  { ...data,panNo:data.panNo.toUpperCase(),branches:JSON.stringify(data.branches.map((obj)=>obj._id)),designation:data.designation._id,speciality:data.speciality._id,department:data.department._id,city:data.city._id,employeeCategory:data.employeeCategory._id,gender:data.gender.gender,title:data.title._id,virtualConsultation:data.virtualConsultation.value};
     
     delete data.role;
 
@@ -119,22 +95,19 @@ const handleCheck = (checked, roleInfo) => {
 
       let temp = await updateUSer(data,paginationModel.page,paginationModel.pageSize,File);
       if (temp) {
-        setEditData("");
-        reset();
-        setModalOpen(false);
+        closeTheModal();
       }
     } else {
       data = { ...data,image:File }
       delete data?._id
       let temp = await addUser(data,paginationModel.page,paginationModel.pageSize); 
       if (temp) {
-        reset();
-        setModalOpen(false);
+        closeTheModal();
       }
     }
   };
 
-  const CourseImageFile = (e) => {
+  const SelectImageFile = (e) => {
     const selectedFile = e.target.files[0];
     if(!selectedFile)
     {
@@ -222,13 +195,13 @@ const handleCheck = (checked, roleInfo) => {
         email: element?.email,
         linkEmployee: element?.linkEmployee,
         mobilenumber: element?.mobilenumber,
-        branch:element.branch,
+        branches:element.branches || [],
         city: element?.city,
         address: element?.address,
         pincode: element?.pincode,
         isActive: element?.isActive,
         image:element?.image,
-        panNo:element?.panNo,
+        panNo:element?.panNo ? element?.panNo.toUpperCase() : "-",
       };
       array.push(thisData);
     });
@@ -246,6 +219,7 @@ const handleCheck = (checked, roleInfo) => {
     setModalOpen(false);
     setPreviewUrl(null)
     setEditData("");
+    setFile(null)
     setFileError(null);
     reset({
       name: "",
@@ -254,7 +228,7 @@ const handleCheck = (checked, roleInfo) => {
       password: "",
       linkEmployee: "",
       mobilenumber: "",
-      primarylocation: null,
+      branches: [],
       address: "",
       pincode: "",
       isActive: "true",
@@ -265,8 +239,6 @@ const handleCheck = (checked, roleInfo) => {
       designation:null,
       speciality:null,
       department:null,
-      country:null,
-      state:null,
       city:null,
       employeeCategory:null,
       gender:null,
@@ -276,26 +248,30 @@ const handleCheck = (checked, roleInfo) => {
       title:null,
       virtualConsultation:null,
       languageSpoken:"",
-      branch:null
     });
     
   };
+
+  useEffect(() => {
+    (async function(){
+      let resData =await getAllRoleData();
+      setRoleData(resData);
+    })();
+  },[])
 
   useEffect(() => {
 
     async function setTheEditData() {
         let tempData = await getUserFindById(editData?._id);
         if(tempData) {
-          const dataNew = [{value:'yes',shaw:true},{value:'no',shaw:false}].find((item)=>item.shaw == tempData?.virtualConsultation);
+          const findVirtualConsultation = [{value:'yes',shaw:true},{value:'no',shaw:false}].find((item)=>item.shaw == tempData?.virtualConsultation);
 
-          tempData = {...tempData,primarylocation:tempData?.primarylocationId,gender:{gender:tempData.gender},virtualConsultation:dataNew,isActive:tempData?.isActive?.toString(),id:editData?.id}
+          tempData = {...tempData,branches:tempData?.branches || [],gender:{gender:tempData.gender},virtualConsultation:findVirtualConsultation,isActive:tempData?.isActive?.toString(),id:editData?.id}
   
         reset(tempData);
         setPreviewUrl(tempData?.image); 
         setModalOpen(true);
-        } else {
-          toast.error("something went wrong");
-        }
+        } 
     }
     if(editData)
     {
@@ -309,9 +285,8 @@ const onPaginationChange = async({page,pageSize}) => {
   console.log("%% this is resData",pageSize);
     if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
     {
-      const recentData = structuredClone(paginationModel);
+      const recentData = JSON.parse(JSON.stringify(paginationModel));
       dispatch(setUserPagination({page,pageSize}));
-      console.log("%% this is resData 3",page!==recentData.page)
       if(page!==recentData.page)
       {
           // change the page
@@ -349,7 +324,7 @@ const onPaginationChange = async({page,pageSize}) => {
     {
       field: "id",
       headerName: "ID",
-      minWidth: "50",
+      minWidth: 50,
     },
     { field: "_id", headerName: "", width: "0" },
     {
@@ -388,10 +363,9 @@ const onPaginationChange = async({page,pageSize}) => {
       field: "actions",
       sortable: false,
       headerName: "View Items",
-      flex: 1,
       minWidth:100,
       renderCell: (params) => (
-        <>
+         params.row.isActive ?  <>
           <div
             className="btn btn-sm"
             onClick={() => {
@@ -409,9 +383,10 @@ const onPaginationChange = async({page,pageSize}) => {
           >
             <CustomAddModeratorOutlinedIcon />
           </div>
-        </>
+        </> : null
       ),
     },
+  
 ];
 
 
@@ -452,8 +427,7 @@ const onPaginationChange = async({page,pageSize}) => {
                         name={"email"}
                         control={control}
                         label={"Email Address"}
-                        rules={{required:{value:true,message:"Email is required"},pattern:{value:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-                        ,message:"Please enter the valid email address"}}}
+                        rules={{required:{value:true,message:"Email is required"},pattern:{value:emailRegex,message:"Please enter the valid email address"}}}
                         /> 
                     </Grid>
 
@@ -463,7 +437,7 @@ const onPaginationChange = async({page,pageSize}) => {
                         control={control}
                         label={"Pan No"}
                         rules={{required:{value:true,message:"Please enter the pan no"},minLength:{value:10 , message:"Please enter valid pan no"},pattern:{
-                            value:/[A-Z]{5}[0-9]{4}[A-Z]{1}/ , message:"Please enter the valid pan no"
+                            value:panNoRegex , message:"Please enter the valid pan no"
                           }}}
                         /> 
                     </Grid>
@@ -503,40 +477,10 @@ const onPaginationChange = async({page,pageSize}) => {
                                 errors.designation && <Typography variant="caption" color="error">Designation is  required</Typography> 
                         }
                     </Grid>
-                    
+                  
                     <Grid item xs={12} md={3}>
                         <Controller
-                            name="country"
-                            control={control}
-                            rules={{ required: 'Please Select City' }}
-                            render={({ field,fieldState: { error } }) => {
-                                const {onChange,value,ref,onBlur} = field; 
-                            return <CustomAutoCompelete 
-                            onChange={onChange}
-                            lable={"Select Country"}
-                            value={value} 
-                            hasError={error}
-                            onBlur={onBlur}
-                            readOnly
-                            disable
-                            getOptionLabel={(option)=>option?.countryName}
-                            url={"admin/regionMaster/country"}
-                            filterOnActive={true}
-                            inputRef={ref}
-                            onInputChange={()=>console.log("beby")}
-                            /> 
-                            }}
-
-                            > 
-                        </Controller>
-                            {
-                                errors.country && <Typography variant="caption" color="error">Please select city</Typography> 
-                            }
-                    </Grid>
-
-                    <Grid item xs={12} md={3}>
-                        <Controller
-                            name="primarylocation"
+                            name="branches"
                             control={control}
                             rules={{ required: 'Branch is required' }}
                             render={({ field,fieldState:{error} }) => {
@@ -545,9 +489,11 @@ const onPaginationChange = async({page,pageSize}) => {
                             onChange={onChange}
                             lable={"Select Branch"}
                             value={value}
+                            multiple={true}
                             hasError={error}
                             onBlur={onBlur}
                             getOptionLabel={(option)=>option?.location}
+                            isOptionEqualToValue={(option, value) => option._id === value._id}
                             url={"admin/locationMaster/getlocation"}
                             saveData={(data)=>dispatch(setBranchData(data))}
                             filterOnActive={true}
@@ -558,7 +504,7 @@ const onPaginationChange = async({page,pageSize}) => {
                         </Controller>
 
                             {
-                                errors.primarylocation && <Typography variant="caption" color="error">Branch is required</Typography> 
+                                errors.branches && <Typography variant="caption" color="error">Branch is required</Typography> 
                             }
                     </Grid>
 
@@ -626,7 +572,7 @@ const onPaginationChange = async({page,pageSize}) => {
                                 message: 'PIN code is required',
                               },
                               pattern: {
-                                value: /^[0-9]*$/,
+                                value: numericRegex,
                                 message: 'PIN code should be numeric',
                               },}}
                         /> 
@@ -698,35 +644,6 @@ const onPaginationChange = async({page,pageSize}) => {
 
                     <Grid item xs={12} md={3}>
                         <Controller
-                            name="state"
-                            control={control}
-                            rules={{ required: 'State is required' }}
-                            render={({ field,fieldState:{error} }) => {
-                                const {onChange,value,ref,onBlur} = field; 
-                            return <CustomAutoCompelete 
-                            onChange={onChange}
-                            lable={"Select State"}
-                            readOnly
-                            disable
-                            value={value}
-                            hasError={error}
-                            onBlur={onBlur}
-                            getOptionLabel={(option)=>option?.stateName}
-                            url={"admin/regionMaster/state"}
-                            filterOnActive={true}
-                            inputRef={ref}
-                            /> 
-                            }}
-
-                            > 
-                        </Controller>
-                            {
-                                errors.state && <Typography variant="caption" color="error">Please Select City</Typography> 
-                            }
-                    </Grid>
-
-                    <Grid item xs={12} md={3}>
-                        <Controller
                             name="employeeCategory"
                             control={control}
                             rules={{ required: 'Employee Category is required' }}
@@ -744,10 +661,8 @@ const onPaginationChange = async({page,pageSize}) => {
                             inputRef={ref}
                             /> 
                             }}
-
                             > 
                         </Controller>
-
                         {
                             errors.employeeCategory && <Typography variant="caption" color="error">Employee Category is required</Typography> 
                         }
@@ -814,7 +729,7 @@ const onPaginationChange = async({page,pageSize}) => {
                             type={"number"}
                             control={control}
                             label={"Mobile NO"}
-                            rules={{required:{value:true,message:"Please enter the mobile number"},minLength:{value:10,message:"Please enter the min length 10"},maxLength:{value:10,message:"Please enter the max length 10"},pattern:{value:/^[0-9]*$/,message:"Please enter the valid mobile number"}}}
+                            rules={{required:{value:true,message:"Please enter the mobile number"},minLength:{value:10,message:"Please enter the min length 10"},maxLength:{value:10,message:"Please enter the max length 10"},pattern:{value:numericRegex,message:"Please enter the valid mobile number"}}}
                         /> 
                     </Grid>
 
@@ -996,7 +911,7 @@ const onPaginationChange = async({page,pageSize}) => {
                               style={{ display: "none" }}
                               id="image"
                               accept=".png, .jpg, .jpeg"
-                              onChange={CourseImageFile}
+                              onChange={SelectImageFile}
                             />
                             Upload Image
                             </Button>
@@ -1025,7 +940,7 @@ const onPaginationChange = async({page,pageSize}) => {
         <TableMainBox
         title={"User List"}
         buttonText={"Add User"}
-        onClick={() => {setModalOpen(true);clearErrors();}}
+        onClick={() => {setModalOpen(true)}}
         >
             {
                 userListLoading ? <><LinearProgress /><TableSkeleton /></> : Array.isArray(rowData) && rowData.length !== 0 ? ( <CommonTable  columns={columns} count={userCount} paginationModel={paginationModel} rowData={rowData}  onPaginationChange={onPaginationChange}/> ) : (<EmptyData />)
@@ -1053,13 +968,13 @@ const onPaginationChange = async({page,pageSize}) => {
               p: '2rem',
             }}
           >
+            <div className={userMasterClasses.roleGridContainer}>
             {
             (Array.isArray(RoleDataFilterd) && RoleDataFilterd.length > 0) ? RoleDataFilterd.map((item, index) => (
-                      <div key={index} style={{display:"flex", alignItems:"center"}}>
-                       { console.log("djkasjfkdk",RoleId ,UserData,item,
-                            UserData?.[RoleId - 1]?.role?.findIndex((data) => data === item._id) !== (-1 || undefined)) }
+                      <div key={index} className={userMasterClasses.roleItemContainer}>
                         <Checkbox
                           checked={
+
                             RoleId &&
                             UserData?.[RoleId - 1]?.role?.findIndex((data) => data === item._id) !== (-1 || undefined)
                           }
@@ -1070,6 +985,7 @@ const onPaginationChange = async({page,pageSize}) => {
                     )) 
                      : <div className="text-center text-xl font-semibold">No Role Found. Please First Create The Role</div>
                   }
+                </div>
           </DialogContent>
         </Dialog>
     </>

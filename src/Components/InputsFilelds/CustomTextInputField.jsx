@@ -11,6 +11,7 @@ export const CustomTextInputField = ({ name, control, label,readOnly,required,ru
         field: { onChange, value ,onBlur},
         fieldState: { error }
       }) => (
+        <>
         <TextField
         sx={{  "& label.Mui-focused": {
           color: error ? "" : "#25396f"
@@ -37,6 +38,7 @@ export const CustomTextInputField = ({ name, control, label,readOnly,required,ru
           inputProps={inputPropsText}
           InputProps={InputPropsText}
         />
+        </>
       )}
     />
   );

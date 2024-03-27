@@ -1,3 +1,5 @@
+import { numericRegex } from "../Constants/index.constant";
+
 export const getDateArrayWithStartDateAndEndDateWithDoctorId = async (startDate, endDate, doctorId) => {
     const dateArray = [];
     
@@ -19,4 +21,27 @@ export const getDateArrayWithStartDateAndEndDateWithDoctorId = async (startDate,
     console.log("this is date array : ",dateArray);
     return dateArray;
 
+}
+
+export const getYearsOrBirthDate = (data) => {
+    //* first we have to found this is date or year
+    let isValidNumber = numericRegex.test(data);
+
+    //* if this is year then we birth date of 1st january of that year
+    if(isValidNumber) {
+        let todayDate = new Date();
+        let year = new Date(todayDate.getFullYear() - data,todayDate.getMonth(),todayDate.getDate());
+        return year;
+    }
+    //* if this is date then we calculate the year and return it 
+    else {
+        let today = new Date();
+        let birthDate = new Date(data);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        let m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
 }
