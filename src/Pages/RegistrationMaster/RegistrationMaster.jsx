@@ -187,7 +187,7 @@ function RegistrationMaster() {
       }
 
       async function submitData(data) {
-
+ 
         let newData = { ...data,bloodGroup:data?.bloodGroup?.value,city:data?.city?._id,gender:data?.gender?.gender,pationType:data?.pationType?.value,title:data?.title?._id,doctor:data?.doctor?._id,refDoctore:data?.refDoctore?._id,dob:data.dob}
 
         delete newData?.regDateTime;
