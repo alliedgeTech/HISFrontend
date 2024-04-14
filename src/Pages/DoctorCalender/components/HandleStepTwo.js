@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import { setDoctor, setStep } from '../../../slices/doctorCalender.slice';
+import { setDoctor, setLocation, setStep } from '../../../slices/doctorCalender.slice';
 import { useForm,Controller } from 'react-hook-form';
 import CustomAutoCompelete from '../../../Components/CustomAutoCompelete/CustomAutoCompelete';
 import Hclasses from "./handleStepOne.module.css"
@@ -10,26 +10,25 @@ import CustomButton from '../../../Components/Button/Button';
 
 
 function HandleStepTwo() {
-    const { doctor,city,location } = useSelector(state=>state.doctorCalender);
-    console.log("this is branch :" ,location);
+    const { location,doctor } = useSelector(state=>state.doctorCalender);
     const dispatch = useDispatch();
     var { handleSubmit, formState: { errors },control } = useForm({
         defaultValues: {
-          doctor:doctor
+          location: location,
         },
         mode:'onTouched'
       });
 
       const submitData = (data) => { 
-        dispatch(setDoctor(data.doctor));
+        dispatch(setLocation(data.location));
         dispatch(setStep(3));
-    }
+      }
 
   return (
     <div className={Hclasses.container}>
 
     <div className={Hclasses.Box}>
-      <Typography className={Hclasses.cusTypogrphy} >Select Doctor</Typography>
+      <Typography className={Hclasses.cusTypogrphy} >Select Branch</Typography>
          <Box
          width={'100%'} 
         component="form"
@@ -44,29 +43,29 @@ function HandleStepTwo() {
               alignItems="center" 
             > 
                 <Grid xs={12} sm={12}>
-                     <Controller
-                        name="doctor"
-                        control={control}
-                        rules={{ required: 'Doctor is required' }}
-                        render={({ field,fieldState:{error} }) => {
-                            const {onChange,value,ref} = field; 
-                        return <CustomAutoCompelete 
-                        onChange={onChange}
-                        lable={"Select Doctor"}
-                        value={value}
-                        getOptionLabel={(option)=>` ${option?.userName} / ${option?.speciality?.speciality}`}
-                        url={`admin/userMaster/user/doctor?city=${city?._id}&branch=${location?._id}`}
-                        inputRef={ref}
-                        hasError={error}
-                        /> 
-                        }}
-                        > 
-                      </Controller>
-
-                        {
-                            errors.doctor && <Typography variant="caption" color="error">{errors.doctor.message}</Typography> 
-                        }
-                    </Grid>
+                    <Controller
+                    name="location"
+                    control={control}
+                    rules={{ required: 'branch is required' }}
+                    render={({ field,fieldState: { error } }) => {
+                      const {onChange,value,ref,onBlur} = field; 
+                    return <CustomAutoCompelete 
+                    onChange={onChange}
+                    lable={"Select Branch"}
+                    hasError={error}
+                    value={value}
+                    onBlur={onBlur}
+                    inputRef={ref}
+                    filterOnActive={true}
+                    getOptionLabel={(option)=> option.location }
+                    url={`admin/locationMaster/location/doctor/${doctor._id}`}
+                    /> 
+                  }}
+                    />
+                    {
+                      errors.location && <Typography variant="caption" color="error">branch is required</Typography> 
+                    }
+                </Grid>
 
 
             </Grid>

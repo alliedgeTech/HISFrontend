@@ -5,10 +5,12 @@ import {
   setActiveDaySlotIndex,
   setActiveDaySlots,
   setActiveDaySlotsUpdate,
+  setAddedNewSlots,
   setDoctorCalenderEditData,
   setDoctorCalenderLoading,
   setLeveRoomDate,
   setRemainingDays,
+  setRemoveSlots,
   setSeveDayData,
 } from "../../../slices/doctorCalender.slice";
 import BoxCalsses from "./handleStepOne.module.css";
@@ -34,6 +36,9 @@ import MenuItem from "@mui/material/MenuItem";
 import toast from "react-hot-toast";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import socket from "../../../socket";
+import CustomButton from "../../../Components/Button/Button";
+import CustomIconButton from "../../../Components/CustomeIcons/CustomEditIcons";
+
 
 const dataColorSow = [
   {
@@ -63,9 +68,7 @@ function RenderBox({
   day,
   date,
   index,
-  leftTime,
-  startTime,
-  sessionTime,
+  scheduleData,
   doBreak,
   HandleSlotDataIndex,
 }) {
@@ -75,7 +78,6 @@ function RenderBox({
     setMenuItemControl(null);
   };
   const { activeDaySlotIndex } = useSelector((state) => state.doctorCalender);
-  console.log("who is activeDaySlotIndex : ", activeDaySlotIndex, index);
   return (
     <div className={BoxCalsses.RenderBox} style={{ background: activeDaySlotIndex === index ? "rgb(37, 57, 111)" : "white",color: activeDaySlotIndex === index ? 'white' : 'black' }}>
       <div className={BoxCalsses.BoxHeading}>
@@ -116,15 +118,36 @@ function RenderBox({
         </Menu>
       </div>
       <Divider style={{ margin: "5px 0px" }} />
-      <div className={BoxCalsses.obj}>
+      <table >
+        <thead>
+          <th>Branch</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Session Duration</th>
+        </thead>
+        <tbody>
+            {
+              scheduleData?.map((item,index) => (
+                <tr key={index} > 
+                  <td>{item.branch.location}</td>
+                  <td style={{textAlign:'center'}}>{item.startTime}</td>
+                  <td style={{textAlign:'center'}}>{item.endTime}</td>
+                  <td style={{textAlign:'center'}}>{item.sessionDuration}</td>
+                </tr>
+              ))
+            }
+        </tbody>
+      </table>
+      {/* <div className={BoxCalsses.obj}>
         <span className={BoxCalsses.title}>StartTime</span> : {startTime}
       </div>
       <div className={BoxCalsses.obj}>
-        <span className={BoxCalsses.title}>leftTime</span> : {leftTime}
+        <span className={BoxCalsses.title}>endTime</span> : {endTime}
       </div>
       <div className={BoxCalsses.obj}>
         <span className={BoxCalsses.title}>SessionTime</span>: {sessionTime}
-      </div>
+      </div> */}
+      <div style={{display:"flex",flexDirection:"column",justifyContent:"flex-end",height:"fit-content"}}> 
       <Divider style={{ margin: "5px 0px" }} />
       <div className={BoxCalsses.flexEnd}>
         <Button
@@ -139,6 +162,7 @@ function RenderBox({
           {" "}
           Show Slots
         </Button>
+      </div>
       </div>
     </div>
   );
@@ -316,21 +340,42 @@ function SlotSBoxRender({
 }
 
 function DoctorSlotsByDate() {
-  const dispatch = useDispatch();
-  const {
-    doctor,
-    sevenDayData,
-    loading,
-    remainingDays,
-    doctorCalenderEditData,
-    doctorCalenderLoading,
-    activeDaySlots,
-    activeDaySlotIndex,
-    leaveRoomDate,
-  } = useSelector((state) => state.doctorCalender);
-  const { isConnected } = useSelector((state) => state.socket);
+const dispatch = useDispatch();
+    const {
+        doctor,
+        location,
+        sevenDayData,
+        loading,
+        remainingDays,
+        doctorCalenderEditData,
+        doctorCalenderLoading,
+        activeDaySlots,
+        activeDaySlotIndex,
+        leaveRoomDate,
+    } = useSelector((state) => state.doctorCalender);
+
   const [createTimingModal, setCreateTimingModal] = useState(false);
-  const { createDoctorSlotData, updateDoctorSlotData, BreakDoctorSlotData } =
+
+  var {
+    handleSubmit,
+    formState: { errors },
+    reset,
+    control,
+    clearErrors,
+    watch,
+    getValues,
+    setValue
+  } = useForm({
+    defaultValues: {
+      day: null,
+      schedule: [{ branch: null, startTime: null, endTime: null,sessionDuration:null }],
+    },
+    mode: "onTouched",
+  });
+
+  const watchSchedule = watch("schedule");
+
+  const { getDoctorCalenderData, createDoctorSlotData, updateDoctorSlotData, BreakDoctorSlotData } =
     useDoctorMasterData();
 
     let mouseDown = false;
@@ -339,11 +384,14 @@ function DoctorSlotsByDate() {
   
     const startDragging = (e) => {
       mouseDown = true;
-      console.log("this is start dragging" ,e.pageX, parentRef.current.offsetLeft );
       startX = e.pageX - parentRef.current.offsetLeft;
       scrollLeft = parentRef.current.scrollLeft;
     }
     
+    useEffect(() => {
+      console.log('this is active day slots : ',activeDaySlots);
+    },[activeDaySlots ])
+
     const stopDragging = (e) => {
       mouseDown = false;
     }
@@ -356,311 +404,348 @@ function DoctorSlotsByDate() {
       parentRef.current.scrollLeft = scrollLeft - scroll;
     }
 
-  function getRoomId(date) {
-    let temp = `${
-      date
-        ? new Date(date).toLocaleDateString("en-CA").toString()
-        : new Date().toLocaleDateString("en-CA").toString()
-    }${doctor?._id?.toString()}`;
+    function getRoomId(date) {
+        let temp = `${doctor?._id?.toString()}_${
+          date
+            ? new Date(date).toLocaleDateString("en-CA").toString()
+            : new Date().toLocaleDateString("en-CA").toString()
+        }_${location?._id?.toString()}`;
+    
+        if (temp === "Invalid Date") {
+          temp = location?._id?.toString() +'_'+ new Date().toLocaleDateString("en-CA").toString() + '_'+ doctor?._id?.toString();
+        }
+    
+        return temp;
+      }
+    
+      function addTimingInSchdule(){
+        const schedule = getValues("schedule");
+        let obj = { branch: null, startTime: null, endTime: null,sessionDuration:null };
+        if(Number.isInteger(doctorCalenderEditData)) {
+          obj.new = true;
+        }
+        setValue("schedule", [...schedule, obj]);
+      }
 
-    if (temp === "Invalid Date") {
-      temp =
-        new Date().toLocaleDateString("en-CA").toString() +
-        doctor?._id?.toString();
-    }
+      function removeSchedule(index){
+        const schedule = getValues("schedule");
+        if(schedule.length === 1) return toast.error("You can't remove all the schedule"); 
+        const temp = schedule.filter((obj,ind) => ind !== index);
+        setValue("schedule",temp);
+      }
 
-    return temp;
-  }
+      function joinRoomAndGetSlots(roomId){
+        socket.emit("joinRoom", [roomId]);
+        socket.emit("slots", { type: "get", id:roomId}, (data)=>{
+            if(!data.success){
+              return toast.error(data.message);
+            }
 
-  console.log("this is active this si sevem days data : ", sevenDayData);
+            dispatch(setActiveDaySlots(data.value));             
 
-  let roomId = getRoomId();
+        });
+        
+      }
 
-  function getCurrentWeekDateByDay(dayName) {
-    console.log("we got the day like this: ", dayName);
-    const daysOfWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-    const today = new Date();
-    const currentDayIndex = today.getDay(); // 0 for Sunday, 1 for Monday, etc.
-
-    const targetDayIndex = daysOfWeek.indexOf(dayName.toLowerCase());
-    let daysToAdd = targetDayIndex - currentDayIndex;
-
-    if (daysToAdd < 0) {
-      // If the target day is earlier in the week, add 7 days to get the next occurrence.
-      daysToAdd += 7;
-    }
-
-    if (daysToAdd === 0) {
-      // If the target day is today, return today's date.
-      console.log("this is today date :", today);
-      return today;
-    }
-
-    const nextDate = new Date(today);
-    nextDate.setDate(today.getDate() + daysToAdd);
-
-    return nextDate;
-  }
-
-  const responceIndivisualBreakHandler = useCallback((data) => {
-      let activeDaySlotsRef = activeDaySlots?.slotsmasters?.slot;
-      if(!Array.isArray(activeDaySlotsRef)) return; 
-      const tempData = JSON.parse(JSON.stringify(activeDaySlots));
-      tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
-        return obj._id===data._id ? {...obj,break:data.value} : obj ;
-      })
-      dispatch(setActiveDaySlots(tempData));
-  },[activeDaySlots]);
-
-  useEffect(() => {
+      useEffect(() => {
    
-    dispatch(setSocketConnected(true));
-    dispatch(setLeveRoomDate(new Date().toLocaleDateString("en-CA").toString())
-    );
-    socket.emit("joinRoom", [roomId, roomId + "_slots"], "doctor_slots");
-      // socket.emit('joinRoom',`${roomId}_slots`,"admin");
-
-    socket.on("doctorCalenderData", (data) => {
-      dispatch(setDoctorCalenderLoading(true));
-      console.log("this is data from socket yeyeyeyyeye: ", data);
-      if (data) {
-        const currentDate = new Date();
-        const tempData = data.commonSchedule.map((obj, index) => ({
-          ...obj,
-          date: getCurrentWeekDateByDay(obj?.dayName)
-            .toLocaleDateString("en-CA")
-            .toString(),
-        }));
-        data.commonSchedule = tempData;
-        dispatch(setSeveDayData(data));
-        const DayData = [
-          { name: "mon", index: 0 },
-          { name: "tue", index: 1 },
-          { name: "wed", index: 2 },
-          { name: "thu", index: 3 },
-          { name: "fri", index: 4 },
-          { name: "sat", index: 5 },
-          { name: "sun", index: 6 },
-        ];
-
-        // Extract the indices from tempData
-        const indicesToRemove = data?.commonSchedule?.map((item) => item.index);
-
-        // Filter DayData to remove elements with matching indices
-        const updatedDayData = DayData.filter(
-          (item) => !indicesToRemove.includes(item.index)
+        dispatch(setLeveRoomDate(new Date().toLocaleDateString("en-CA").toString())
         );
 
-        dispatch(setRemainingDays(updatedDayData));
-        dispatch(setDoctorCalenderLoading(false));
-      } else {
-        toast.error("Something went wronge in socket");
-      }
-    });
-
-    socket.on("update_slot",(data)=>{
-      if(!data) return;
-      dispatch(setActiveDaySlotsUpdate(data))
-    })
-
-    socket.on("soltsData", (data) => {
-      dispatch(setActiveDaySlots(data));
-      console.log("slotData", data);
-    });
+        const roomId = getRoomId();
+        joinRoomAndGetSlots(roomId);
     
-    return () => {
-      dispatch(setSocketConnected(false));
-      dispatch(setActiveDaySlotIndex(0));
-      // socket.emit("leaveRoom", roomId)
-      socket.off("soltsData");
-      socket.off("doctorCalenderData");
-      socket.off("update_slot");
-      socket.emit("leaveRoom",leaveRoomDate + doctor?._id + "_slots");
-    };
-  }, []);
+        // socket.on("doctorCalenderData", (data) => {
+        //   dispatch(setDoctorCalenderLoading(true));
+        //   console.log("this is data from socket yeyeyeyyeye: ", data);
 
+        //   if (data) {
+        //     const currentDate = new Date();
+        //     const tempData = data.commonSchedule.map((obj, index) => ({
+        //       ...obj,
+        //       date: getCurrentWeekDateByDay(obj?.dayName)
+        //         .toLocaleDateString("en-CA")
+        //         .toString(),
+        //     }));
+        //     data.commonSchedule = tempData;
+        //     dispatch(setSeveDayData(data));
+        //     const DayData = [
+        //       { name: "mon", index: 0 },
+        //       { name: "tue", index: 1 },
+        //       { name: "wed", index: 2 },
+        //       { name: "thu", index: 3 },
+        //       { name: "fri", index: 4 },
+        //       { name: "sat", index: 5 },
+        //       { name: "sun", index: 6 },
+        //     ];
+    
+        //     // Extract the indices from tempData
+        //     const indicesToRemove = data?.commonSchedule?.map((item) => item.index);
+    
+        //     // Filter DayData to remove elements with matching indices
+        //     const updatedDayData = DayData.filter(
+        //       (item) => !indicesToRemove.includes(item.index)
+        //     );
+    
+        //     dispatch(setRemainingDays(updatedDayData));
+        //     dispatch(setDoctorCalenderLoading(false));
+        //   } else {
+        //     toast.error("Something went wronge in socket");
+        //   }
 
-  function HandleSlotDataIndex(index) {
-    console.log("this is index @: ", index);
-    if (activeDaySlotIndex === index) {
-      console.log(
-        "i am emit the event that is joinRoom Date : same date click"
-      );
-      return;
-    }
-    console.log(
-      "i am emit the event that is joinRoom Date :  this is check is connected or not : ",
-      isConnected
-    );
+        // });
+    
+        //TODO remove this event future
+        socket.on("update_slot",(data)=>{
+          if(!data) return;
+          dispatch(setActiveDaySlotsUpdate(data))
+        })
+    
+        socket.on("slots", (data) => {
+          switch(data?.type){
+            case 'get':
+              //* here we got all slots data
+              getDoctorCalenderData();
+              dispatch(setActiveDaySlots(data?.data));
+              console.log("slotData", data);
+              break;
+            case 'add':
+            //TODO add function for this add the slots
+              // uid and data and at place we have to add
+              dispatch(setAddedNewSlots(data));
+              console.log("please add this slots : ",data);
+              break;
+    
+            case 'delete':
+            //TODO : delete the slots
+              dispatch(setRemoveSlots(data))
+              console.log("please delete this slots : ",data);
+              break;
+            
+            case 'update':
+            //TODO : update the slots
+              dispatch(setActiveDaySlotsUpdate(data));
+              console.log("please update this slots : ",data);
+              break;
+          }
+          
+        });
+        
+        return () => {
+          dispatch(setActiveDaySlotIndex(null));
+          socket.off("slots");
+          socket.off("doctorCalenderData");
+          //TODO remove this event future
+          socket.off("update_slot");
+          socket.emit("leaveRoom",[getRoomId(leaveRoomDate)]);
+        };
+      }, []);
 
-    if (sevenDayData && isConnected) {
-      dispatch(setActiveDaySlotIndex(index));
-      socket.emit("leaveRoom", leaveRoomDate + doctor?._id + "_slots");
-      const { date } = sevenDayData?.commonSchedule?.[index];
-      console.log("i am emit the event that is joinRoom Date : ", date);
-      socket.emit("joinRoom", [`${getRoomId(date)}_slots`], "slots");
-      dispatch(setLeveRoomDate(date));
-    } else {
-      toast.error("Please reload the page");
-    }
-  }
+      function HandleSlotDataIndex(index) {
+        console.log("this is index @: ", index);
+        if (activeDaySlotIndex === index) {
+          console.log(
+            "i am emit the event that is joinRoom Date : same date click"
+            );
+          return;
+        }
+    
+        if (sevenDayData) {
+          dispatch(setActiveDaySlotIndex(index));
+          socket.emit("leaveRoom", [getRoomId(leaveRoomDate)]);
+          const date = sevenDayData?.[index]?.date;
+          console.log("i am emit the event that is joinRoom Date : ", date);
+          const key = getRoomId(date);
+          joinRoomAndGetSlots(key)
+          dispatch(setLeveRoomDate(date));
+        } else {
+          toast.error("Doctor common schedule is not available");
+        }
+      }
 
-  var {
-    handleSubmit,
-    formState: { errors },
-    reset,
-    control,
-    clearErrors,
-    watch,
-  } = useForm({
-    defaultValues: {
-      day: null,
-      startTime: null,
-      leftTime: null,
-      sessionTime: null,
-    },
-    mode: "onTouched",
-  });
+      function StringToCorrectDate(dateString) {
+        if (dateString) {
+          const [hours, minutes] = dateString.split(":");
+          return dayjs()
+            .set("hour", parseInt(hours, 10))
+            .set("minute", parseInt(minutes, 10));
+        }
+        return null;
+      }
 
-  const watchStarttime = watch("startTime");
+      useEffect(() => {
+        //TODO : here we have to see wehen doctorCalenderEditData is change at that time we have to set data in useform
+        if (
+          (doctorCalenderEditData || doctorCalenderEditData == 0) &&
+          Number.isInteger(doctorCalenderEditData)
+        ) {
+          let tempData = JSON.parse(JSON.stringify(sevenDayData?.[doctorCalenderEditData]));
+          
+          tempData.schedule = tempData.schedule.map((obj) => (
+            {
+              ...obj,
+              startTime:dayjs(new Date(new Date(`2000-01-01 ${obj.startTime}`))),
+              endTime:dayjs(new Date(new Date(`2000-01-01 ${obj.endTime}`)))
+            }
+          ))
+          reset({
+            day:null,
+            schedule:tempData?.schedule
+          })
+          // const newData = {
+          //   ...tempData?.doctorTime,
+          //   date: tempData?.date,
+          //   day: { name: tempData?.dayName },
+          //   startTime: StringToCorrectDate(tempData?.doctorTime?.startTime),
+          //   endTime: StringToCorrectDate(tempData?.doctorTime?.endTime),
+          // };
+    
+          // reset({ ...newData });
+          setCreateTimingModal(true);
+          console.log("newData",tempData);
+        }
+      }, [doctorCalenderEditData]);
 
-  function StringToCorrectDate(dateString) {
-    if (dateString) {
-      const [hours, minutes] = dateString.split(":");
-      return dayjs()
-        .set("hour", parseInt(hours, 10))
-        .set("minute", parseInt(minutes, 10));
-    }
-    return null;
-  }
-
-  useEffect(() => {
-    console.log("this is doctorEditData", doctorCalenderEditData);
-    if (
-      (doctorCalenderEditData || doctorCalenderEditData == 0) &&
-      Number.isInteger(doctorCalenderEditData)
-    ) {
-      const tempData = sevenDayData?.commonSchedule?.[doctorCalenderEditData];
-      console.log("tempData$", tempData);
-
-      const newData = {
-        ...tempData?.doctorTime,
-        date: tempData?.date,
-        day: { name: tempData?.dayName },
-        startTime: StringToCorrectDate(tempData?.doctorTime?.startTime),
-        leftTime: StringToCorrectDate(tempData?.doctorTime?.leftTime),
+      const closeTheModal = () => {
+        setCreateTimingModal(false);
+        dispatch(setDoctorCalenderEditData(null));
+        reset({
+            day: null,
+            schedule: [{ branch: null, startTime: null, endTime: null,sessionDuration:null }],
+        });
+        clearErrors();
       };
 
-      reset({ ...newData });
-      setCreateTimingModal(true);
-      // console.log("newData",newData);
-    }
-  }, [doctorCalenderEditData]);
+      const submitData = async (data) => {
+        //TODO : here we  have to change whole function
 
-  const closeTheModal = () => {
-    setCreateTimingModal(false);
-    dispatch(setDoctorCalenderEditData(null));
-    reset({
-      day: null,
-      startTime: null,
-      leftTime: null,
-      sessionTime: null,
-    });
-    clearErrors();
-  };
+        console.log("this is data i got form the form : ",data);
+        const day = data.day?.value;
+        let schedule = data.schedule.map((obj) => {
+          return{
+            new: obj.new,
+            uid: obj.uid,
+            branch: obj.branch?._id,
+            startTime: obj.startTime.format('HH:mm'),
+            endTime: obj.endTime.format("HH:mm"),
+            sessionDuration: obj.sessionDuration,
+          }
+        })
+        console.log("this is data i got form the form : 2",schedule);
+        let newSchedule ;
+        if(doctorCalenderEditData || doctorCalenderEditData==0){
+          newSchedule = schedule.filter((obj) => obj.new);
+          schedule = schedule.filter((obj) => !obj.new);
+        }
 
-  const SetTwoMinimumLength = (value) => {
-    return String(value).padStart(2, "0");
-  };
+        const obj = {
+          doctorId: doctor?._id,
+          day,
+          schedule:JSON.stringify(schedule),
+          _id: sevenDayData?.[doctorCalenderEditData]?._id,
+        }
 
-  const submitData = async (data) => {
-    const compareWith =
-      sevenDayData?.commonSchedule?.[doctorCalenderEditData]?.doctorTime;
-    let tempData = {};
-    console.log("data", data);
-    // console.log("this is start time : ",data.startTime.$H.length < 2 ? 'babu' : "op",data.startTime.$H);
-    console.log(
-      "this is left time : ",
-      `${data.leftTime.$H}:${data.leftTime.$m}`,
-      compareWith?.leftTime
-    );
-    let MakeCombo;
-    MakeCombo = `${SetTwoMinimumLength(
-      data.startTime.$H
-    )}:${SetTwoMinimumLength(data.startTime.$m)}`;
-    if (MakeCombo != compareWith?.startTime) {
-      tempData.startTime = MakeCombo;
-      if (MakeCombo < compareWith?.startTime) {
-        tempData.startTimeAdditional = {
-          oldStartTime: compareWith?.startTime,
-          sessionTime: data.sessionTime,
+        if(doctorCalenderEditData || doctorCalenderEditData==0){
+          console.log("this is schedule : ",obj.schedule,newSchedule);
+          const resData = await updateDoctorSlotData({_id:obj._id,schedule:obj.schedule,newSchedule:JSON.stringify(newSchedule)});
+          if(resData){
+            closeTheModal();
+          }
+          console.log("editing is going on : ",obj)
+        } else {
+          const resData = await createDoctorSlotData(obj);
+          if(resData){
+            closeTheModal();
+          }
+        }
+        // const compareWith =
+        //   sevenDayData?.commonSchedule?.[doctorCalenderEditData]?.doctorTime;
+        // let tempData = {};
+        // console.log("data", data);
+        // // console.log("this is start time : ",data.startTime.$H.length < 2 ? 'babu' : "op",data.startTime.$H);
+        // console.log(
+        //   "this is left time : ",
+        //   `${data.leftTime.$H}:${data.leftTime.$m}`,
+        //   compareWith?.leftTime
+        // );
+        // let MakeCombo;
+        // MakeCombo = `${SetTwoMinimumLength(
+        //   data.startTime.$H
+        // )}:${SetTwoMinimumLength(data.startTime.$m)}`;
+        // if (MakeCombo != compareWith?.startTime) {
+        //   tempData.startTime = MakeCombo;
+        //   if (MakeCombo < compareWith?.startTime) {
+        //     tempData.startTimeAdditional = {
+        //       oldStartTime: compareWith?.startTime,
+        //       sessionTime: data.sessionTime,
+        //     };
+        //   }
+        // }
+    
+        // MakeCombo = `${SetTwoMinimumLength(data.leftTime.$H)}:${SetTwoMinimumLength(
+        //   data.leftTime.$m
+        // )}`;
+        // if (MakeCombo != compareWith?.leftTime) {
+        //   tempData.leftTime = MakeCombo;
+        //   if (MakeCombo > compareWith?.leftTime) {
+        //     tempData.leftTimeAdditional = {
+        //       oldleftTime: compareWith?.leftTime,
+        //       sessionTime: data.sessionTime,
+        //     };
+        //   }
+        // }
+        // if (data.sessionTime != compareWith?.sessionTime) {
+        //   tempData.sessionTime = data.sessionTime;
+        // }
+        // tempData = {
+        //   ...tempData,
+        //   userId: doctor?._id,
+        //   date: data?.date,
+        //   day: data?.day?.name,
+        // };
+    
+        // console.log("tempData", tempData);
+    
+        // if (doctorCalenderEditData || doctorCalenderEditData == 0) {
+        //   tempData["_id"] = data._id;
+        //   console.log("this is final data : ", tempData);
+        //   const resData = await updateDoctorSlotData({
+        //     ...tempData,
+        //     userId: doctor?._id,
+        //   });
+    
+        //   if (resData) {
+        //     closeTheModal();
+        //   }
+        //   return;
+        // }
+    
+        // const resData = await createDoctorSlotData(tempData);
+    
+        // if (resData) {
+        //   closeTheModal();
+        // }
+      };
+
+      const doBreak = (data) => {
+        BreakDoctorSlotData({
+          date: sevenDayData?.commonSchedule?.[data]?.date,
+          userId: doctor?._id,
+        });
+      };
+    
+      const TakeIndivisualBreak = async (data) => {
+        console.log("this is data TakeIndivisualBreak: ", data);
+        const tempData = {
+          id: data?._id,
+          userId: doctor?._id,
+          date: activeDaySlots?.slotsmasters?.date,
+          boolBreak: data?.boolBreak,
         };
-      }
-    }
-
-    MakeCombo = `${SetTwoMinimumLength(data.leftTime.$H)}:${SetTwoMinimumLength(
-      data.leftTime.$m
-    )}`;
-    if (MakeCombo != compareWith?.leftTime) {
-      tempData.leftTime = MakeCombo;
-      if (MakeCombo > compareWith?.leftTime) {
-        tempData.leftTimeAdditional = {
-          oldleftTime: compareWith?.leftTime,
-          sessionTime: data.sessionTime,
-        };
-      }
-    }
-    if (data.sessionTime != compareWith?.sessionTime) {
-      tempData.sessionTime = data.sessionTime;
-    }
-    tempData = {
-      ...tempData,
-      userId: doctor?._id,
-      date: data?.date,
-      day: data?.day?.name,
-    };
-
-    console.log("tempData", tempData);
-
-    if (doctorCalenderEditData || doctorCalenderEditData == 0) {
-      tempData["_id"] = data._id;
-      console.log("this is final data : ", tempData);
-      const resData = await updateDoctorSlotData({
-        ...tempData,
-        userId: doctor?._id,
-      });
-
-      if (resData) {
-        closeTheModal();
-      }
-      return;
-    }
-
-    const resData = await createDoctorSlotData(tempData);
-
-    if (resData) {
-      closeTheModal();
-    }
-  };
-
-  const doBreak = (data) => {
-    BreakDoctorSlotData({
-      date: sevenDayData?.commonSchedule?.[data]?.date,
-      userId: doctor?._id,
-    });
-  };
-
-  const TakeIndivisualBreak = async (data) => {
-    console.log("this is data TakeIndivisualBreak: ", data);
-    const tempData = {
-      id: data?._id,
-      userId: doctor?._id,
-      date: activeDaySlots?.slotsmasters?.date,
-      boolBreak: data?.boolBreak,
-    };
-    console.log("this is data TakeIndivisualBreak tempData", tempData);
-    socket.emit("takeBreakIndivisual", tempData);
-  };
+        console.log("this is data TakeIndivisualBreak tempData", tempData);
+        // TODO : change this event 
+        socket.emit("takeBreakIndivisual", tempData);
+      };
 
   return (
     <>
@@ -684,120 +769,9 @@ function DoctorSlotsByDate() {
               // columns={{ xs: 4, sm: 8, md: 12 }}
               justifyContent="space-between"
               alignItems="center">
-              <Grid xs={12} sm={4}>
-                <Controller
-                  name="startTime"
-                  control={control}
-                  rules={{
-                    required: {
-                      valueAsDate: true,
-                      value: true,
-                      message: "StartTime is required",
-                    },
-                  }}
-                  render={({ field, fieldState: { error } }) => {
-                    const { onChange, value, ref} = field;
-                    return (
-                      <>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <TimePicker
-                            sx={{
-                              "& label.Mui-focused": {
-                                color: error ? "#d32f2f" : "#25396f",
-                              },
-                              "& .MuiOutlinedInput-root": {
-                                "&.Mui-focused fieldset": {
-                                  borderColor: error ? "#d32f2f" : "#25396f",
-                                },
-                              },
-                            }}
-                            onChange={onChange}
-                            value={value}
-                            ref={ref}
-                            label="Select StartTime"
-                            views={["hours", "minutes"]}
-                            format="hh:mm:a"
-                            ampm={false}
-                          />
-                        </LocalizationProvider>
-                        {error && (
-                          <Typography variant="caption" color="error">
-                            {error.message}
-                          </Typography>
-                        )}
-                      </>
-                    );
-                  }}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={4}>
-                <Controller
-                  name="leftTime"
-                  control={control}
-                  rules={{
-                    required: { value: true, message: "EndTime is required" },
-                  }}
-                  render={({ field, fieldState: { error } }) => {
-                    const { onChange, value, ref } = field;
-                    return (
-                      <>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <TimePicker
-                            sx={{
-                              "& label.Mui-focused": {
-                                color: error ? "#d32f2f" : "#25396f",
-                              },
-                              "& .MuiOutlinedInput-root": {
-                                "&.Mui-focused fieldset": {
-                                  borderColor: error ? "#d32f2f" : "#25396f",
-                                },
-                              },
-                            }}
-                            onChange={onChange}
-                            value={value}
-                            minTime={watchStarttime}
-                            ref={ref}
-                            label="Select EndTime"
-                            views={["hours", "minutes"]}
-                            format="hh:mm:a"
-                            ampm={false}
-                            ampmInClock={false}
-                          />
-                        </LocalizationProvider>
-                        {error && (
-                          <Typography variant="caption" color="error">
-                            {error.message}
-                          </Typography>
-                        )}
-                      </>
-                    );
-                  }}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={4}>
-                <CustomTextInputField
-                  type="number"
-                  name={"sessionTime"}
-                  control={control}
-                  label={"Session Time"}
-                  rules={{
-                    valueAsNumber: true,
-                    required: {
-                      value: true,
-                      message: "session time is required",
-                    },
-                    min: {
-                      value: 1,
-                      message: "session time must be greater then 0",
-                    },
-                  }}
-                />
-              </Grid>
 
               {!(doctorCalenderEditData || doctorCalenderEditData == 0) && (
-                <Grid xs={12} sm={4}>
+                <Grid xs={12} sm={12}>
                   <Controller
                     name="day"
                     control={control}
@@ -813,7 +787,7 @@ function DoctorSlotsByDate() {
                           onBlur={onBlur}
                           inputRef={ref}
                           options={remainingDays}
-                          getOptionLabel={(option) => option.name}
+                          getOptionLabel={(option) => option.label}
                         />
                       );
                     }}
@@ -825,6 +799,171 @@ function DoctorSlotsByDate() {
                   )}
                 </Grid>
               )}
+              {
+                watchSchedule.map((_data,index) => (
+
+                <Grid xs={12} sm={12} marginTop={3} borderRadius={5} padding={3} sx={{ "&":{
+                  border:"1px solid #d3d3d3",
+                }, "&:hover":{
+                      boxShadow:"rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px",
+                      transition:"box-shadow 0.3s ease-in-out",
+                      border:"none"
+                } }}>
+                  
+                  <Grid xs={12} display={"flex"} justifyContent={"flex-end"}>
+                    <div onClick={()=>removeSchedule(index)} style={{width:20,height:20,borderRadius:"100%",background:"#D3D3D3",marginBottom:10,cursor:"pointer"}}>
+                      <CustomIconButton color='white' fontSize='small' iconName="clear" ></CustomIconButton>
+                    </div>
+                  </Grid>
+
+                  <Grid xs={12} sm={12}>
+                    <Controller
+                    name={`schedule.${index}.branch`}
+                    control={control}
+                    rules={{ required: 'branch is required' }}
+                    render={({ field,fieldState: { error } }) => {
+                      const {onChange,value,ref,onBlur} = field; 
+                    return <CustomAutoCompelete 
+                    onChange={onChange}
+                    lable={"Select Branch"}
+                    hasError={error}
+                    value={value}
+                    onBlur={onBlur}
+                    inputRef={ref}
+                    filterOnActive={true}
+                    getOptionLabel={(option)=> option.location }
+                    url={`admin/locationMaster/location/doctor/${doctor._id}`}
+                    /> 
+                }}
+                  />
+                  {
+                    errors?.schedule?.[index]?.branch && <Typography variant="caption" color="error">branch is required</Typography> 
+                  }
+                  </Grid>
+
+                  <Grid xs={12} sm={12} marginTop={2}>
+                <Controller
+                  name={`schedule.${index}.startTime`}
+                  control={control}
+                  rules={{
+                    required: {
+                      valueAsDate: true,
+                      value: true,
+                      message: "StartTime is required",
+                    },
+                  }}
+                  render={({ field, fieldState: { error } }) => {
+                    const { onChange, value, ref} = field;
+                    return (
+                      <>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <TimePicker
+                            sx={{
+                              "&":{
+                                width: "100%",
+                              },
+                              "& label.Mui-focused": {
+                                color: error ? "#d32f2f" : "#25396f",
+                              },
+                              "& .MuiOutlinedInput-root": {
+                                "&.Mui-focused fieldset": {
+                                  borderColor: error ? "#d32f2f" : "#25396f",
+                                },
+                              },
+                            }}
+                            onChange={onChange}
+                            value={value}
+                            ref={ref}
+                            label="Select StartTime"
+                            // views={["hours", "minutes"]}
+                            // format="hh:mm"
+                            // ampm={false}
+                          />
+                        </LocalizationProvider>
+                        {error && (
+                          <Typography variant="caption" color="error">
+                            {error.message}
+                          </Typography>
+                        )}
+                      </>
+                    );
+                  }}
+                />
+                  </Grid>
+
+                  <Grid xs={12} sm={12} marginTop={2}>
+                    <Controller
+                      name={`schedule.${index}.endTime`}
+                      control={control}
+                      rules={{
+                        required: { value: true, message: "EndTime is required" },
+                      }}
+                      render={({ field, fieldState: { error } }) => {
+                        const { onChange, value, ref } = field;
+                        return (
+                          <>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <TimePicker
+                                sx={{
+                                  "&":{
+                                    width: "100%",
+                                  },
+                                  "& label.Mui-focused": {
+                                    color: error ? "#d32f2f" : "#25396f",
+                                  },
+                                  "& .MuiOutlinedInput-root": {
+                                    "&.Mui-focused fieldset": {
+                                      borderColor: error ? "#d32f2f" : "#25396f",
+                                    },
+                                  },
+                                }}
+                                onChange={onChange}
+                                value={value}
+                                ref={ref}
+                                label="Select EndTime"
+                                // views={["hours", "minutes"]}
+                                // format="hh:mm"
+                                // ampm={false}
+                                // ampmInClock={false}
+                              />
+                            </LocalizationProvider>
+                            {error && (
+                              <Typography variant="caption" color="error">
+                                {error.message}
+                              </Typography>
+                            )}
+                          </>
+                        );
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid xs={12} sm={12} marginTop={2}>
+                    <CustomTextInputField
+                      type="number"
+                      name={`schedule.${index}.sessionDuration`}
+                      control={control}
+                      label={"Session Time"}
+                      rules={{
+                        valueAsNumber: true,
+                        required: {
+                          value: true,
+                          message: "session time is required",
+                        },
+                        min: {
+                          value: 1,
+                          message: "session time must be greater then 0",
+                        },
+                      }}
+                    />
+                  </Grid>
+
+                  </Grid>
+                )) 
+              }
+              <Grid marginTop={2} display={"flex"} justifyContent={"flex-end"} xs={12}>
+              <CustomButton onClick={addTimingInSchdule} buttonText={"Add Timing"}></CustomButton>
+              </Grid>
             </Grid>
           </Box>
         </AddEditModal>
@@ -844,53 +983,63 @@ function DoctorSlotsByDate() {
                 </Button>
               </div>
             )}
-            {Array.isArray(sevenDayData?.commonSchedule) &&
-              sevenDayData?.commonSchedule?.map((item, index) => {
+            {Array.isArray(sevenDayData) &&
+              sevenDayData?.map((item, index) => {
                 return (
                   <RenderBox
                     key={index}
                     doBreak={doBreak}
                     index={index}
-                    day={item?.dayName}
+                    day={item.day}
                     date={item?.date}
-                    leftTime={item?.doctorTime?.leftTime}
-                    startTime={item?.doctorTime?.startTime}
-                    sessionTime={item?.doctorTime?.sessionTime}
+                    scheduleData={item.schedule}
                     HandleSlotDataIndex={HandleSlotDataIndex}
                   />
                 );
               })}
           </div>
-        <div className={BoxCalsses.slotsContainerMini}>
-          <div className={BoxCalsses.slotsHeading}>
-            {doctor?.userName && <span>{doctor?.userName}'s Slots</span>}
-            {activeDaySlots?.slotsmasters?.date && (
-              <span className={BoxCalsses.text_icon_align}>
-                {" "}
-                <CalendarMonthOutlinedIcon style={{ fontSize: "28px" }} />{" "}
-                {new Date(activeDaySlots?.slotsmasters?.date).toLocaleDateString("en-CA").toString()}
-              </span>
-            )}
+
+          <div className={BoxCalsses.slotsContainerMini}>
+            <div className={BoxCalsses.slotsHeading}>
+              <div style={{display:"flex", flexDirection:"column"}}>
+                {doctor?.userName && <span>{doctor?.userName}'s Slots</span>}
+                <span>Branch : {location?.location}</span> 
+              </div>
+              {activeDaySlots?.[0]?.date && (
+                <span className={BoxCalsses.text_icon_align}>
+                  {" "}
+                  <CalendarMonthOutlinedIcon style={{ fontSize: "28px" }} />{" "}
+                  {new Date(activeDaySlots?.[0]?.date).toLocaleDateString("en-CA").toString()}
+                </span>
+              )}
+            </div>
+            <div className={BoxCalsses.colorShowSlots}>
+              {/**  booked break   */}
+              {dataColorSow.map(({ color, label }, index) => (
+                <ColorRender color={color} label={label} key={index} />
+              ))}
+            </div>
+            <div className={BoxCalsses.slotBodyContainer}>
+              {activeDaySlots?.map((item, index) => {
+
+                return  <>
+                 {index > 0 && <Divider />}
+                  <div className={BoxCalsses.slotBody}> 
+                  { 
+                    item.allSlots.slots.map((item2) => {
+                     return <SlotSBoxRender
+                      key={index}
+                      {...item2}
+                      TakeIndivisualBreak={TakeIndivisualBreak}
+                      slotBreak={item2?.break}
+                    />
+                    }) 
+                  }
+                </div>
+                </>
+              })}
+            </div>
           </div>
-          <div className={BoxCalsses.colorShowSlots}>
-            {/**  booked break   */}
-            {dataColorSow.map(({ color, label }, index) => (
-              <ColorRender color={color} label={label} key={index} />
-            ))}
-          </div>
-          <div className={BoxCalsses.slotBody}>
-            {activeDaySlots?.slotsmasters?.slot?.map((item, index) => {
-              return (
-                <SlotSBoxRender
-                  key={index}
-                  {...item}
-                  TakeIndivisualBreak={TakeIndivisualBreak}
-                  slotBreak={item?.break}
-                />
-              );
-            })}
-          </div>
-        </div>
       </div>
     </>
   );

@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    city:null,
     location:null,
     doctor:null,
     remainingDays:null,
@@ -12,7 +11,7 @@ const initialState = {
     doctorCalenderLoading:false,
     slotDeallocationLoading:false,
     activeDaySlots:null,    
-    activeDaySlotIndex:0,
+    activeDaySlotIndex:null,
     leaveRoomDate:null,
 };
 
@@ -25,9 +24,6 @@ const doctorCalenderSlice = createSlice({
         },
         setDoctorCalenderEditData:(state,action) => {
             state.doctorCalenderEditData = action.payload;
-        },
-        setCity:(state,action) => {
-            state.city = action.payload 
         },
         setLocation:(state,action) => {
             state.location = action.payload
@@ -51,10 +47,63 @@ const doctorCalenderSlice = createSlice({
             state.activeDaySlots = action.payload;
         },
         setActiveDaySlotsUpdate:(state,action) => {
-            if(!Array.isArray(state.activeDaySlots?.slotsmasters?.slot))  return;
-            state.activeDaySlots.slotsmasters.slot  = state.activeDaySlots?.slotsmasters.slot.map((obj) => {
-                return obj._id===action.payload._id ? {...obj,...action.payload} : obj ;
-              })
+            // TODO here we have to add 
+            if(!Array.isArray(state.activeDaySlots))  return;
+            const { uid,data } = action.payload;
+            const slots = state.activeDaySlots;
+            if(Array.isArray(slots)){
+                slots = slots.map((obj)=>{
+                    if(obj?.allSlots?.uid == uid && Array.isArray(obj.allSlots?.slots)){
+                        obj.allSlots.slots.map((item)=>{
+                            if(data._id === item._id){
+                                item = data;
+                            }
+                            return item;
+                        })
+                        return obj;
+                    } else {
+                        return obj;
+                    }
+                })
+            }
+        },
+        setAddedNewSlots:(state,action)=>{
+            let slots = state.activeDaySlots;
+            const { uid,at,data } = action.payload;
+
+            if(Array.isArray(slots)){
+                slots = slots.map((obj) => {
+                    if(obj?.allSlots?.uid == uid) {
+                        if(Array.isArray(obj?.allSlots?.slots)){
+                            if(Number.isInteger(at)){
+                                obj.allSlots.slots.splice(at,0,data);
+                            } else {
+                                obj.allSlots.slots = [...obj.allSlots.slots,...data];
+                            }
+                        } else {
+                            obj.allSlots.slots = data;
+                        }
+                        return obj;
+                    } else  {
+                        return obj;
+                    }
+                })
+            }
+        },
+        setRemoveSlots:(state,action) => {
+            const { uid,data } = action.payload;
+
+            if(Array.isArray(state.activeDaySlots)){
+                state.activeDaySlots = state.activeDaySlots.map((obj) => {
+                    if(obj?.allSlots?.uid == uid && Array.isArray(obj?.allSlots?.slots)) {
+                        obj.allSlots.slots = obj.allSlots.slots.filter((slot) => !data.includes(slot._id))
+                    } else {
+                        return obj;
+                    }
+                })
+
+            //    state.activeDaySlots = state.activeDaySlots.filter((obj) => obj?.allSlots?.slots?.length > 0);
+            }
         },
         setActiveDaySlotIndex: (state,action) => {
             state.activeDaySlotIndex = action.payload
@@ -65,6 +114,6 @@ const doctorCalenderSlice = createSlice({
     }
 })
 
-export const { setCity,setLocation,setDoctor,setRemainingDays,setSeveDayData,setStep,setDoctorCalenderLoading,setDoctorCalenderEditData,setSlotDeallocationLoading,setActiveDaySlots,setActiveDaySlotIndex,setLeveRoomDate,setActiveDaySlotsUpdate } = doctorCalenderSlice.actions;
+export const { setLocation,setDoctor,setRemainingDays,setSeveDayData,setStep,setDoctorCalenderLoading,setDoctorCalenderEditData,setSlotDeallocationLoading,setActiveDaySlots,setActiveDaySlotIndex,setLeveRoomDate,setActiveDaySlotsUpdate,setAddedNewSlots,setRemoveSlots } = doctorCalenderSlice.actions;
 
 export default doctorCalenderSlice.reducer;

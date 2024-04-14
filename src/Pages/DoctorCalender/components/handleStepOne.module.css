@@ -160,10 +160,17 @@
     margin: 0 auto;
 }
 
+.slotBodyContainer{
+    display:flex;
+    flex-direction: column;
+    gap: 25px;
+}   
+
 .slotBody{
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 50px;   
+    row-gap: 30px;   
+    column-gap: 50px;
     width: 98%;
     margin: 20px auto;
 }

@@ -4,6 +4,7 @@ import { setBranchCount, setBranchCountIncByOne, setBranchData, setBranchListLoa
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { setSeveDayData } from "../../slices/doctorCalender.slice";
 
 const ApiManager = new APIManager();
 
@@ -46,6 +47,7 @@ export const useBranchData = () => {
             let tempdata = structuredClone(branchData);
             console.log("asdfaksdiofjsaji",data?.id)
             tempdata[data?.id] = resData.data.data;
+            dispatch(setSeveDayData(null));
             dispatch(setBranchData(tempdata));
             dispatch(setBranchLoading(false));
             toast.dismiss(toastId)
