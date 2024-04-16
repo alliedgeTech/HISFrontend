@@ -20,7 +20,7 @@ import Button from "@mui/material/Button";
 import CustomAddIcons from "../../../Components/CustomeIcons/CustomAddIcons";
 import { useForm, Controller } from "react-hook-form";
 import AddEditModal from "../../../Components/AddEditModal/AddEditModal";
-import { Box, Typography } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import CustomAutoCompelete from "../../../Components/CustomAutoCompelete/CustomAutoCompelete";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -38,6 +38,7 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import socket from "../../../socket";
 import CustomButton from "../../../Components/Button/Button";
 import CustomIconButton from "../../../Components/CustomeIcons/CustomEditIcons";
+import { CheckBox } from "@mui/icons-material";
 
 
 const dataColorSow = [
@@ -103,7 +104,7 @@ function RenderBox({
           }}>
           <MenuItem
             onClick={() => {
-              doBreak(index);
+              doBreak(date);
               handleClose();
             }}>
             Holiday
@@ -168,7 +169,7 @@ function RenderBox({
   );
 }
 
-function BreakSlot({ time, TakeIndivisualBreak, _id }) {
+function BreakSlot({ time, TakeIndivisualBreak, _id,uid }) {
   const [MenuItemControl, setMenuItemControl] = useState(null);
   function handleClose() {
     setMenuItemControl(null);
@@ -200,7 +201,7 @@ function BreakSlot({ time, TakeIndivisualBreak, _id }) {
         }}>
         <MenuItem
           onClick={() => {
-            TakeIndivisualBreak({ _id, boolBreak: false });
+            TakeIndivisualBreak({ _id, boolBreak: false,uid });
             handleClose();
           }}>
           Cancle Break
@@ -210,7 +211,7 @@ function BreakSlot({ time, TakeIndivisualBreak, _id }) {
   );
 }
 
-function BookedSlot({ time, count, TakeIndivisualBreak, _id }) {
+function BookedSlot({ time, count, TakeIndivisualBreak, _id, uid }) {
   const [MenuItemControl, setMenuItemControl] = useState(null);
   function handleClose() {
     setMenuItemControl(null);
@@ -243,7 +244,7 @@ function BookedSlot({ time, count, TakeIndivisualBreak, _id }) {
         }}>
         <MenuItem
           onClick={() => {
-            TakeIndivisualBreak({ _id, boolBreak: true });
+            TakeIndivisualBreak({ _id, boolBreak: true, uid });
             handleClose();
           }}>
           Take Break
@@ -257,9 +258,10 @@ function SlotSBoxRender({
   booked,
   slotBreak,
   startTime,
-  count,
+  tokenNumber,
   TakeIndivisualBreak,
   _id,
+  uid,
   ...props
 }) {
   const [MenuItemControl, setMenuItemControl] = useState(null);
@@ -273,6 +275,7 @@ function SlotSBoxRender({
       <BreakSlot
         _id={_id}
         time={startTime}
+        uid={uid}
         TakeIndivisualBreak={TakeIndivisualBreak}
       />
     );
@@ -283,7 +286,8 @@ function SlotSBoxRender({
       <BookedSlot
         time={startTime}
         _id={_id}
-        count={count}
+        uid={uid}
+        count={tokenNumber}
         TakeIndivisualBreak={TakeIndivisualBreak}
       />
     );
@@ -329,7 +333,7 @@ function SlotSBoxRender({
         }}>
         <MenuItem
           onClick={() => {
-            TakeIndivisualBreak({ _id, boolBreak: true });
+            TakeIndivisualBreak({ _id, boolBreak: true,uid });
             handleClose();
           }}>
           Take Break
@@ -355,7 +359,7 @@ const dispatch = useDispatch();
     } = useSelector((state) => state.doctorCalender);
 
   const [createTimingModal, setCreateTimingModal] = useState(false);
-
+  const [allBranchInputModal, setAllBranchInputModal] = useState(false);
   var {
     handleSubmit,
     formState: { errors },
@@ -367,6 +371,7 @@ const dispatch = useDispatch();
     setValue
   } = useForm({
     defaultValues: {
+      applyOnallBranch:false,
       day: null,
       schedule: [{ branch: null, startTime: null, endTime: null,sessionDuration:null }],
     },
@@ -375,7 +380,7 @@ const dispatch = useDispatch();
 
   const watchSchedule = watch("schedule");
 
-  const { getDoctorCalenderData, createDoctorSlotData, updateDoctorSlotData, BreakDoctorSlotData } =
+  const { multiBreakOfSlots, createDoctorSlotData, updateDoctorSlotData, BreakDoctorSlotData, formatSevenDaysData } =
     useDoctorMasterData();
 
     let mouseDown = false;
@@ -505,7 +510,6 @@ const dispatch = useDispatch();
           switch(data?.type){
             case 'get':
               //* here we got all slots data
-              getDoctorCalenderData();
               dispatch(setActiveDaySlots(data?.data));
               console.log("slotData", data);
               break;
@@ -526,6 +530,11 @@ const dispatch = useDispatch();
             //TODO : update the slots
               dispatch(setActiveDaySlotsUpdate(data));
               console.log("please update this slots : ",data);
+              break;
+
+            case 'sevenDaySlots':
+              formatSevenDaysData({schedule:data?.data});
+              console.log("here we are got the formated seven days data : " ,data);
               break;
           }
           
@@ -610,6 +619,7 @@ const dispatch = useDispatch();
         setCreateTimingModal(false);
         dispatch(setDoctorCalenderEditData(null));
         reset({
+            applyOnallBranch:false,
             day: null,
             schedule: [{ branch: null, startTime: null, endTime: null,sessionDuration:null }],
         });
@@ -727,25 +737,51 @@ const dispatch = useDispatch();
         // }
       };
 
-      const doBreak = (data) => {
-        BreakDoctorSlotData({
-          date: sevenDayData?.commonSchedule?.[data]?.date,
-          userId: doctor?._id,
-        });
+      const doBreak = (date) => {
+        setAllBranchInputModal(date);
       };
     
       const TakeIndivisualBreak = async (data) => {
-        console.log("this is data TakeIndivisualBreak: ", data);
+        console.log("this is data TakeIndivisualBreak: ", data,leaveRoomDate);
         const tempData = {
-          id: data?._id,
-          userId: doctor?._id,
-          date: activeDaySlots?.slotsmasters?.date,
-          boolBreak: data?.boolBreak,
-        };
+          doctorId:doctor?._id,
+          date:leaveRoomDate,
+          branch:location?._id,
+          id:data?._id,
+          boolBreak:data?.boolBreak,
+          uid:data.uid
+        }
+       
         console.log("this is data TakeIndivisualBreak tempData", tempData);
-        // TODO : change this event 
-        socket.emit("takeBreakIndivisual", tempData);
+        // // TODO : change this event 
+        socket.emit("slots", { type:"break", data:tempData },()=>{
+          toast.error("Slots are not cancled. Something went wronge");
+        });
       };
+
+      const closeAllBranchInputModal = () => {
+         setAllBranchInputModal(false);
+         reset({
+          applyOnallBranch:false,
+            day: null,
+            schedule: [{ branch: null, startTime: null, endTime: null,sessionDuration:null }],
+         });
+         clearErrors();
+      }
+
+      const submitAllBranchInputData = (data) => {
+        console.log("this is data submit for allBranch apply : ",data);
+        const obj = {
+          doctorId:doctor?._id,
+          date:allBranchInputModal,
+        }
+        if(!data.applyOnallBranch){ 
+          obj.branch = location?._id;
+        }
+        multiBreakOfSlots(obj);
+        closeAllBranchInputModal();
+      }
+
 
   return (
     <>
@@ -968,6 +1004,48 @@ const dispatch = useDispatch();
           </Box>
         </AddEditModal>
       }
+
+      {
+         <AddEditModal
+         maxWidth="lg"
+         handleClose={closeAllBranchInputModal}
+         handleSubmit={handleSubmit(submitAllBranchInputData)}
+         open={allBranchInputModal}
+         ButtonText={"Apply"}
+         modalTitle={'Take a holiday with all brach ?'}
+         isEdit={false}>
+         <Box component="form" onSubmit={handleSubmit(submitAllBranchInputData)} p={1}>
+           <Grid
+             container
+             spacing={{ md: 3, xs: 2 }}
+             justifyContent="space-between"
+             alignItems="center">
+                <Grid xs={12}>
+                    <Controller   
+                      name={"applyOnallBranch"}
+                      control={control} 
+                      render={({field: { onChange, value, ref }}) => (
+                        <FormControlLabel
+                        label="Apply on all branch"
+                        control={
+                          <Checkbox
+                            checked={value}
+                            defaultValue={value}
+                            ref={ref}
+                            onChange={onChange}
+                          />
+                      }
+                    />
+                      )}
+                      >
+                    </Controller>
+                </Grid>
+            </Grid>
+          </Box>
+        </AddEditModal>
+      }
+
+
       <div>
           <div className={BoxCalsses.slotsContainer} onMouseDownCapture={startDragging} onMouseMove={move} onMouseDown={startDragging} onMouseUp={stopDragging} onMouseLeave={stopDragging} ref={parentRef}>
             {remainingDays?.length > 0 && (
@@ -1029,6 +1107,7 @@ const dispatch = useDispatch();
                     item.allSlots.slots.map((item2) => {
                      return <SlotSBoxRender
                       key={index}
+                      uid={item?.allSlots?.uid}
                       {...item2}
                       TakeIndivisualBreak={TakeIndivisualBreak}
                       slotBreak={item2?.break}

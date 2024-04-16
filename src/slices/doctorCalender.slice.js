@@ -47,16 +47,19 @@ const doctorCalenderSlice = createSlice({
             state.activeDaySlots = action.payload;
         },
         setActiveDaySlotsUpdate:(state,action) => {
-            // TODO here we have to add 
             if(!Array.isArray(state.activeDaySlots))  return;
             const { uid,data } = action.payload;
-            const slots = state.activeDaySlots;
+            let slots = state.activeDaySlots;
             if(Array.isArray(slots)){
                 slots = slots.map((obj)=>{
                     if(obj?.allSlots?.uid == uid && Array.isArray(obj.allSlots?.slots)){
-                        obj.allSlots.slots.map((item)=>{
-                            if(data._id === item._id){
-                                item = data;
+                        obj.allSlots.slots = obj.allSlots.slots.map((item)=>{
+                            const findSlotInData = data.find((updatedData)=> updatedData._id == item._id );
+
+                            console.log('this is got slots for update : ',findSlotInData);
+
+                            if(findSlotInData){
+                                item = {...item,...findSlotInData};
                             }
                             return item;
                         })
@@ -71,12 +74,14 @@ const doctorCalenderSlice = createSlice({
             let slots = state.activeDaySlots;
             const { uid,at,data } = action.payload;
 
+            console.log("this data we have to add : ",data);
+
             if(Array.isArray(slots)){
                 slots = slots.map((obj) => {
                     if(obj?.allSlots?.uid == uid) {
                         if(Array.isArray(obj?.allSlots?.slots)){
                             if(Number.isInteger(at)){
-                                obj.allSlots.slots.splice(at,0,data);
+                                obj.allSlots.slots.splice(at,0,...data);
                             } else {
                                 obj.allSlots.slots = [...obj.allSlots.slots,...data];
                             }
@@ -92,20 +97,27 @@ const doctorCalenderSlice = createSlice({
         },
         setRemoveSlots:(state,action) => {
             const { uid,data } = action.payload;
+            let slots = state.activeDaySlots;
+            if(Array.isArray(slots)){
+                slots = slots.map((obj) => {
 
-            if(Array.isArray(state.activeDaySlots)){
-                state.activeDaySlots = state.activeDaySlots.map((obj) => {
+                    console.log("is this allSlots  : ",obj);
                     if(obj?.allSlots?.uid == uid && Array.isArray(obj?.allSlots?.slots)) {
+                        console.log("is this is mapping and uid also match : ",obj.allSlots,obj.allSlots.slots);
+
                         obj.allSlots.slots = obj.allSlots.slots.filter((slot) => !data.includes(slot._id))
                     } else {
                         return obj;
                     }
                 })
 
+                console.log("this is done the process");
+
             //    state.activeDaySlots = state.activeDaySlots.filter((obj) => obj?.allSlots?.slots?.length > 0);
             }
         },
         setActiveDaySlotIndex: (state,action) => {
+            console.log('hello ji i am setted the index : ',action.payload);
             state.activeDaySlotIndex = action.payload
         },
         setLeveRoomDate: (state,action) => {

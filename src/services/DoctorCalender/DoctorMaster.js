@@ -94,54 +94,60 @@ export const useDoctorMasterData = () => {
         return new Date(nextDate).toLocaleDateString("en-CA",{ timeZone:'Asia/Kolkata' });
     }
 
-    const getDoctorCalenderData = async () => {
+    const formatSevenDaysData = ({schedule}) => {
+
         const tempData = [{label:"Monday",value:"Monday"},{ label: "Tuesday",value:"Tuesday"},{ label: "Wednesday",value: "Wednesday"},{ label: "Thursday",value:"Thursday"},{label:"Friday",value:'Friday'},{label:"Saturday",value:'Saturday'},{label:"Sunday",value:"Sunday"}];
 
+        if(Number.isInteger(schedule?.length) && schedule?.length === 0){
+            dispatch(setRemainingDays(tempData))
+        } else {
+            let filterdTempData = [{label:"Monday",value:"Monday"},{ label: "Tuesday",value:"Tuesday"},{ label: "Wednesday",value: "Wednesday"},{ label: "Thursday",value:"Thursday"},{label:"Friday",value:'Friday'},{label:"Saturday",value:'Saturday'},{label:"Sunday",value:"Sunday"}];
+            filterdTempData = tempData.filter((item)=> !schedule.some((element)=> item.value === element.day ));
+
+            let firstIndexShouldRemove = 0 ;
+            const pivotDayIndex = new Date().getDay();
+
+            schedule = schedule.map((item)=>{
+                const index = getIndexFromTheDayName(item.day);
+               return {
+                    ...item,
+                    index,
+                    date: getCurrentWeekDateByDay(item.day)
+                }
+            })  
+            
+            schedule.sort((a,b)=> a.index - b.index);
+
+            schedule.forEach(element => {
+                if(element.index < pivotDayIndex ){
+                    firstIndexShouldRemove ++;
+                } else {
+                    console.log("this is run why index is seted : ", element.index === pivotDayIndex && activeDaySlotIndex === null);
+                    element.index === pivotDayIndex && activeDaySlotIndex === null && dispatch(setActiveDaySlotIndex(0));
+                    return;
+                }
+            });
+
+            console.log("this is first index should remove : ",firstIndexShouldRemove)
+
+            const spliceData = schedule.splice(0,firstIndexShouldRemove);
+
+            schedule = [...schedule,...spliceData];
+            console.log("this is processed data : ",schedule);
+            dispatch(setSeveDayData(schedule));
+            dispatch(setRemainingDays(filterdTempData));
+
+        }
+    }
+
+    const getDoctorCalenderData = async () => {
+        
         dispatch(setDoctorCalenderLoading(true));
         const resData = await ApiManager.get(`admin/calender/commonschedule/${doctor._id}`);
         if(!resData.error)
         {
             let schedule = resData.data.data;
-
-            if(Number.isInteger(schedule?.length) && schedule?.length === 0){
-                dispatch(setRemainingDays(tempData))
-            } else {
-                let filterdTempData = [{label:"Monday",value:"Monday"},{ label: "Tuesday",value:"Tuesday"},{ label: "Wednesday",value: "Wednesday"},{ label: "Thursday",value:"Thursday"},{label:"Friday",value:'Friday'},{label:"Saturday",value:'Saturday'},{label:"Sunday",value:"Sunday"}];
-                filterdTempData = tempData.filter((item)=> !resData.data.data.some((element)=> item.value === element.day ));
-
-                let firstIndexShouldRemove = 0 ;
-                const pivotDayIndex = new Date().getDay();
-
-                schedule = schedule.map((item)=>{
-                    const index = getIndexFromTheDayName(item.day);
-                   return {
-                        ...item,
-                        index,
-                        date: getCurrentWeekDateByDay(item.day)
-                    }
-                })  
-                
-                schedule.sort((a,b)=> a.index - b.index);
-
-                schedule.forEach(element => {
-                    if(element.index < pivotDayIndex ){
-                        firstIndexShouldRemove ++;
-                    } else {
-                        element.index === pivotDayIndex && activeDaySlotIndex === null && dispatch(setActiveDaySlotIndex(0));
-                        return;
-                    }
-                });
-
-                console.log("this is first index should remove : ",firstIndexShouldRemove)
-
-                const spliceData = schedule.splice(0,firstIndexShouldRemove);
-
-                schedule = [...schedule,...spliceData];
-                console.log("this is processed data : ",schedule);
-                dispatch(setSeveDayData(schedule));
-                dispatch(setRemainingDays(filterdTempData));
-
-            }
+            formatSevenDaysData({schedule});
         }
 
         dispatch(setDoctorCalenderLoading(false));
@@ -156,6 +162,17 @@ export const useDoctorMasterData = () => {
         }
     }
 
+    const multiBreakOfSlots = async(data) => {
+        const toastId = toast.loading("Loading...");    
+        const resData = await ApiManager.post("admin/calender/slots/multibreak",data);
+        if(!resData.error){
+            toast.dismiss(toastId);
+            toast.success("slots are breaked successfully");
+            return true;
+        }    
+        toast.dismiss(toastId);
+        return false;
+    }
     useEffect(()=>{
         !sevenDayData && getDoctorCalenderData();
     },[doctor]);
@@ -165,6 +182,8 @@ export const useDoctorMasterData = () => {
         createDoctorSlotData,
         updateDoctorSlotData,
         BreakDoctorSlotData,
-        getDoctorCalenderData
+        getDoctorCalenderData,
+        formatSevenDaysData,
+        multiBreakOfSlots
     }
 }
