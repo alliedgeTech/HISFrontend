@@ -38,7 +38,7 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import socket from "../../../socket";
 import CustomButton from "../../../Components/Button/Button";
 import CustomIconButton from "../../../Components/CustomeIcons/CustomEditIcons";
-import { CheckBox } from "@mui/icons-material";
+import { CheckBox, HolidayVillage } from "@mui/icons-material";
 
 
 const dataColorSow = [
@@ -360,6 +360,8 @@ const dispatch = useDispatch();
 
   const [createTimingModal, setCreateTimingModal] = useState(false);
   const [allBranchInputModal, setAllBranchInputModal] = useState(false);
+  const [timeInputModal, setTimeInputModal] = useState(false);
+
   var {
     handleSubmit,
     formState: { errors },
@@ -371,6 +373,8 @@ const dispatch = useDispatch();
     setValue
   } = useForm({
     defaultValues: {
+      holidayStartTime: null,
+      holidayEndTime: null,
       applyOnallBranch:false,
       day: null,
       schedule: [{ branch: null, startTime: null, endTime: null,sessionDuration:null }],
@@ -618,9 +622,13 @@ const dispatch = useDispatch();
       const closeTheModal = () => {
         setCreateTimingModal(false);
         dispatch(setDoctorCalenderEditData(null));
+        setAllBranchInputModal(false);
+        setTimeInputModal(false);
         reset({
             applyOnallBranch:false,
             day: null,
+            holidayEndTime:null,
+            holidayStartTime:null,
             schedule: [{ branch: null, startTime: null, endTime: null,sessionDuration:null }],
         });
         clearErrors();
@@ -752,22 +760,10 @@ const dispatch = useDispatch();
           uid:data.uid
         }
        
-        console.log("this is data TakeIndivisualBreak tempData", tempData);
-        // // TODO : change this event 
         socket.emit("slots", { type:"break", data:tempData },()=>{
           toast.error("Slots are not cancled. Something went wronge");
         });
       };
-
-      const closeAllBranchInputModal = () => {
-         setAllBranchInputModal(false);
-         reset({
-          applyOnallBranch:false,
-            day: null,
-            schedule: [{ branch: null, startTime: null, endTime: null,sessionDuration:null }],
-         });
-         clearErrors();
-      }
 
       const submitAllBranchInputData = (data) => {
         console.log("this is data submit for allBranch apply : ",data);
@@ -778,10 +774,41 @@ const dispatch = useDispatch();
         if(!data.applyOnallBranch){ 
           obj.branch = location?._id;
         }
+
+        if( data.holidayEndTime && data.holidayStartTime) {
+          if(data.holidayEndTime < data.holidayStartTime) {
+           return toast.error("Please enter valid end time ");
+          } else {
+            obj.startTime = data.holidayStartTime.format('HH:mm');
+            obj.endTime = data.holidayEndTime.format('HH:mm');
+          }
+        }
         multiBreakOfSlots(obj);
-        closeAllBranchInputModal();
+        closeTheModal();
       }
 
+      const submitTimeInputData = (data) => {
+        console.log("this is data submit for allBranch apply : ",data,leaveRoomDate);        
+        const obj = {
+          doctorId:doctor?._id,
+          date:leaveRoomDate,
+        }
+        if(!data.applyOnallBranch){ 
+          obj.branch = location?._id;
+        }
+
+        if( data.holidayEndTime && data.holidayStartTime) {
+          if(data.holidayEndTime < data.holidayStartTime) {
+           return toast.error("Please enter valid end time ");
+          } else {
+            obj.startTime = data.holidayStartTime.format('HH:mm');
+            obj.endTime = data.holidayEndTime.format('HH:mm');
+          }
+        }
+        console.log("this is final form data : ",obj);
+        multiBreakOfSlots(obj);
+        closeTheModal();
+      }
 
   return (
     <>
@@ -1008,7 +1035,7 @@ const dispatch = useDispatch();
       {
          <AddEditModal
          maxWidth="lg"
-         handleClose={closeAllBranchInputModal}
+         handleClose={closeTheModal}
          handleSubmit={handleSubmit(submitAllBranchInputData)}
          open={allBranchInputModal}
          ButtonText={"Apply"}
@@ -1042,9 +1069,140 @@ const dispatch = useDispatch();
                 </Grid>
             </Grid>
           </Box>
-        </AddEditModal>
+         </AddEditModal>
       }
 
+      {
+        <AddEditModal
+        maxWidth="lg"
+        handleClose={closeTheModal}
+        handleSubmit={handleSubmit(submitTimeInputData)}
+        open={timeInputModal}
+        ButtonText={"Apply"}
+        modalTitle={`Take a holiday on date ${leaveRoomDate}`}
+        isEdit={false}>
+        <Box component="form" onSubmit={handleSubmit(submitTimeInputData)} p={1}>
+          <Grid
+            container
+            spacing={{ md: 3, xs: 2 }}
+            justifyContent="space-between"
+            alignItems="center">
+               
+               <Grid xs={12} sm={12} marginTop={2}>
+                <Controller
+                  name={`holidayStartTime`}
+                  control={control}
+                  rules={{
+                    required: {
+                      valueAsDate: true,
+                      value: true,
+                      message: "StartTime is required",
+                    },
+                  }}
+                  render={({ field, fieldState: { error } }) => {
+                    const { onChange, value, ref} = field;
+                    return (
+                      <>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <TimePicker
+                            sx={{
+                              "&":{
+                                width: "100%",
+                              },
+                              "& label.Mui-focused": {
+                                color: error ? "#d32f2f" : "#25396f",
+                              },
+                              "& .MuiOutlinedInput-root": {
+                                "&.Mui-focused fieldset": {
+                                  borderColor: error ? "#d32f2f" : "#25396f",
+                                },
+                              },
+                            }}
+                            onChange={onChange}
+                            value={value}
+                            ref={ref}
+                            label="Select holiday startTime"
+                          />
+                        </LocalizationProvider>
+                        {error && (
+                          <Typography variant="caption" color="error">
+                            {error.message}
+                          </Typography>
+                        )}
+                      </>
+                    );
+                  }}
+                />
+              </Grid>
+
+              <Grid xs={12} sm={12} marginTop={2}>
+                <Controller
+                  name={`holidayEndTime`}
+                  control={control}
+                  rules={{
+                    required: { value: true, message: "EndTime is required" },
+                  }}
+                  render={({ field, fieldState: { error } }) => {
+                    const { onChange, value, ref } = field;
+                    return (
+                      <>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <TimePicker
+                            sx={{
+                              "&":{
+                                width: "100%",
+                              },
+                              "& label.Mui-focused": {
+                                color: error ? "#d32f2f" : "#25396f",
+                              },
+                              "& .MuiOutlinedInput-root": {
+                                "&.Mui-focused fieldset": {
+                                  borderColor: error ? "#d32f2f" : "#25396f",
+                                },
+                              },
+                            }}
+                            onChange={onChange}
+                            value={value}
+                            ref={ref}
+                            label="Select EndTime"
+                          />
+                        </LocalizationProvider>
+                        {error && (
+                          <Typography variant="caption" color="error">
+                            {error.message}
+                          </Typography>
+                        )}
+                      </>
+                    );
+                  }}
+                />
+              </Grid>
+
+              <Grid xs={12}>
+                   <Controller   
+                     name={"applyOnallBranch"}
+                     control={control} 
+                     render={({field: { onChange, value, ref }}) => (
+                       <FormControlLabel
+                       label="Apply on all branch"
+                       control={
+                         <Checkbox
+                           checked={value}
+                           defaultValue={value}
+                           ref={ref}
+                           onChange={onChange}
+                         />
+                     }
+                   />
+                     )}
+                     >
+                   </Controller>
+              </Grid>
+
+           </Grid>
+         </Box>
+        </AddEditModal>
+      }
 
       <div>
           <div className={BoxCalsses.slotsContainer} onMouseDownCapture={startDragging} onMouseMove={move} onMouseDown={startDragging} onMouseUp={stopDragging} onMouseLeave={stopDragging} ref={parentRef}>
@@ -1085,9 +1243,11 @@ const dispatch = useDispatch();
               </div>
               {activeDaySlots?.[0]?.date && (
                 <span className={BoxCalsses.text_icon_align}>
-                  {" "}
-                  <CalendarMonthOutlinedIcon style={{ fontSize: "28px" }} />{" "}
+                  <CustomButton buttonText={"Take Holiday Today"} endIcon={"😎"} size={"small"} onClick={()=>setTimeInputModal(true)}/>
+                  <div>
+                  <CalendarMonthOutlinedIcon style={{ fontSize: "28px" }} />
                   {new Date(activeDaySlots?.[0]?.date).toLocaleDateString("en-CA").toString()}
+                  </div>
                 </span>
               )}
             </div>
