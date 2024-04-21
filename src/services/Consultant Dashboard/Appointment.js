@@ -8,17 +8,36 @@ const ApiManager = new APIManager();
 
 export const useAppointmentData = () => {
 
-        const { appointmentPagination,appointmentData,startDate:sD,endDate:eD,doctorAppointmentList:D,appointmentListLoading } = useSelector(state => state.appointment);
+        const { appointmentPagination,appointmentData,startDate:sD,endDate:eD,doctorAppointmentList:D,appointmentListLoading,branch:appointmentBranch } = useSelector(state => state.appointment);
         const dispatch = useDispatch();
 
-    const getAppintmentData = async (withLoading=false,page=appointmentPagination.page,pageSize=appointmentPagination.pageSize,searchBy='date',startDate=sD,endDate=eD,doctor=D,val) => {
+    const getAppintmentData = async (
+        withLoading=false,
+        page=appointmentPagination.page,
+        pageSize=appointmentPagination.pageSize,
+        startDate=sD,
+        endDate=eD,
+        doctor=D,
+        val,
+        branch=appointmentBranch) => {
         // console.log("this is with loading : ",withLoading)
         withLoading && dispatch(setAppointmentListLoading(true));
         
-        let url = searchBy==='date' ? `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&searchBy=${searchBy}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}` : `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&searchBy=${searchBy}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}&val=${val}`
+        console.log("this is page : ",page ," this is pageSize : ",pageSize," this is startDate : ",startDate," this is endDate : ",endDate," this is doctor : ",doctor," this is val : ",val," this is branch : ",branch);
+
+        let url = `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}&branch=${branch._id}`
+
+        
+        if(val){
+           url = url.concat(`&searchValue=${val}`)
+        }
+
+        console.log("this is our url ",val);
 
         const data = await ApiManager.get(url);
-        console.log("this is data majboot hook :",data);
+
+        console.log("this is data :",data);
+
         if(!data.error) 
         {
             dispatch(setAppointmentData(data?.data?.data));

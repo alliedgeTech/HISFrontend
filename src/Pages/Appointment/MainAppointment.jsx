@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import HandleStepOneClasses from "../DoctorCalender/components/handleStepOne.module.css";
 import { Typography, Box, Grid, Tab, Tabs, AppBar } from "@mui/material";
 import { useAppointmentData } from '../../services/Consultant Dashboard/Appointment';
-import { setAppointmentCurrentSocketRooms, setAppointmentStep, setShowDoctorAppointment } from '../../slices/appointment.slice';
+import { setAppointmentBranch, setAppointmentCurrentSocketRooms, setAppointmentStep, setShowDoctorAppointment } from '../../slices/appointment.slice';
 import CustomButton from '../../Components/Button/Button';
 import { useForm,Controller } from 'react-hook-form';
 import CustomAutoCompelete from '../../Components/CustomAutoCompelete/CustomAutoCompelete';
@@ -13,6 +13,7 @@ import AppointmentSwiper3 from './components/AppointmentSwiper3';
 import { useTheme } from '@emotion/react';
 import SwipeableViews from "react-swipeable-views";
 import TableSkeleton from '../../Skeleton/TableSkeleton';
+import { useDeferredValue } from 'react';
 
 
 function TabPanel(props) {
@@ -39,33 +40,41 @@ function MainAppointment() {
     const { getAppintmentData } = useAppointmentData();
     const theme = useTheme();
     const dispatch = useDispatch();
-    const {  handleSubmit,control,} = useForm({
+    const {  handleSubmit,control,watch } = useForm({
         defaultValues:{
-            'doctorAppointmentList':null
+            'doctorAppointmentList':null,
+            branch:null,
         },
         mode:"onTouched"
-    })
+    });
+    const doctorwatch = watch('doctorAppointmentList');
+    const doctorDefferedValue = useDeferredValue(doctorwatch);
+
+
 
     useEffect(() => {
       
       return () => {
-        dispatch(setAppointmentCurrentSocketRooms());
+        dispatch(setAppointmentCurrentSocketRooms(undefined));
       }
     },[])
 
     function setDoctorAppointmentListDoctor(data) {
         console.log("this is selected doctor ", data);
         dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
+        dispatch(setAppointmentBranch(data.branch))
         getAppintmentData(
           true,
           undefined,
           undefined,
           undefined,
           undefined,
+          data.doctorAppointmentList,
           undefined,
-          data.doctorAppointmentList
+          data.branch
         );
-        dispatch(setAppointmentCurrentSocketRooms({startDate,endDate,doctorId:data.doctorAppointmentList?._id}));
+        dispatch(setAppointmentCurrentSocketRooms({startDate,endDate,doctorId:data.doctorAppointmentList?._id,branch:data.branch._id}));
+
       }
 
     if (!doctorAppointmentList) {
@@ -73,7 +82,7 @@ function MainAppointment() {
           <div className={HandleStepOneClasses.container}>
             <div className={HandleStepOneClasses.Box}>
               <Typography className={HandleStepOneClasses.cusTypogrphy}>
-                Select Doctor
+                Select Doctor & Branch
               </Typography> 
               <Box
                 width={"100%"}
@@ -84,9 +93,10 @@ function MainAppointment() {
                   container
                   width={"100%"}
                   // columns={{ xs: 4, sm: 8, md: 12 }}
-                  justifyContent="center"
+                  justifyContent="space-evenly"
                   alignItems="center">
-                  <Grid sm={12}>
+
+                  <Grid sm={4}>
                     <Controller
                       name="doctorAppointmentList"
                       control={control}
@@ -101,6 +111,29 @@ function MainAppointment() {
                               ` ${option?.userName} / ${option?.speciality?.speciality}`
                             }
                             url={`admin/userMaster/user/doctor`}
+                            inputRef={ref}
+                            hasError={error}
+                          />
+                        );
+                      }}></Controller>
+                  </Grid>
+
+                  <Grid sm={4}>
+                    <Controller
+                      name="branch"
+                      control={control}
+                      render={({ field, fieldState: { error } }) => {
+                        const { onChange, value, ref, onBlur } = field;
+                        return (
+                          <CustomAutoCompelete
+                            onChange={onChange}
+                            lable={"Select Branch"}
+                            disable={!doctorDefferedValue}
+                            value={value}
+                            onBlur={onBlur}
+                            getOptionLabel={(option)=> option.location }
+                            filterOnActive={true}
+                            url={`admin/locationMaster/location/doctor/${doctorDefferedValue?._id}`}
                             inputRef={ref}
                             hasError={error}
                           />

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  setAppointmentBranch,
   setAppointmentCurrentSocketRooms,
   setAppointmentData,
   setAppointmentEditData,
@@ -60,6 +61,7 @@ function Appointment() {
     appointmentEditData,
     appointmentCount,
     appointmentPagination: paginationModel,
+    branch,
     startDate,
     endDate,
     doctorAppointmentList,
@@ -94,6 +96,7 @@ function Appointment() {
       startDate: startDate,
       endDate: endDate,
       doctorAppointmentList: doctorAppointmentList,
+      appointmentBranch: branch,
     },
     mode: "onTouched",
   });
@@ -212,7 +215,7 @@ function Appointment() {
       let tempData = data.data;
       switch(data.type) {
         case "update":
-          if(tempData?._id) {
+          if(tempData) {
             dispatch(setAppointmentUpdatedData(tempData));
           }
           break;
@@ -262,7 +265,6 @@ function Appointment() {
       false,
       0,
       undefined,
-      "conName",
       undefined,
       undefined,
       undefined,
@@ -283,7 +285,6 @@ function Appointment() {
         false,
         0,
         undefined,
-        "date",
         undefined,
         undefined,
         undefined,
@@ -435,13 +436,15 @@ function Appointment() {
         doctor: element?.doctor,
         appointmentType: element?.appointmentType,
         appointmentDate: element?.appointmentDate,
+        appointmentBranch: element?.appointmentBranch,
         visitType: element?.visitType,
         mobileNo: element?.registration?.mobileNo,
         bloodGroup: element?.registration?.bloodGroup,
         city: element?.registration?.city?.cityName,
         jwt: element?.jwt,
         inTime: element?.inTime,
-        time:element?.time
+        time:element?.time,
+        isActive:element.isActive,
       };
       array.push(thisData);
     });
@@ -492,18 +495,20 @@ function Appointment() {
   //   );
   // }
 
-  function GenrateJwtToken({ _id, userId, checkDate }) {
-    console.log("this is id : ", _id, userId);
-    console.log(
-      "this is check date : ",
-      checkDate,
-      dayjs().format("YYYY-MM-DD")
-    );
-    if (checkDate?.slice(0, 10) != dayjs().format("YYYY-MM-DD")) {
-      toast.error("You can only generate token for today's appointment");
+  function GenrateJwtToken({ _id, userId, checkDate, branch }) {
+    console.log("this is id : ", _id, userId,branch,checkDate);
+  
+    const todayDate = new Date().toLocaleDateString("en-CA",{ timeZone:'Asia/Kolkata' });
+
+    if (checkDate?.slice(0, 10) != todayDate) {
+      toast.error("You can token generate for today's appointment");
       return;
     }
-    socket.emit("generateJwtToken",{ _id, userId, date: dayjs().format("YYYY-MM-DD") });
+
+    socket.emit("appointment",{data:{ _id, doctorId:userId, date: todayDate, branch},type:"generateJwtToken"},()=>{
+      toast.error("token is not generated. Something went wrong");
+    });
+
   }
   const tempData = structuredClone(appointmentData);
   console.log("temp Data:", tempData);
@@ -565,20 +570,21 @@ function Appointment() {
       headerName: "JWT",
       width: 120,
       renderCell: (params) =>
-        params.row.jwt ? (
+        params.row.jwt > 0 ? (
           params.row.jwt
         ) : (
-         params.row.time &&  <div
+         params.row.isActive ?  <div
             style={{ cursor: "pointer" }}
             onClick={() =>
               GenrateJwtToken({
                 _id: params?.row?._id,
                 userId: params?.row?.doctor?._id,
                 checkDate: params?.row?.appointmentDate,
+                branch:params.row?.appointmentBranch?._id
               })
             }>
             <AddTaskOutlinedIcon />
-          </div>
+          </div> : null
         ),
     },
     {
@@ -723,6 +729,7 @@ function Appointment() {
   }
 
   const LeftSideDrawerList = useCallback(() => {
+    const watchDoctor = watch("doctorAppointmentList");
     const watchStartDate = watch("startDate");
 
     const getListAccordingDoctorDate = async (data) => {
@@ -736,6 +743,9 @@ function Appointment() {
         dataChanged = true;
       } else if (endDate != newEndDate) {
         dataChanged = true;
+      } else if(branch?._id != data.appointmentBranch?._id) {
+        dataChanged = true;
+
       }
 
       if (dataChanged) {
@@ -747,29 +757,34 @@ function Appointment() {
         dispatch(setStartDate(newStartDate));
         dispatch(setEndDate(newEndDate));
         dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
+        dispatch(setAppointmentBranch(data.appointmentBranch));
         dispatch(
           setAppointmentpagination({
             page: 0,
             pageSize: paginationModel.pageSize,
           })
         );
+        dispatch(setAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data.doctorAppointmentList._id,branch:data.appointmentBranch._id}));
+
         const innerResData = await getAppintmentData(
           true,
           0,
           undefined,
-          undefined,
           newStartDate,
           newEndDate,
-          data.doctorAppointmentList
+          data.doctorAppointmentList,
+          undefined,
+          data.appointmentBranch,
         );
         if (!innerResData) {
           setLeftDrawer(true);
           return;
         }
-        dispatch(setAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data.doctorAppointmentList._id}));
+        
       }
       setLeftDrawer(false);
     };
+
     return (
       <Box
         component="form"
@@ -815,6 +830,28 @@ function Appointment() {
                 );
               }}></Controller>
           </Grid>
+
+          <Grid sm={12}>
+              <Controller
+                name="appointmentBranch"
+                control={control}
+                render={({ field, fieldState: { error } }) => {
+                  const { onChange, value, ref, onBlur } = field;
+                  return (
+                    <CustomAutoCompelete
+                      onChange={onChange}
+                      lable={"Select Branch"}
+                      value={value}
+                      onBlur={onBlur}
+                      getOptionLabel={(option)=> option.location }
+                      filterOnActive={true}
+                      url={`admin/locationMaster/location/doctor/${watchDoctor?._id}`}
+                      inputRef={ref}
+                      hasError={error}
+                    />
+                  );
+                }}></Controller>
+            </Grid>
 
           <Grid sm={12}>
             <CustomDatePickerField

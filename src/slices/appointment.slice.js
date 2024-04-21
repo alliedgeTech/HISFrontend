@@ -10,6 +10,7 @@ const initialState = {
   startDate: new Date().toLocaleDateString("en-CA").toString(),
   endDate: new Date().toLocaleDateString("en-CA").toString(),
   doctorAppointmentList: null,
+  branch:null,
   appointmentStep: 0,
   appointmentJwtData: null,
   appointmentOutTimeData: null,
@@ -36,6 +37,9 @@ const appointmentSlice = createSlice({
     setAppointmentpagination: (state, action) => {
       state.appointmentPagination.page = action.payload.page;
       state.appointmentPagination.pageSize = action.payload.pageSize;
+    },
+    setAppointmentBranch: (state,action) => {
+      state.branch = action.payload;
     },
     setStartDate: (state, action) => {
       state.startDate = action.payload;
@@ -93,9 +97,16 @@ const appointmentSlice = createSlice({
     },
     setAppointmentUpdatedData: (state, action) => {
       let newData = action.payload;
+      
       if (Array.isArray(state.appointmentData)) {
-        state.appointmentData = state.appointmentData.map((data) =>
-          data._id === newData._id ? { ...data, ...newData } : data
+        state.appointmentData = state.appointmentData.map((data) => {
+            const updatedAppointment = newData.find((appointmentData)=>appointmentData._id === data._id);
+
+            if(updatedAppointment) {
+              data = { ...data ,...updatedAppointment };
+            }
+            return data;
+          }
         );
       }
     },
@@ -149,9 +160,9 @@ const appointmentSlice = createSlice({
       let startDate = action.payload?.startDate;
       let endDate = action.payload?.endDate;
       let doctorId = action.payload?.doctorId;
+      let branchId = action.payload?.branch;
 
-
-      if(startDate && endDate && doctorId) {
+      if(startDate && endDate && doctorId && branchId) {
         const dateArray = [];
 
         // Convert startDate and endDate to Date objects
@@ -160,13 +171,13 @@ const appointmentSlice = createSlice({
   
         // Include startDate and endDate in the array
         if (startDate.getTime() === endDate.getTime()) {
-          dateArray.push(doctorId + "_" + startDate.toISOString().split("T")[0]); // Push doctorId prefix + startDate as a string
+          dateArray.push(doctorId + "_" + new Date(startDate).toLocaleDateString("en-CA") + "_" + branchId + "_" + "appointment"); // Push doctorId prefix + startDate as a string
         } else {
           // Loop through dates from startDate to endDate
           const currentDate = new Date(startDate);
           while (currentDate <= endDate) {
             dateArray.push(
-              doctorId + "_" + currentDate.toISOString().split("T")[0]
+              doctorId + "_" + currentDate.toLocaleDateString("en-CA") + "_" + branchId + "_" + "appointment"
             ); // Push doctorId prefix + current date as a string
             currentDate.setDate(currentDate.getDate() + 1);
           }
@@ -185,6 +196,7 @@ export const {
   setAppointmentLoading,
   setAppointmentpagination,
   setRemoveAppointmentData,
+  setAppointmentBranch,
   setStartDate,
   setEndDate,
   setShowDoctorAppointment,
