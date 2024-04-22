@@ -97,6 +97,10 @@ function Appointment() {
       endDate: endDate,
       doctorAppointmentList: doctorAppointmentList,
       appointmentBranch: branch,
+      //* rech
+      rescheduleBranch:null,
+      rescheduleBranchAppointmentType:null,
+      rescheduleBranchCurrentTime:null,
     },
     mode: "onTouched",
   });
@@ -109,8 +113,13 @@ function Appointment() {
   const [showSlotSelect, setShowSlotSelect] = useState(false);
   const [LeftDrawer, setLeftDrawer] = useState(false);
   const [SearchValue, setSearchValue] = useState(null);
+
+  //* for appointment reschedule
   const [appointmentReschedule, setAppointmentReschedule] = useState(null);
   const [appointmentRescheduleData, setAppointmentRescheduleData] = useState(null);
+  const [appointmentReschduleForm, setAppointmentReschduleForm] = useState(false);
+  //* for appointment reschedule
+  
 
   const {
     appointmentListLoading,
@@ -123,6 +132,8 @@ function Appointment() {
   const { getRegistrationData } = useFrontOfficeRegistration();
   const DoctorWatch = watch("doctor");
   const watchSlot = watch("time")
+  const watchRescheduleBranchAppointmentType = watch("rescheduleBranchAppointmentType");
+
   const defferedSlot = useDeferredValue(watchSlot );
   const setRegistrationModalData = async (tempData) => {
     let url = `admin/frontOffice/registration/m/${tempData}?type=id`;
@@ -141,7 +152,7 @@ function Appointment() {
       const tempData = {
         ...data?.data?.data,
         gender: { gender: data?.data?.data?.gender },
-      };
+    };
 
       setRegistrationNumberFound(tempData?._id);
       console.log("this is temp data : ", tempData);
@@ -299,6 +310,9 @@ function Appointment() {
     setRegistrationNumberFound(false);
     setNewRegistrationForm(false);
     dispatch(setAppointmentEditData(false));
+    setAppointmentReschduleForm(false);
+    setAppointmentReschedule(false);
+    setAppointmentRescheduleData(null);
     reset({
       doctor: null,
       appointmentType: "walkin",
@@ -316,6 +330,9 @@ function Appointment() {
       otherRemarks: "",
       time: "",
       email: "",
+      rescheduleBranch:null,
+      rescheduleBranchAppointmentType:null,
+      rescheduleBranchCurrentTime:null,
     });
     clearErrors();
   };
@@ -399,6 +416,48 @@ function Appointment() {
     }
   };
 
+  const submitAppointmentReschedule = async (data) => {
+    console.log("this is reschedule slot data responce data : ", data);
+   
+    let tempObj = {
+      appointmentId:appointmentRescheduleData._id,
+      appointmentType:data.rescheduleBranchAppointmentType,
+    }      
+
+    console.log("this is appointment reshceudle data : appointment type : ",data.rescheduleBranchAppointmentType)
+
+    if(data.rescheduleBranchAppointmentType === 'scheduled') {
+
+      if(!data.time || !data.rescheduleBranchAppointmentType) {
+        return toast.error("Please select the slot time.");
+      }
+
+      tempObj.time=data.time
+      tempObj.appointmentDate=data.appointmentDate
+    } else {
+      tempObj.appointmentDate = new Date().toLocaleDateString("en-CA",{ timeZone:'Asia/Kolkata'});
+      tempObj.currentTime =  dayjs().format("HH:mm")
+    }
+
+    console.log("this is appointment reshceudle data : ",tempObj);
+      // await rescheduleAppointment(tempObj);
+      // closeTheModal();
+
+      // {
+      //   "appointmentId": "66250d025074adb4ed3484e2",
+      //   "appointmentType": "scheduled",
+      //   "time": "66250c575074adb4ed348455",
+      //   "appointmentDate": "2024-04-22"
+      // }
+
+      // {
+      //   "appointmentId": "66250d025074adb4ed3484e2",
+      //   "appointmentType": "walkin",
+      //   "appointmentDate": "2024-04-22",
+      //   "currentTime": "22:40"
+      // }
+  }
+
   const onPaginationChange = async ({ page, pageSize }) => {
     if (
       page !== paginationModel.page ||
@@ -444,6 +503,7 @@ function Appointment() {
         jwt: element?.jwt,
         inTime: element?.inTime,
         time:element?.time,
+        currentTime:element?.currentTime,
         isActive:element.isActive,
       };
       array.push(thisData);
@@ -608,7 +668,7 @@ function Appointment() {
       width: 150,
       renderCell: (params) => (
         <>
-         { params.row.time && <div
+         { params.row.isActive && <div
            style={{cursor:"pointer"}}
             onClick={() => {
               setModalOpen(true);
@@ -628,21 +688,19 @@ function Appointment() {
             <CustomIconButton />
           </div>}
           {
-            !params.row.inTime && params.row.time && <div
+            !params.row.inTime && (params.row.time || params.row.currentTime) && <div
             style={{marginLeft:"20px",cursor:"pointer"}}
             onClick={() => cancelAppointment(params.row._id) }>
             <CustomIconButton iconName="cancelOutlinedIcon" />
           </div>
           }
           {
-            params.row.jwt === 0 && params.row.time && <div
+            !params.row.inTime && <div
             style={{marginLeft:"20px",cursor:"pointer"}}
-            onClick={() => {setAppointmentReschedule(true);setAppointmentRescheduleData(params.row)} }>
+            onClick={() => {setAppointmentReschduleForm(true);setAppointmentRescheduleData(params.row)}} >
             <CustomIconButton iconName="R" />
           </div>
           }
-
-
         </>
       ),
     },
@@ -1294,6 +1352,52 @@ function Appointment() {
         </Box>
       </AddEditModal>
 
+      <AddEditModal
+        maxWidth="lg"
+        handleClose={closeTheModal}
+        handleSubmit={handleSubmit(submitAppointmentReschedule)}
+        open={appointmentReschduleForm}
+        modalTitle={
+          `Appointment Reschedule`
+        }
+        ButtonText={"Reschdule Appointment"}
+        isEdit={!!appointmentEditData}
+        Loading={appointmentLoading}>
+        <Box component="form" onSubmit={handleSubmit(submitAppointmentReschedule)} p={3}>
+          <Grid
+            container
+            spacing={{ md: 3, xs: 2 }}
+            justifyContent="space-between"
+            alignItems="center">
+
+               <Grid xs={12} sm={4}>
+              <Controller
+                name="rescheduleBranchAppointmentType"
+                control={control}
+                rules={{ required: "Appointmnet type is required" }}
+                render={({ field, fieldState: { error } }) => {
+                  const { onChange, value, ref } = field;
+                  return (
+                    <CustomAutoCompelete
+                      onChange={onChange}
+                      lable={"Appointment Type"}
+                      value={value}
+                      getOptionLabel={(option) => option}
+                      options={["walkin", "scheduled"]}
+                      inputRef={ref}
+                      hasError={error}
+                    />
+                  );
+                }}></Controller>
+               </Grid>
+
+               { watchRescheduleBranchAppointmentType === 'scheduled' && <CustomButton onClick={()=>setAppointmentReschedule(true)}  buttonText={"Select slots"}></CustomButton>
+               }
+
+          </Grid>
+        </Box>
+      </AddEditModal>
+
       <SwipeableDrawer
         anchor={"right"}
         open={LeftDrawer}
@@ -1327,11 +1431,12 @@ function Appointment() {
         defaultValue={{
           date: appointmentRescheduleData?.appointmentDate,
           time: appointmentRescheduleData?.time,
+          branch: appointmentRescheduleData?.appointmentBranch,
         }}
         open={appointmentReschedule}
         setSelectSlotModal={setAppointmentReschedule}
         doctor={appointmentRescheduleData?.doctor}
-        setValueFormSelectSlot={responceRescheduleAppointment}
+        setValueFormSelectSlot={setValueFormSelectSlot}
       />
 
       <TableMainBox customHeader={CustomHeader()}>
@@ -1349,7 +1454,7 @@ function Appointment() {
             paginationModel={paginationModel}
             customHeight="248px"
             rowData={rowData}
-            getRowClassName={(params) => !params.row.time && 'inactive-row' }
+            getRowClassName={(params) => !params.row.isActive && 'inactive-row' }
             onPaginationChange={onPaginationChange}
           />
         ) : (

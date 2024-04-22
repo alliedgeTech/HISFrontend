@@ -464,52 +464,6 @@ const dispatch = useDispatch();
         const roomId = getRoomId();
         joinRoomAndGetSlots(roomId);
     
-        // socket.on("doctorCalenderData", (data) => {
-        //   dispatch(setDoctorCalenderLoading(true));
-        //   console.log("this is data from socket yeyeyeyyeye: ", data);
-
-        //   if (data) {
-        //     const currentDate = new Date();
-        //     const tempData = data.commonSchedule.map((obj, index) => ({
-        //       ...obj,
-        //       date: getCurrentWeekDateByDay(obj?.dayName)
-        //         .toLocaleDateString("en-CA")
-        //         .toString(),
-        //     }));
-        //     data.commonSchedule = tempData;
-        //     dispatch(setSeveDayData(data));
-        //     const DayData = [
-        //       { name: "mon", index: 0 },
-        //       { name: "tue", index: 1 },
-        //       { name: "wed", index: 2 },
-        //       { name: "thu", index: 3 },
-        //       { name: "fri", index: 4 },
-        //       { name: "sat", index: 5 },
-        //       { name: "sun", index: 6 },
-        //     ];
-    
-        //     // Extract the indices from tempData
-        //     const indicesToRemove = data?.commonSchedule?.map((item) => item.index);
-    
-        //     // Filter DayData to remove elements with matching indices
-        //     const updatedDayData = DayData.filter(
-        //       (item) => !indicesToRemove.includes(item.index)
-        //     );
-    
-        //     dispatch(setRemainingDays(updatedDayData));
-        //     dispatch(setDoctorCalenderLoading(false));
-        //   } else {
-        //     toast.error("Something went wronge in socket");
-        //   }
-
-        // });
-    
-        //TODO remove this event future
-        socket.on("update_slot",(data)=>{
-          if(!data) return;
-          dispatch(setActiveDaySlotsUpdate(data))
-        })
-    
         socket.on("slots", (data) => {
           switch(data?.type){
             case 'get':
@@ -518,20 +472,17 @@ const dispatch = useDispatch();
               console.log("slotData", data);
               break;
             case 'add':
-            //TODO add function for this add the slots
               // uid and data and at place we have to add
               dispatch(setAddedNewSlots(data));
               console.log("please add this slots : ",data);
               break;
     
             case 'delete':
-            //TODO : delete the slots
               dispatch(setRemoveSlots(data))
               console.log("please delete this slots : ",data);
               break;
             
             case 'update':
-            //TODO : update the slots
               dispatch(setActiveDaySlotsUpdate(data));
               console.log("please update this slots : ",data);
               break;

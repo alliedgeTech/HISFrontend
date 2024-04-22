@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AddEditModal from "../../../Components/AddEditModal/AddEditModal";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import CustomDatePickerField from "../../../Components/InputsFilelds/CustomDatePickerField";
 import Grid from "@mui/material/Unstable_Grid2";
 import dayjs from "dayjs";
@@ -9,6 +9,8 @@ import toast from "react-hot-toast";
 import SlotsSkeleton from "../../../Skeleton/SlotsSkeleton";
 import EmptyData from "../../../Components/NoData/EmptyData";
 import socket from "../../../socket";
+import CustomAutoCompelete from "../../../Components/CustomAutoCompelete/CustomAutoCompelete";
+import { Divider } from "@mui/material";
 
 const dataColorSow = [
   {
@@ -65,16 +67,17 @@ function SlotSBoxRender({
   setSlotValue,
   slotBreak,
   startTime,
-  count,
+  tokenNumber,
   _id,
-  ...props
 }) {
+
+  console.log("this is setSlotValue " ,setSlotValue);
   if (slotBreak) {
     return <BreakSlot _id={_id} time={startTime} />;
   }
 
   if (booked) {
-    return <BookedSlot time={startTime} _id={_id} count={count} />;
+    return <BookedSlot time={startTime} _id={_id} count={tokenNumber} />;
   }
   return (
     <div
@@ -90,6 +93,8 @@ function SlotSBoxRender({
   );
 }
 
+
+
 function SelectSlotModal({
   open,
   setSelectSlotModal,
@@ -98,26 +103,32 @@ function SelectSlotModal({
   defaultValue,
   buttonText="Select Slot"
 }) {
+  console.log('this i am get the default : ',doctor)
+
   const [slotsData, setSlotsData] = useState(null);
   const [loading, setLoading] = useState(true);
-  let previousJoinRoomDate = null;
-  const { handleSubmit, control, clearErrors, reset, watch, setValue } =
+  const [previousJoinRoomDate, setPreviousJoinRoomDate] = useState(null);
+  const { handleSubmit, control, clearErrors, reset, watch, setValue, getValues } =
     useForm({
       defaultValues: {
-        slot: defaultValue?.time ? defaultValue?.time : null,
-        date: defaultValue?.date ? dayjs(defaultValue?.date) : dayjs(),
+        slot: defaultValue.time ? defaultValue.time : null,
+        date: defaultValue.date ? dayjs(defaultValue.date) : dayjs(),
       },
       mode: "onTouched",
     });
+
   const setSlotValue = (id) => {
+    console.log("this is function  : ",id);
     setValue("slot", id);
   };
+
   const closeTheModal = () => {
     reset({
       slot: null,
       date: null,
     });
     clearErrors();
+    previousJoinRoomDate && socket.emit("leaveRoom",[previousJoinRoomDate]);
     setSelectSlotModal(false);
   };
 
@@ -129,86 +140,186 @@ function SelectSlotModal({
     }
 
     const tempData = {
-      date: dayjs(data.date.$d).format("YYYY-MM-DD"),
+      date: dayjs(data.date).format("YYYY-MM-DD"),
       slot: data.slot,
     };
+
     setSlotsData(null);
     console.log("this is date", tempData);
     setValueFormSelectSlot(tempData);
     closeTheModal();
   };
 
+  function addSlots(slotsNewData){
+
+    if(!slotsNewData || !Array.isArray(slotsData)) return console.log("please provide the data for the add the slots");
+    const { uid,at,data } = slotsNewData;
+
+    let oldData = JSON.parse(JSON.stringify(slotsData));
+
+    oldData = oldData.map((obj) => {
+      if(obj?.allSlots?.uid == uid) {
+          if(Array.isArray(obj?.allSlots?.slots)){
+              if(Number.isInteger(at)){
+                  obj.allSlots.slots.splice(at,0,...data);
+              } else {
+                  obj.allSlots.slots = [...obj.allSlots.slots,...data];
+              }
+          } else {
+              obj.allSlots.slots = data;
+          }
+          return obj;
+      } else  {
+          return obj;
+      }
+    })
+
+    setSlotsData(oldData);
+  }
+
+  function deleteSlots(slotsDelete){
+    
+    if(!slotsDelete && !Array.isArray(slotsData)) {
+      return console.log("Please provide the data for the delete the slots either slotsdata is not an array");
+    }
+
+    const { uid,data } = slotsDelete;
+    let oldData = JSON.parse(JSON.stringify(slotsData));
+    oldData = oldData.map((obj) => {
+      if(obj?.allSlots?.uid == uid && Array.isArray(obj?.allSlots?.slots)) {
+          console.log("is this is mapping and uid also match : ",obj.allSlots,obj.allSlots.slots);
+
+          obj.allSlots.slots = obj.allSlots.slots.filter((slot) => !data.includes(slot._id))
+      } else {
+          return obj;
+      }
+
+      setSlotsData(oldData);
+  })
+
+  }
+
+  function updateSlots(updateSlots){
+
+    if(!updateSlots && !Array.isArray(slotsData)) {
+      return console.log("Please provide the data for the update the slots either slotsdata is not an array");
+    }
+
+    const { uid,data } = updateSlots;
+    
+    let oldData = JSON.parse(JSON.stringify(slotsData));
+
+    oldData = oldData.map((obj)=>{
+      if(obj?.allSlots?.uid == uid && Array.isArray(obj.allSlots?.slots)){
+          obj.allSlots.slots = obj.allSlots.slots.map((item)=>{
+              const findSlotInData = data.find((updatedData)=> updatedData._id == item._id );;
+              console.log(findSlotInData,"this i am found the slots :")
+              if(findSlotInData){
+                  item = {...item,...findSlotInData};
+              }
+              return item;
+          })
+          return obj;
+      } else {
+          return obj;
+      }
+  })
+
+  setSlotsData(oldData);
+  } 
+
+  function joinRoomAndGetSlots(roomId){
+    socket.emit("joinRoom", [roomId]);
+    socket.emit("slots", { type: "get", id:roomId}, (data)=>{
+        if(!data.success){
+          setSlotsData(null);
+          setLoading(false);
+          return toast.error(data.message);
+        }
+        setSlotsData(data?.value);
+        setLoading(false); 
+
+    });
+    
+  }
+
+  useEffect(() => {
+    console.log("this is all steps previous date show: ",previousJoinRoomDate);
+  },[previousJoinRoomDate])
+
   const watchDate = watch("date");
   const watchSlot = watch("slot");
 
-  // useEffect(()=>{
-  //   console.log("@@ default date : ",dayjs(defaultValue));
-  //   setValue("date", defaultValue ? dayjs(defaultValue) : dayjs())
-  // },[])
-
   useEffect(() => {
 
-    socket.on("soltsData", (data) => {
-      setSlotsData(data);
-      setLoading(false);
-    });
-    return () => {
-      socket.off("soltsData");
-    }
-  }, []);
-
-  useEffect(() => {
-    socket.on("update_slot",(data) => {
+    if(slotsData){
+      socket.on("slots", (data) => {
+        switch(data?.type){
+          case 'get':
+            //* here we got all slots data
+            setSlotsData(data?.data);
+            setLoading(false);
+            break;
   
-      let activeDaySlotsRef = slotsData?.slotsmasters?.slot;
-
-      if (!Array.isArray(activeDaySlotsRef)) return;
-
-      const tempData = slotsData;
-      tempData.slotsmasters.slot = tempData.slotsmasters.slot.map((obj) => {
-        return obj._id === data._id ? { ...obj, ...data } : obj;
+          case 'add':
+            // uid and data and at place we have to add
+            addSlots(data);
+            console.log("please add this slots : ",data);
+            break;
+  
+          case 'delete':
+            deleteSlots(data);
+            console.log("please delete this slots : ",data);
+            break;
+          
+          case 'update':
+            updateSlots(data);
+            console.log("please update this slots : ",data);
+            break;
+  
+        }
+        
       });
-      setSlotsData((_pres) => {
-        return {...tempData };
-      });
-    });
+    }
 
     return () => {
-      socket.off("update_slot")
+      socket.off("solts");
     }
-  },[slotsData])
+  }, [slotsData]);
 
   useEffect(() => {
-    if (watchDate && doctor) {
-      console.log(
-        "this is watch date : ",
-        watchDate,
-        dayjs(watchDate.$d).format("YYYY-MM-DD")
-      );
-      if (previousJoinRoomDate) {
-        socket.emit("leaveRoom", previousJoinRoomDate);
-      }
-      setLoading(true);
-      console.log("this is start to join the room : ")
-      socket.emit(
-        "joinRoom",
-        [`${dayjs(watchDate.$d).format("YYYY-MM-DD")}${doctor?._id}_slots`],
-        "slots"
-      );
-      previousJoinRoomDate = `${dayjs(watchDate.$d).format("YYYY-MM-DD")}${
-        doctor?._id
-      }_slots`;
-    }
+    if(open){
+      if (watchDate && doctor && defaultValue.branch) {
 
-    return () => {
-      if (doctor) {
-        socket.emit(
-          "leaveRoom",
-          `${dayjs(watchDate?.$d).format("YYYY-MM-DD")}${doctor?._id}_slots`
-        );
+        const key = `${doctor?._id}_${dayjs(watchDate).format("YYYY-MM-DD")}_${defaultValue.branch?._id}`
+  
+        console.log("this is real value of getValues of the date :  ",getValues("date"))
+  
+        if (previousJoinRoomDate) {
+          socket.emit("leaveRoom", [previousJoinRoomDate]);
+        }
+  
+        setLoading(true);
+        joinRoomAndGetSlots(key)
+        
+        setPreviousJoinRoomDate(key);
       }
-    };
-  }, [watchDate]);
+  
+      return () => {
+        if (previousJoinRoomDate) {
+          socket.emit(
+            "leaveRoom",
+            [previousJoinRoomDate]
+          );
+          setPreviousJoinRoomDate(null);
+        }
+      };
+    }
+  }, [watchDate,open]);
+
+  useEffect(() => {
+    console.log("this is slots data : ",slotsData);
+  },[slotsData])
 
   
   return (
@@ -255,20 +366,28 @@ function SelectSlotModal({
               </div>
             </Grid>
           </Grid>
-          <div className={BoxCalsses.slotBody}>
-            {slotsData ?
-              slotsData?.slotsmasters?.slot?.map((item, index) => {
-                return (
-                  <SlotSBoxRender
-                    watchSlot={watchSlot}
-                    setSlotValue={setSlotValue}
-                    key={index}
-                    {...item}
-                    slotBreak={item?.break}
-                  />
-                );
-              }) : <EmptyData />}
-          </div>
+          <div className={BoxCalsses.slotBodyContainer}>
+              {slotsData && Array.isArray(slotsData) ? slotsData?.map((item, index) => {
+
+                return  <>
+                 {index > 0 && <Divider />}
+                  <div className={BoxCalsses.slotBody}> 
+                  { 
+                    item.allSlots.slots.map((item2) => {
+                     return <SlotSBoxRender
+                      key={index}
+                      uid={item?.allSlots?.uid}
+                      {...item2}
+                      setSlotValue={setSlotValue}
+                      slotBreak={item2?.break}
+                      watchSlot={watchSlot}
+                    />
+                    }) 
+                  }
+                </div>
+                </>
+              }) : <EmptyData /> }
+            </div>
         </>
       )}
     </AddEditModal>
