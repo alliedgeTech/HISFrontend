@@ -132,7 +132,9 @@ function Appointment() {
   const { getRegistrationData } = useFrontOfficeRegistration();
   const DoctorWatch = watch("doctor");
   const watchSlot = watch("time")
+  const watchAppointmentBranch = watch("appointmentBranch")
   const watchRescheduleBranchAppointmentType = watch("rescheduleBranchAppointmentType");
+  const watchAppointmentType = watch("appointmentType");
 
   const defferedSlot = useDeferredValue(watchSlot );
   const setRegistrationModalData = async (tempData) => {
@@ -260,13 +262,20 @@ function Appointment() {
   // }, [defferedMobileNumber]);
 
   useEffect(() => {
+    setValue("appointmentBranch",null);
+  }, [DoctorWatch]);
+
+  useEffect(() => {
     setValue("time",null);
-    if (DoctorWatch) {
+    if (watchAppointmentBranch) {
+      console.log("this is i am set the appointment branch :");
       setShowSlotSelect(true);
     } else {
       setShowSlotSelect(false);
     }
-  }, [DoctorWatch]);
+  }, [watchAppointmentBranch]);
+
+  
 
   function FetchTheNewList(value) {
     dispatch(
@@ -356,10 +365,23 @@ function Appointment() {
   const submitData = async (data) => {
     console.log("this is form data : ", data);
 
-    if (!data.time && !data.appointmentDate) {
-      toast.error("Please select the slot");
-      return;
+    const timeDateObj = {
+      branch:data?.appointmentBranch?._id
+    };
+
+    if(data.appointmentType === 'scheduled'){
+      if (!data.time && !data.appointmentDate) {
+        toast.error("Please select the slot");
+        return;
+      }
+      timeDateObj.appointmentDate = data.appointmentDate;
+      timeDateObj.time = data.time
+    } else {
+      timeDateObj.appointmentDate = new Date().toLocaleDateString("en-CA",{ timeZone:'Asia/Kolkata' });
+      timeDateObj.currentTime = dayjs().format("HH:mm");
     }
+
+    
 
     if (appointmentEditData) {
       const tempData = await updateAppointmentData({
@@ -381,8 +403,9 @@ function Appointment() {
           appointmentType: data.appointmentType,
           registration: RegistrationNumberFound,
           visitType: data.visitType.value,
-          appointmentDate: data.appointmentDate,
-          time: data.time,
+          ...timeDateObj
+          // appointmentDate: data.appointmentDate,
+          // time: data.time,
         });
 
         if (tempData) {
@@ -394,7 +417,7 @@ function Appointment() {
           doctor: data.doctor._id,
           appointmentType: data.appointmentType,
           visitType: data.visitType.value,
-          appointmentDate: data.appointmentDate,
+          // appointmentDate: data.appointmentDate,
           title: data.title._id,
           age: data?.age,
           pationName: data?.pationName,
@@ -404,7 +427,8 @@ function Appointment() {
           mobileNo: data?.mobileNo,
           otherRemarks: data?.otherRemarks,
           email: data?.email,
-          time: data?.time,
+          ...timeDateObj,
+          // time: data?.time,
           address: data.address,
         });
 
@@ -1035,6 +1059,29 @@ function Appointment() {
                 }}></Controller>
             </Grid>
 
+            <Grid sm={4}>
+                <Controller
+                  name="appointmentBranch"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => {
+                    const { onChange, value, ref, onBlur } = field;
+                    return (
+                      <CustomAutoCompelete
+                        onChange={onChange}
+                        lable={"Select Branch"}
+                        disable={!DoctorWatch}
+                        value={value}
+                        onBlur={onBlur}
+                        getOptionLabel={(option)=> option.location }
+                        filterOnActive={true}
+                        url={`admin/locationMaster/location/doctor/${DoctorWatch?._id}`}
+                        inputRef={ref}
+                        hasError={error}
+                      />
+                    );
+                  }}></Controller>
+            </Grid>
+
             <Grid xs={12} sm={4}>
               <Controller
                 name="appointmentType"
@@ -1118,7 +1165,7 @@ function Appointment() {
                     }></CustomButton>
                 </Grid>
 
-                <Grid xs={12} sm={4}>
+               { watchAppointmentType === 'scheduled' && <Grid xs={12} sm={4}>
                   <CustomButton
                     disabled={!showSlotSelect}
                     color={ defferedSlot ? "rgb(76, 175, 80)" : undefined}
@@ -1127,7 +1174,7 @@ function Appointment() {
                     buttonText={"Select Slot"}
                     startIcon={<AlarmOutlinedIcon />}
                     onClick={() => setSelectSlotModal(true)}></CustomButton>
-                </Grid>
+                </Grid>}
 
                 <Grid xs={12} sm={4}>
                   <CustomButton fullWidth buttonText={'New Registration'} startIcon={<AddIcon />} onClick={newRegistrationAddedOnNumber}></CustomButton>
@@ -1418,6 +1465,7 @@ function Appointment() {
         defaultValue={{
           date: getValues("appointmentDate"),
           time: getValues("time"),
+          branch: watchAppointmentBranch
         }}
         open={selectSlotModal}
         setSelectSlotModal={setSelectSlotModal}
