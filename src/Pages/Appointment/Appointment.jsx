@@ -439,9 +439,9 @@ function Appointment() {
       tempObj.currentTime =  dayjs().format("HH:mm")
     }
 
-    console.log("this is appointment reshceudle data : ",tempObj);
-      // await rescheduleAppointment(tempObj);
-      // closeTheModal();
+      console.log("this is appointment reshceudle data : ",tempObj);
+      await rescheduleAppointment(tempObj);
+      closeTheModal();
 
       // {
       //   "appointmentId": "66250d025074adb4ed3484e2",
@@ -903,7 +903,7 @@ function Appointment() {
                       onBlur={onBlur}
                       getOptionLabel={(option)=> option.location }
                       filterOnActive={true}
-                      url={`admin/locationMaster/location/doctor/${watchDoctor?._id}`}
+                      url={watchDoctor ? `admin/locationMaster/location/doctor/${watchDoctor?._id}` : ""}
                       inputRef={ref}
                       hasError={error}
                     />

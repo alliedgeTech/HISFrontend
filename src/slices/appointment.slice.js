@@ -65,7 +65,7 @@ const appointmentSlice = createSlice({
     },
     setRemoveAppointmentData: (state, action) => {
       if(Array.isArray(state.appointmentData) && state.appointmentData.length > 0) {
-        state.appointmentData = state.appointmentData.filter((obj) => obj._id !== action.payload.data);
+        state.appointmentData = state.appointmentData.filter((obj) => !action.payload.data.find((app_id) => app_id == obj._id));
       } 
       if(state.appointmentData.length === 0) {
         if(state.appointmentPagination.page >= 1) {
