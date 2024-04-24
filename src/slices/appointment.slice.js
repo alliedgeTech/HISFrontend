@@ -121,17 +121,20 @@ const appointmentSlice = createSlice({
     },
     setUpdatedAppointmentJwtData: (state, action) => {
       if (Array.isArray(state.appointmentJwtData)) {
-        state.appointmentJwtData = state.appointmentJwtData.map((data) =>
-          data._id === action.payload._id
-            ? { ...data, ...action.payload }
-            : data
-        );
+          state.appointmentJwtData = state.appointmentJwtData.map((data) => {
+          const findUpdatedAppointment = action.payload.find((updatedData)=> updatedData._id == data._id );
+          console.log("this is updated the appointment :  ",findUpdatedAppointment);
+          if(findUpdatedAppointment) {
+             data = { ...data, ...findUpdatedAppointment };
+          }
+          return data;
+        });
       }
     },
     setRemovedAppointmentJwtData: (state, action) => {
       if (Array.isArray(state.appointmentJwtData)) {
-        state.appointmentJwtData = state.appointmentJwtData.filter(
-          (data) => data._id !== action.payload
+        state.appointmentJwtData = state.appointmentJwtData.filter((currentAppointment) =>
+           !action.payload.find((filteredAppointment)=> filteredAppointment == currentAppointment._id)
         );
         if(state.appointmentJwtData?.length === 0) {
           state.appointmentJwtData = null;

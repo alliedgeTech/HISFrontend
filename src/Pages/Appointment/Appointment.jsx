@@ -97,6 +97,7 @@ function Appointment() {
       endDate: endDate,
       doctorAppointmentList: doctorAppointmentList,
       appointmentBranch: branch,
+      filterAppointmentBranch:branch,
       //* rech
       rescheduleBranch:null,
       rescheduleBranchAppointmentType:null,
@@ -825,7 +826,7 @@ function Appointment() {
         dataChanged = true;
       } else if (endDate != newEndDate) {
         dataChanged = true;
-      } else if(branch?._id != data.appointmentBranch?._id) {
+      } else if(branch?._id != data.filterAppointmentBranch?._id) {
         dataChanged = true;
 
       }
@@ -839,14 +840,14 @@ function Appointment() {
         dispatch(setStartDate(newStartDate));
         dispatch(setEndDate(newEndDate));
         dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
-        dispatch(setAppointmentBranch(data.appointmentBranch));
+        dispatch(setAppointmentBranch(data.filterAppointmentBranch));
         dispatch(
           setAppointmentpagination({
             page: 0,
             pageSize: paginationModel.pageSize,
           })
         );
-        dispatch(setAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data.doctorAppointmentList._id,branch:data.appointmentBranch._id}));
+        dispatch(setAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data.doctorAppointmentList._id,branch:data.filterAppointmentBranch._id}));
 
         const innerResData = await getAppintmentData(
           true,
@@ -856,7 +857,7 @@ function Appointment() {
           newEndDate,
           data.doctorAppointmentList,
           undefined,
-          data.appointmentBranch,
+          data.filterAppointmentBranch,
         );
         if (!innerResData) {
           setLeftDrawer(true);
@@ -915,7 +916,7 @@ function Appointment() {
 
           <Grid sm={12}>
               <Controller
-                name="appointmentBranch"
+                name="filterAppointmentBranch"
                 control={control}
                 render={({ field, fieldState: { error } }) => {
                   const { onChange, value, ref, onBlur } = field;

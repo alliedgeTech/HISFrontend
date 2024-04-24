@@ -13,7 +13,7 @@ import AlarmOnOutlinedIcon from '@mui/icons-material/AlarmOnOutlined';
 import socket from '../../../socket';
 
 function AppointmentSwiper2() {
-    const  { doctorAppointmentList,appointmentJwtData } = useSelector((state) => state.appointment);
+    const  { doctorAppointmentList,appointmentJwtData,branch } = useSelector((state) => state.appointment);
     const dispatch = useDispatch();
 
     function GetTodayDate () {  
@@ -36,28 +36,34 @@ function AppointmentSwiper2() {
           </div>
       )
   }
-  
 
     const [Loading, setLoading] = useState(true);
 
   useEffect(() => {
-    socket.emit("joinRoom", [GetTodayDate()+doctorAppointmentList?._id+"_jwt"], "appointment_jwt");
+    const key = doctorAppointmentList?._id+"_"+GetTodayDate()+"_"+branch?._id+"_"+"appointmentJwt";
+    socket.emit("joinRoom", [key]);
 
-    socket.on("appointment_jwt", (data) => {
-        console.log("appointment_jwt", data);
-        dispatch(setAppointmentJwtData(data));
-        setLoading(false);
+    socket.emit("appointmentJwt",{ key,type:'get' },(data) => {
+      dispatch(setAppointmentJwtData(data));
+      setLoading(false);
     });
 
-    socket.on("generatedJWtToken_listAppointment",(data) => {
+    // socket.on("appointment_jwt", (data) => {
+    //     console.log("appointment_jwt", data);
+    //     dispatch(setAppointmentJwtData(data));
+    //     setLoading(false);
+    // });
+
+    //generatedJWtToken_listAppointment
+    socket.on("appointmentJwt",(data) => {
       if(!data || !data.data ) return;
       switch (data.type) {
         case "add":
-          console.log("i am dispatching the new data : ",data.data)
+          console.log("i am dispatching the new data : ",data.data);
           dispatch(setNewDataAppointmentJwtData(data.data));
           break;
         case "update":
-          dispatch(setUpdatedAppointmentJwtData(data.data))
+          dispatch(setUpdatedAppointmentJwtData(data.data));
           break;
         case "remove":
           dispatch(setRemovedAppointmentJwtData(data.data))
@@ -66,27 +72,22 @@ function AppointmentSwiper2() {
           break;
       }
     })
-
    
     return () => {
-      socket.off("appointment_jwt");
-      socket.off("generatedJWtToken_listAppointment");
-      socket.emit("leaveRoom", GetTodayDate()+doctorAppointmentList?._id+"_jwt");
+      socket.off("appointmentJwt");
+      socket.emit("leaveRoom", doctorAppointmentList?._id+"_"+GetTodayDate()+"_"+branch._id+"_"+"appointmentJwt");
     };
   }, []);
 
   function emitInTimeEvent(_id){
       let tempData = {
         _id,
-        userId:doctorAppointmentList?._id,
-        inTime:GetHourAndMin(),
-        date:GetTodayDate(),
+        inTime: GetHourAndMin(),
       }
 
-      socket.emit("appointment_inTime",tempData,()=>{
+      socket.emit("appointmentJwt",{type:"inTime",data:tempData,key: doctorAppointmentList?._id + "_" + GetTodayDate() + "_" + branch?._id + "_" + "appointmentJwt"},()=>{
         toast.error("Something went wrong");
       });
-      console.log("this is in time we have to send : ",tempData);
   }
 
   function emitOutTimeEvent(_id)
@@ -178,8 +179,8 @@ function AppointmentSwiper2() {
       headerName: "Actions",
       sortable: false,
       width: 150,
-      renderCell: (params) => (
-        <div style={{gap:20,display:"flex"}}>
+      renderCell: (params) => 
+        { return params.row.isActive && <div style={{gap:20,display:"flex"}}>
           <div
           style={{cursor:"pointer"}}
           onClick={() => { emitInTimeEvent(params?.row?._id) }}>
@@ -192,8 +193,7 @@ function AppointmentSwiper2() {
             <AlarmOnOutlinedIcon />
           </div>
 
-        </div>
-      ),
+        </div>},
     },
   ];
 
@@ -211,9 +211,10 @@ function AppointmentSwiper2() {
         email:element?.registration?.email,
         mobileNo: element?.registration?.mobileNo,
         jwt:element?.jwt,
-        startTime:element?.time?.startTime,
+        startTime:element?.time?.startTime || element?.currentTime,
         inTime:element?.inTime,
-        outTime:element?.outTime
+        outTime:element?.outTime,
+        isActive:element?.isActive,
       };
       array.push(thisData);
     });
@@ -231,7 +232,6 @@ function AppointmentSwiper2() {
       <TableMainBox
         customHeader={<CustomHeader />}
         >
-
         {
             Loading ? <><LinearProgress />
             <TableSkeleton /></> 
@@ -259,7 +259,7 @@ function AppointmentSwiper2() {
                 py: "22px",
               },
             }}
-            getRowClassName={(params) => !params?.row?.startTime && "inactive-row"}
+            getRowClassName={(params) => !params?.row?.isActive && "inactive-row"}
             disableRowSelectionOnClick={true}
             columns={columns}
             rows={rowData}
