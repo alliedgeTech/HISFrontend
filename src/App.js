@@ -29,7 +29,7 @@ function App() {
     <NavigationScroll>
       <Routes>
         <Route path='/' element={<MainLayout/>} >
-          <Route path='/' element={<MainSecretoryAppointment />} />
+          {/* <Route path='/' element={<MainSecretoryAppointment />} /> */}
           <Route path='/rolemaster' element={<RoleMaster/>} />
           <Route path='/usermaster' element={<UserMaster/>} />
           <Route path='/locationmaster' element={<BranchMaster/>} />

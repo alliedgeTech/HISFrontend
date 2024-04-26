@@ -95,13 +95,15 @@ function AppointmentSwiper2() {
 
     let tempData = {
       _id,
-      userId:doctorAppointmentList?._id,
       outTime:GetHourAndMin(),
-      date:GetTodayDate(),
     }
-    socket.emit("appointment_outTime",tempData,() =>{
+    socket.emit("appointmentJwt",{ type:'outTime',data:tempData,key:doctorAppointmentList?._id+"_"+GetTodayDate()+"_"+branch?._id+"_"+"appointmentJwt"},() =>{
       toast.error("Something went wrong");
-    });
+    })
+
+    // socket.emit("appointment_outTime",tempData,() =>{
+    //   toast.error("Something went wrong");
+    // });
   }
 
   const columns = [

@@ -19,7 +19,7 @@ function CustomHeader() {
 }
 
 function AppointmentSwiper3() {
-    const  { doctorAppointmentList,appointmentOutTimeData } = useSelector((state) => state.appointment);
+    const  { doctorAppointmentList,appointmentOutTimeData,branch } = useSelector((state) => state.appointment);
     const dispatch = useDispatch();
     function GetTodayDate () {  
         return new Date().toLocaleDateString("en-CA").toString();
@@ -28,15 +28,15 @@ function AppointmentSwiper3() {
     const [Loading, setLoading] = useState(true);
 
   useEffect(() => {
-    socket.emit("joinRoom", [GetTodayDate()+doctorAppointmentList?._id+"_outTime"], "appointment_outTime");
+    socket.emit("joinRoom", [doctorAppointmentList?._id+"_"+GetTodayDate()+"_"+branch._id+"_appointmentOutTime"]);
 
-    socket.on("appointment_outTime", (data) => {
-        console.log("appointment_outTime", data);
+    socket.emit("appointmentOutTime",{ key: doctorAppointmentList?._id+"_"+GetTodayDate()+"_"+branch._id , type:'get' },(data) => {
+        console.log("appointmentOutTime", data);
         dispatch(setAppointmentOutTimeData(data));
         setLoading(false);
     });
 
-    socket.on("outTime_listAppointment",(data) => {
+    socket.on("appointmentOutTime",(data) => {
       switch (data.type) {
         case "add":
           dispatch(setNewAppointmentOutTimeData(data.data));
@@ -49,9 +49,8 @@ function AppointmentSwiper3() {
 
    
     return () => {
-      socket.off("outTime_listAppointment");
-      socket.off("appointment_outTime");
-      socket.emit("leaveRoom", GetTodayDate()+doctorAppointmentList?._id+"_outTime");
+      socket.off("appointmentOutTime");
+      socket.emit("leaveRoom", doctorAppointmentList?._id+"_"+GetTodayDate()+branch._id+"_outTime");
     };
   }, []);
 
