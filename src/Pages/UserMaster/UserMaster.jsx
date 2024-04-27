@@ -328,38 +328,6 @@ const onPaginationChange = async({page,pageSize}) => {
     },
     { field: "_id", headerName: "", width: "0" },
     {
-      filed: "image",
-      headerName: "Profile",
-      rowHeight: 200,
-      renderCell: (params) => (
-        <img src={params.row.image} style={{width:"100%",maxWidth: "100px" }} alt='' />
-      ),
-      flex: 1,
-      sortable: false,
-      maxWidth:120,
-      // headerAlign: "center", 
-      // align: "center",
-    },
-    { field: "userName", headerName: "user Name",minWidth:150,flex:1 },
-    { field: "email", headerName: "Email", flex: 1,minWidth:230 },
-    { field: "linkEmployee", headerName: "Linked Employee", flex: 1,minWidth:100 },
-    { field: "mobilenumber", headerName: "Phone Number", flex: 1,minWidth:180},
-    { field: "address", headerName: "Address", flex: 1,minWidth:200 },
-    { field: "pincode", headerName: "Code",minWidth:100,flex:1},
-    { field: "isActive", headerName: "Is Active", sortable: false,minWidth:100,flex:1,
-      renderCell: (params) => (
-        <IOSSwitch checked={params.row.isActive} onChange={(e) => updateUSer({ _id: params?.row?._id, isActive: e.target.checked, id: params.row.id - (paginationModel.page * paginationModel.pageSize) - 1 })}></IOSSwitch>
-      )
-    },
-    {
-      field: "panNo",
-      headerName: "Pan No",
-      flex: 1,
-      // headerAlign: "center",
-      // align: "center",
-      minWidth:140
-    },
-    {
       field: "actions",
       sortable: false,
       headerName: "View Items",
@@ -386,6 +354,40 @@ const onPaginationChange = async({page,pageSize}) => {
         </> : null
       ),
     },
+    { field: "isActive", headerName: "Is Active", sortable: false,minWidth:100,flex:1,
+    renderCell: (params) => (
+      <IOSSwitch checked={params.row.isActive} onChange={(e) => updateUSer({ _id: params?.row?._id, isActive: e.target.checked, id: params.row.id - (paginationModel.page * paginationModel.pageSize) - 1 })}></IOSSwitch>
+    )
+    },
+    {
+      filed: "image",
+      headerName: "Profile",
+      rowHeight: 200,
+      renderCell: (params) => (
+        <img src={params.row.image} style={{width:"100%",maxWidth: "100px" }} alt='' />
+      ),
+      flex: 1,
+      sortable: false,
+      maxWidth:120,
+      // headerAlign: "center", 
+      // align: "center",
+    },
+    { field: "userName", headerName: "user Name",minWidth:150,flex:1 },
+    { field: "email", headerName: "Email", flex: 1,minWidth:230 },
+    { field: "linkEmployee", headerName: "Linked Employee", flex: 1,minWidth:100 },
+    { field: "mobilenumber", headerName: "Phone Number", flex: 1,minWidth:180},
+    { field: "address", headerName: "Address", flex: 1,minWidth:200 },
+    { field: "pincode", headerName: "Code",minWidth:100,flex:1},
+   
+    {
+      field: "panNo",
+      headerName: "Pan No",
+      flex: 1,
+      // headerAlign: "center",
+      // align: "center",
+      minWidth:140
+    },
+   
   
 ];
 

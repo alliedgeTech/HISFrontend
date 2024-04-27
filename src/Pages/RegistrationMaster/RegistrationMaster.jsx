@@ -317,28 +317,6 @@ function RegistrationMaster() {
           headerName: "ID",
           width:"20"
         },
-        {field: "image",headerName: "Profile",rowHeight: 200, renderCell: (params) => (
-          <img src={params.row.image} style={{width:"50px",borderRadius:999999999999999999999,height:"50px" }} alt='' />
-        ), sortable: false, maxWidth:120,},
-        { field: "_id", headerName: "", width: "0" },
-        { field: "title", headerName: "userName",width:"130",renderCell:(params)=>`${params?.row?.title} ${params?.row?.pationName}` ,headerAlign: 'center'},
-        {field:"doctor",headerName:"Doctor",width:"130",headerAlign: 'center',align: 'center'},
-        {field:"age",headerName:"Age",flex:1,headerAlign: 'center',}, 
-        {field:"gender",headerName:"Gender",width:100,headerAlign: 'center',align: 'center'},
-        { field: "mobileNo", headerName: "Phone Number", width: 150,headerAlign: 'center',align:'center' },
-        { field: "email", headerName: "Email", width: 180,headerAlign: 'center',align:'center'},
-        {field:"city",headerName:"City",width:150,headerAlign:'center',align:"center"},
-        {field:"state",headerName:"State",width:150,headerAlign: 'center',align:"center"},
-        {field:"bloodGroup",headerName:"Blood Group",width:"100"},
-        { field: "regDateTime", headerName: "Registration Date", width: 200 ,renderCell:(params)=>new Date(params?.row?.regDateTime).toLocaleString(),headerAlign:'center',align:"center"},
-        { field: "address", headerName: "Address", width: 200,headerAlign:'center',align:"center" },
-        { field: "pincode", headerName: "Code", width: 100 },
-        { field: "isActive", headerName: "Is Active", width: 80, 
-        renderCell : (params)=>(
-           <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateStateAndAmount({ id: params.row._id,value:e.target.checked})}></IOSSwitch> 
-          
-        )
-      },
         {
           field: "actions",
           headerName: "Actions",
@@ -366,6 +344,30 @@ function RegistrationMaster() {
             </div>
           ),
         },
+        { field: "isActive", headerName: "Is Active", width: 80, 
+        renderCell : (params)=>(
+           <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateStateAndAmount({ id: params.row._id,value:e.target.checked})}></IOSSwitch> 
+          
+        )
+        },
+        {field: "image",headerName: "Profile",rowHeight: 200, renderCell: (params) => (
+          <img src={params.row.image} style={{width:"50px",borderRadius:999999999999999999999,height:"50px" }} alt='' />
+        ), sortable: false, maxWidth:120,},
+        { field: "_id", headerName: "", width: "0" },
+        { field: "title", headerName: "userName",width:"130",renderCell:(params)=>`${params?.row?.title} ${params?.row?.pationName}` ,headerAlign: 'center'},
+        {field:"doctor",headerName:"Doctor",width:"130",headerAlign: 'center',align: 'center'},
+        {field:"age",headerName:"Age",flex:1,headerAlign: 'center',}, 
+        {field:"gender",headerName:"Gender",width:100,headerAlign: 'center',align: 'center'},
+        { field: "mobileNo", headerName: "Phone Number", width: 150,headerAlign: 'center',align:'center' },
+        { field: "email", headerName: "Email", width: 180,headerAlign: 'center',align:'center'},
+        {field:"city",headerName:"City",width:150,headerAlign:'center',align:"center"},
+        {field:"state",headerName:"State",width:150,headerAlign: 'center',align:"center"},
+        {field:"bloodGroup",headerName:"Blood Group",width:"100"},
+        { field: "regDateTime", headerName: "Registration Date", width: 200 ,renderCell:(params)=>new Date(params?.row?.regDateTime).toLocaleString(),headerAlign:'center',align:"center"},
+        { field: "address", headerName: "Address", width: 200,headerAlign:'center',align:"center" },
+        { field: "pincode", headerName: "Code", width: 100 },
+        
+        
       ];
 
       const setImageOfWebcam = (image) => {

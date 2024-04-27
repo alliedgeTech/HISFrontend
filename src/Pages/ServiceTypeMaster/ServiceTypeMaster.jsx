@@ -174,29 +174,31 @@ function ServiceTypeMaster() {
         headerName: "ID",
     },
     { field: "_id", headerName: "", width: "0" },
-    { field: "serviceTypeName", headerName: "Service Type", flex:1 },
-    { field:"ipOp",headerName:'Ip/Op',flex:1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      sortable:false,
+      renderCell: (params) => (
+      <>
+          <div
+          className="btn btn-sm"
+          onClick={() => {clearErrors();dispatch(setEditServiceTypeData(true));setOpenModal(true);reset({
+              ...params.row,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1,isActive:params.row?.isActive?.toString() })}} 
+          >
+               <CustomIconButton />
+          </div>
+      </>
+      ),
+    },
     { field: "isActive", headerName: "Is Active", flex:1 ,
     renderCell : (params) => {
     return  <IOSSwitch checked={params.row.isActive} onChange={(e)=>updateServiceTypeData({ _id:params.row?._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1},paginationModel.page,paginationModel.pageSize)}></IOSSwitch>  
     }
     },
-    {
-        field: "actions",
-        headerName: "Actions",
-        sortable:false,
-        renderCell: (params) => (
-        <>
-            <div
-            className="btn btn-sm"
-            onClick={() => {clearErrors();dispatch(setEditServiceTypeData(true));setOpenModal(true);reset({
-                ...params.row,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1,isActive:params.row?.isActive?.toString() })}} 
-            >
-                 <CustomIconButton />
-            </div>
-        </>
-        ),
-    },
+    { field: "serviceTypeName", headerName: "Service Type", flex:1 },
+    { field:"ipOp",headerName:'Ip/Op',flex:1 },
+    
+    
   ];
 
     const setRows = (data) => {

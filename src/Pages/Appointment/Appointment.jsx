@@ -343,6 +343,7 @@ function Appointment() {
       rescheduleBranch:null,
       rescheduleBranchAppointmentType:null,
       rescheduleBranchCurrentTime:null,
+      appointmentBranch: branch,
     });
     clearErrors();
   };
@@ -609,6 +610,50 @@ function Appointment() {
       headerName: "ID",
     },
     {
+      field: "actions",
+      headerName: "Actions",
+      sortable: false,
+      width: 150,
+      renderCell: (params) => (
+        <>
+         {/* { params.row.isActive && <div
+           style={{cursor:"pointer"}}
+            onClick={() => {
+              setModalOpen(true);
+              clearErrors();
+              reset({
+                ...params.row,
+
+                visitType: VisitTypeData.find(
+                  (d) => d.value == params.row.visitType
+                ),
+                id:
+                  params.row.id -
+                  paginationModel.page * paginationModel.pageSize -
+                  1,
+              });
+              dispatch(setAppointmentEditData(true));
+            }}>
+            <CustomIconButton />
+          </div>} */}
+          {
+            !params.row.inTime && (params.row.time || params.row.currentTime) && <div
+            style={{marginLeft:"20px",cursor:"pointer"}}
+            onClick={() => cancelAppointment(params.row._id) }>
+            <CustomIconButton iconName="cancelOutlinedIcon" />
+          </div>
+          }
+          {
+            !params.row.inTime && <div
+            style={{marginLeft:"20px",cursor:"pointer"}}
+            onClick={() => {setAppointmentReschduleForm(true);setAppointmentRescheduleData(params.row)}} >
+            <CustomIconButton iconName="R" />
+          </div>
+          }
+        </>
+      ),
+    },
+    {
       field: "pationName",
       headerName: "Pation Name",
       flex: 1,
@@ -686,49 +731,7 @@ function Appointment() {
       renderCell: (params) => <div>{params?.row?.doctor?.userName}</div>,
       flex: 1,
     },
-    {
-      field: "actions",
-      headerName: "Actions",
-      sortable: false,
-      width: 150,
-      renderCell: (params) => (
-        <>
-         { params.row.isActive && <div
-           style={{cursor:"pointer"}}
-            onClick={() => {
-              setModalOpen(true);
-              clearErrors();
-              reset({
-                ...params.row,
-                visitType: VisitTypeData.find(
-                  (d) => d.value == params.row.visitType
-                ),
-                id:
-                  params.row.id -
-                  paginationModel.page * paginationModel.pageSize -
-                  1,
-              });
-              dispatch(setAppointmentEditData(true));
-            }}>
-            <CustomIconButton />
-          </div>}
-          {
-            !params.row.inTime && (params.row.time || params.row.currentTime) && <div
-            style={{marginLeft:"20px",cursor:"pointer"}}
-            onClick={() => cancelAppointment(params.row._id) }>
-            <CustomIconButton iconName="cancelOutlinedIcon" />
-          </div>
-          }
-          {
-            !params.row.inTime && <div
-            style={{marginLeft:"20px",cursor:"pointer"}}
-            onClick={() => {setAppointmentReschduleForm(true);setAppointmentRescheduleData(params.row)}} >
-            <CustomIconButton iconName="R" />
-          </div>
-          }
-        </>
-      ),
-    },
+   
   ];
 
   function CustomHeader() {

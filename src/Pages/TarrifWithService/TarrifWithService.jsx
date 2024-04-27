@@ -160,6 +160,29 @@ function TarrifWithService() {
           align: "center",
       },
       { field: "_id", headerName: "", width: "0" },
+      {
+        field: "actions",
+        headerName: "Actions",
+        sortable: false,
+        headerAlign: "center", align: "center",
+        renderCell: (params) => (
+            <>
+                <div
+                    className="btn btn-sm"
+                    onClick={() => { dispatch(setTarrifWithServiceEditData(true));setOpenModal(true);reset({...params.row,isActive:params.row.isActive.toString(),id:params.row.id - (paginationModel.page * paginationModel.pageSize) -1}) }}
+                >   
+                  <CustomIconButton />
+                </div>
+            </>
+        ),
+      },
+      { field: "isActive", headerName: "Is Active", flex: 1, headerAlign: "center", align: "center",minWidth:100,
+      renderCell: (params) => {
+          return <IOSSwitch checked={params.row.isActive} onChange={(e) =>  updateTarrifWithServiceData({ _id: tarrifWithServiceData[params.row.id - (paginationModel.page * paginationModel.pageSize) - 1]?._id, isActive: e.target.checked,id:params.row.id - (paginationModel.page * paginationModel.pageSize) -1})
+          }
+            ></IOSSwitch>
+      }
+      },
       { field: "tarrif", headerName: "Tarrif", flex: 1, headerAlign: "center", align: "center",minWidth:150,renderCell:(params) => (params.row.tarrif.tariffName)},
       { field: "service", headerName: "Service", flex: 1, headerAlign: "center", align: "center",minWidth:180,renderCell : (paramas) => {
           return <span>{paramas.row.service?.serviceName} {`(${paramas.row?.service?.serviceType?.serviceTypeName})`} </span>
@@ -170,29 +193,6 @@ function TarrifWithService() {
       { field: "discount", headerName: "Discount", flex: 1, headerAlign: "center", align: "center",minWidth:100,renderCell : (paramas) => {
           return <span>{paramas.row.discount}%</span>
       }
-      },
-      { field: "isActive", headerName: "Is Active", flex: 1, headerAlign: "center", align: "center",minWidth:100,
-          renderCell: (params) => {
-              return <IOSSwitch checked={params.row.isActive} onChange={(e) =>  updateTarrifWithServiceData({ _id: tarrifWithServiceData[params.row.id - (paginationModel.page * paginationModel.pageSize) - 1]?._id, isActive: e.target.checked,id:params.row.id - (paginationModel.page * paginationModel.pageSize) -1})
-              }
-                ></IOSSwitch>
-          }
-      },
-      {
-          field: "actions",
-          headerName: "Actions",
-          sortable: false,
-          headerAlign: "center", align: "center",
-          renderCell: (params) => (
-              <>
-                  <div
-                      className="btn btn-sm"
-                      onClick={() => { dispatch(setTarrifWithServiceEditData(true));setOpenModal(true);reset({...params.row,isActive:params.row.isActive.toString(),id:params.row.id - (paginationModel.page * paginationModel.pageSize) -1}) }}
-                  >   
-                    <CustomIconButton />
-                  </div>
-              </>
-          ),
       },
   ], [paginationModel,tarrifWithServiceData]);
 

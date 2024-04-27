@@ -455,6 +455,24 @@ function SocMaster() {
     },
     { field: "_id", headerName: "", width: "0" },
     {
+      field: "actions",
+      headerName: "Actions",
+      headerAlign: "center",
+      align: "center",
+      sortable: false,
+      renderCell: (params) => (
+        <>
+          {
+            <div
+              className="btn btn-sm"
+              onClick={() => setEditDateHandler(params.row)}>
+              <CustomIconButton />
+            </div>
+          }
+        </>
+      ),
+    },
+    {
       field: "tarrif",
       headerName: "Tarrif",
       flex: 1,
@@ -490,24 +508,7 @@ function SocMaster() {
       align: "center",
       renderCell: (params) => params.row?.doctor?.userName || "All Doctor",
     },
-    {
-      field: "actions",
-      headerName: "Actions",
-      headerAlign: "center",
-      align: "center",
-      sortable: false,
-      renderCell: (params) => (
-        <>
-          {
-            <div
-              className="btn btn-sm"
-              onClick={() => setEditDateHandler(params.row)}>
-              <CustomIconButton />
-            </div>
-          }
-        </>
-      ),
-    },
+    
   ];
 
   const setRows = (data) => {

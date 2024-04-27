@@ -100,13 +100,6 @@ function StateMaster() {
         {
             field:'_id',headerName:'_id',width:0
         },
-        { field: "stateName", headerName: "State Name",flex:1 },
-        { field: "countryName", headerName: "Country Name", flex:1 },
-        { field: "isActive", headerName: "Is Active", flex:1,
-        renderCell: (params) => {
-          return <IOSSwitch checked={params.row.isActive} onChange={(e)=>handleSwitch(params?.row?._id,e.target.checked,"state")}></IOSSwitch> 
-        }
-      },
         {
           field: "actions",
           headerName: "Actions",
@@ -122,6 +115,13 @@ function StateMaster() {
             </>
           ),
         },
+        { field: "isActive", headerName: "Is Active", flex:1,
+        renderCell: (params) => {
+          return <IOSSwitch checked={params.row.isActive} onChange={(e)=>handleSwitch(params?.row?._id,e.target.checked,"state")}></IOSSwitch> 
+        }
+         },
+        { field: "stateName", headerName: "State Name",flex:1 },
+        { field: "countryName", headerName: "Country Name", flex:1 },
       ];
 
       useEffect(()=>{

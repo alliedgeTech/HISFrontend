@@ -296,6 +296,27 @@ function BranchMaster() {
               align: "center",
           },
           { field: "_id", headerName: "", width: "0" },
+          {
+            field: "actions",
+            headerName: "Actions",
+            sortable: false,
+            headerAlign: "center", align: "center",
+            renderCell: (params) => (
+              params.row.isActive ? <>
+                    <div   
+                        className="btn btn-sm"
+                        onClick={() => { setEditData(params.row.id - (paginationModel.page * paginationModel.pageSize)-1); setOpenModal(true);console.log("this is information :" , params.row.id,paginationModel.page,paginationModel.pageSize,params.row.id - (paginationModel.page * paginationModel.pageSize)-1) }}
+                    >
+                        <CustomIconButton />
+                    </div>
+                </> : null
+            ),
+        },
+          { field: "isActive", headerName: "is Active", flex: 1, headerAlign: "center", align: "center",minWidth:100,
+              renderCell: (params) => {
+                  return <IOSSwitch checked={params.row.isActive} onChange={(e) => updateBranchData({ _id: LocationData[params.row.id - (paginationModel.page * paginationModel.pageSize) - 1]?._id,id:params.row.id - (paginationModel.page * paginationModel.pageSize) - 1, isActive: e.target.checked }, paginationModel.page, paginationModel.pageSize)}></IOSSwitch>
+              }
+          },
           { field: "location", headerName: "Branch", flex: 1, headerAlign: "center", align: "center",minWidth: 150},
           { field: "locationcode", headerName: "Code", flex: 1, headerAlign: "center", align: "center",minWidth:150 },
           { field: "city", headerName: 'City', flex: 1, renderCell: (params) => params.row?.city?.cityName, headerAlign: "center", align: "center",minWidth:150},
@@ -304,27 +325,8 @@ function BranchMaster() {
           { field: "addomainname", headerName: "Add Domain Name", flex: 1, headerAlign: "center", align: "center",minWidth:180 },
           { field: "adddomaintype", headerName: "Add Domain Type", flex: 1, headerAlign: "center", align: "center",minWidth:180 },
           { field: "maxBedCount", headerName: "Max Bed Count", flex: 1, headerAlign: "center", align: "center",minWidth:180 },
-          { field: "isActive", headerName: "is Active", flex: 1, headerAlign: "center", align: "center",minWidth:100,
-              renderCell: (params) => {
-                  return <IOSSwitch checked={params.row.isActive} onChange={(e) => updateBranchData({ _id: LocationData[params.row.id - (paginationModel.page * paginationModel.pageSize) - 1]?._id,id:params.row.id - (paginationModel.page * paginationModel.pageSize) - 1, isActive: e.target.checked }, paginationModel.page, paginationModel.pageSize)}></IOSSwitch>
-              }
-          },
-          {
-              field: "actions",
-              headerName: "Actions",
-              sortable: false,
-              headerAlign: "center", align: "center",
-              renderCell: (params) => (
-                 params.row.isActive ? <>
-                      <div   
-                          className="btn btn-sm"
-                          onClick={() => { setEditData(params.row.id - (paginationModel.page * paginationModel.pageSize)-1); setOpenModal(true);console.log("this is information :" , params.row.id,paginationModel.page,paginationModel.pageSize,params.row.id - (paginationModel.page * paginationModel.pageSize)-1) }}
-                      >
-                          <CustomIconButton />
-                      </div>
-                  </> : null
-              ),
-          },
+          
+          
       ];
       
     
@@ -447,7 +449,7 @@ function BranchMaster() {
                         name={"locationCode"}
                         control={control}
                         label={"Location Code"}
-                        rules={{required:{value:true,message:"Location Code is required"},pattern:{ value:numericRegex,message:"Please enter valid location code"},maxLength: { value:6, message:"Location code can be max 6 length" },minLength: { value:6, message:"Location code can be min 6 length" },valueAsNumber:true}}
+                        rules={{required:{value:true,message:"Location Code is required"}}}
                         /> 
                  </Grid>
 

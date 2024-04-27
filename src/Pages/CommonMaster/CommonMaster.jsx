@@ -161,7 +161,7 @@ const onPaginationChange = async({page,pageSize}) => {
                                     
 
   const columns =[  
-        {
+      {
         field:"_id",
         headerName:"_id",
         width:0,
@@ -171,12 +171,6 @@ const onPaginationChange = async({page,pageSize}) => {
         headerName: "ID",
       },
       { field: "value", headerName: FieldHeaderName, flex:1, minWidth:200},
-      { field: "isActive", headerName: "Is Active", flex:1, minWidth:100,
-       renderCell: (params) => (
-      
-        <IOSSwitch checked={params.row.isActive} onChange={(e)=>{update({ _id:params.row._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1},resetAll);console.log('@this is real pagination : ',params.row.id)}} />
-      ) 
-      },
       {
         field: "actions",
         headerName: "Actions",
@@ -191,7 +185,14 @@ const onPaginationChange = async({page,pageSize}) => {
 
           </> : null
         ),
-      }]
+      },
+      { field: "isActive", headerName: "Is Active", flex:1, minWidth:100,
+       renderCell: (params) => (
+      
+        <IOSSwitch checked={params.row.isActive} onChange={(e)=>{update({ _id:params.row._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1},resetAll);console.log('@this is real pagination : ',params.row.id)}} />
+      ) 
+      },
+      ]
 
   
   return (

@@ -191,42 +191,6 @@ const {  createService, getServiceData, updateServiceData } =
       headerAlign: 'center',align: 'center'
     },
     { field: "_id", headerName: "", width: "0" },
-    { field: "serviceType", headerName: "Service Type", flex: 1,renderCell:(params) => params.row?.serviceType?.serviceTypeName,minWidth:150,headerAlign: 'center',align: 'center' },
-    { field: "department", headerName: "Department", flex: 1,minWidth:150, renderCell:(params) => params.row?.department?.department,headerAlign: 'center',align: 'center' },
-    { field: "serviceName", headerName: "Service", flex: 1,minWidth:150,headerAlign: 'center',align: 'center' },
-    { field: "grade", headerName: "Grade", flex: 1,minWidth:100,headerAlign: 'center',align: 'center' },
-    { field: "gradePeriod", headerName: "Grade Period", flex: 1,headerAlign: 'center',align: 'center',minWidth:60 },
-    { field: "isLogical", headerName: "Is Logical", flex: 1,headerAlign: 'center',align: 'center',minWidth:60 },
-    { field: "isEditable", headerName: "Is Editable", flex: 1,headerAlign: 'center',align: 'center',minWidth:60 },
-    { field: "gender", headerName: "Gender", flex: 1,headerAlign: 'center',align: 'center',minWidth:100 },
-    { field: "ipOp", headerName: "Ip/Op", flex: 1,headerAlign: 'center',align: 'center',minWidth:70 },
-    { field: "remarks", headerName: "Remarks", flex: 1,headerAlign: 'center',align: 'center',minWidth:150 },
-    {
-      field: "isActive",
-      headerName: "Is Active",
-      headerAlign: 'center',align: 'center',
-      flex: 1,
-      renderCell: (params) => {
-        return (
-          <IOSSwitch
-            checked={params.row.isActive}
-            onChange={(e) =>
-              updateServiceData(
-                {
-                  _id: params.row?._id,
-                  isActive: e.target.checked,
-                  id:
-                    params.row.id -
-                    paginationModel.page * paginationModel.pageSize -
-                    1,
-                },
-                paginationModel.page,
-                paginationModel.pageSize
-              )
-            }></IOSSwitch>
-        );
-      },
-    },
     {
       field: "actions",
       headerName: "Actions",
@@ -261,6 +225,44 @@ const {  createService, getServiceData, updateServiceData } =
         </>
       ),
     },
+    {
+      field: "isActive",
+      headerName: "Is Active",
+      headerAlign: 'center',align: 'center',
+      flex: 1,
+      renderCell: (params) => {
+        return (
+          <IOSSwitch
+            checked={params.row.isActive}
+            onChange={(e) =>
+              updateServiceData(
+                {
+                  _id: params.row?._id,
+                  isActive: e.target.checked,
+                  id:
+                    params.row.id -
+                    paginationModel.page * paginationModel.pageSize -
+                    1,
+                },
+                paginationModel.page,
+                paginationModel.pageSize
+              )
+            }></IOSSwitch>
+        );
+      },
+    },
+    
+    { field: "serviceType", headerName: "Service Type", flex: 1,renderCell:(params) => params.row?.serviceType?.serviceTypeName,minWidth:150,headerAlign: 'center',align: 'center' },
+    { field: "department", headerName: "Department", flex: 1,minWidth:150, renderCell:(params) => params.row?.department?.department,headerAlign: 'center',align: 'center' },
+    { field: "serviceName", headerName: "Service", flex: 1,minWidth:150,headerAlign: 'center',align: 'center' },
+    { field: "grade", headerName: "Grade", flex: 1,minWidth:100,headerAlign: 'center',align: 'center' },
+    { field: "gradePeriod", headerName: "Grade Period", flex: 1,headerAlign: 'center',align: 'center',minWidth:60 },
+    { field: "isLogical", headerName: "Is Logical", flex: 1,headerAlign: 'center',align: 'center',minWidth:60 },
+    { field: "isEditable", headerName: "Is Editable", flex: 1,headerAlign: 'center',align: 'center',minWidth:60 },
+    { field: "gender", headerName: "Gender", flex: 1,headerAlign: 'center',align: 'center',minWidth:100 },
+    { field: "ipOp", headerName: "Ip/Op", flex: 1,headerAlign: 'center',align: 'center',minWidth:70 },
+    { field: "remarks", headerName: "Remarks", flex: 1,headerAlign: 'center',align: 'center',minWidth:150 },
+    
   ];
 
   const setRows = (data) => {

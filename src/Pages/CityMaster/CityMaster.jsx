@@ -103,18 +103,6 @@ function CityMaster() {
             minWidth:100
           },
           {
-            field:"_id",headerName:"_id",hide:true
-          },
-          { field: "cityName", headerName: "City Name", flex:1},
-          { field: "stateName", headerName: "State Name", flex:1 },
-          { field: "countryName", headerName: "Country Name", flex:1 },
-          { field: "isActive", headerName: "Is Active",flex:1,
-          renderCell: (params) => {
-            return <IOSSwitch checked={params.row.isActive}  onChange={(e)=>handleSwitch(params.row._id,e.target.checked,"city")}></IOSSwitch> 
-          }
-      
-          },
-          {
             field: "actions",
             headerName: "Actions",
             shortable: false,
@@ -129,6 +117,20 @@ function CityMaster() {
               </>
             ),
           },
+          { field: "isActive", headerName: "Is Active",flex:1,
+          renderCell: (params) => {
+            return <IOSSwitch checked={params.row.isActive}  onChange={(e)=>handleSwitch(params.row._id,e.target.checked,"city")}></IOSSwitch> 
+          }
+      
+          },
+          {
+            field:"_id",headerName:"_id",hide:true
+          },
+          { field: "cityName", headerName: "City Name", flex:1},
+          { field: "stateName", headerName: "State Name", flex:1 },
+          { field: "countryName", headerName: "Country Name", flex:1 },
+          ,
+         
       ];
 
       useEffect(()=>{
