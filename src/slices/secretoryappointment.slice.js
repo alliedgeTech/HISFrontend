@@ -138,7 +138,6 @@ const secretoryAppointmentSlice = createSlice({
       }
     },
     setSecretoryAppointmentCurrentSocketRooms: (state, action) => {
-        console.log("!@# step 2 : i am start to leave the room : ", state.secretoryAppointmentCurrentSocketRooms);
       if (
         Array.isArray(state.secretoryAppointmentCurrentSocketRooms) &&
         state.secretoryAppointmentCurrentSocketRooms.length > 0
@@ -170,7 +169,6 @@ const secretoryAppointmentSlice = createSlice({
             currentDate.setDate(currentDate.getDate() + 1);
           }
         } 
-        console.log("!@# step 3 : i am storing this rooms : ",dateArray);
         state.secretoryAppointmentCurrentSocketRooms = dateArray;
         socket.emit("joinRoom", dateArray);
       } 

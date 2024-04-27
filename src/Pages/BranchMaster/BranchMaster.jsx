@@ -250,7 +250,6 @@ function BranchMaster() {
     // }
 
     var submitData = async(data) => {
-        console.log(" form data", data);
         if(!validateIP(data.AdIpAddress))
         {
           toast.error("Please enter valid IP Address")
@@ -277,7 +276,6 @@ function BranchMaster() {
         }
         else
         {
-          console.log('this is data i have see the add time : ' ,tempData);
           let temp = await addBranchData(tempData,paginationModel.page,paginationModel.pageSize);
 
           if(temp)
@@ -305,7 +303,7 @@ function BranchMaster() {
               params.row.isActive ? <>
                     <div   
                         className="btn btn-sm"
-                        onClick={() => { setEditData(params.row.id - (paginationModel.page * paginationModel.pageSize)-1); setOpenModal(true);console.log("this is information :" , params.row.id,paginationModel.page,paginationModel.pageSize,params.row.id - (paginationModel.page * paginationModel.pageSize)-1) }}
+                        onClick={() => { setEditData(params.row.id - (paginationModel.page * paginationModel.pageSize)-1); setOpenModal(true) }}
                     >
                         <CustomIconButton />
                     </div>

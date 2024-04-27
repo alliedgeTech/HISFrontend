@@ -19,7 +19,6 @@ export const  useFrontOfficeRegistration = () => {
         const data = await ApiManager.get(`admin/frontOffice/registration?page=${page}&pageSize=${pageSize}`);
         if(!data.error)
         {
-            console.log("this is count data : ",data);
             dispatch(setRegistrationCount(data?.data?.count));
             dispatch(setRegistrationData(data?.data?.data));  
             withLoading && dispatch(setRegistrationListLoading(false));
@@ -95,7 +94,6 @@ export const  useFrontOfficeRegistration = () => {
 
 
     const updateRegistration = async (data,image) => {
-        console.log("i got this image : ",image);
         if(image)
         {
             dispatch(setRegistrationLoading(true));
@@ -117,7 +115,6 @@ export const  useFrontOfficeRegistration = () => {
             } catch (error) {
 
                 // toast.error(error?.message);
-                console.log("this is error current : ",error?.message);
                 dispatch(setRegistrationLoading(false));
                 return false;
 

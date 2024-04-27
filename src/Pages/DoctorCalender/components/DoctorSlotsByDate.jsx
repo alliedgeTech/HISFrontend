@@ -396,10 +396,6 @@ const dispatch = useDispatch();
       startX = e.pageX - parentRef.current.offsetLeft;
       scrollLeft = parentRef.current.scrollLeft;
     }
-    
-    useEffect(() => {
-      console.log('this is active day slots : ',activeDaySlots);
-    },[activeDaySlots ])
 
     const stopDragging = (e) => {
       mouseDown = false;
@@ -469,27 +465,22 @@ const dispatch = useDispatch();
             case 'get':
               //* here we got all slots data
               dispatch(setActiveDaySlots(data?.data));
-              console.log("slotData", data);
               break;
             case 'add':
               // uid and data and at place we have to add
               dispatch(setAddedNewSlots(data));
-              console.log("please add this slots : ",data);
               break;
     
             case 'delete':
               dispatch(setRemoveSlots(data))
-              console.log("please delete this slots : ",data);
               break;
             
             case 'update':
               dispatch(setActiveDaySlotsUpdate(data));
-              console.log("please update this slots : ",data);
               break;
 
             case 'sevenDaySlots':
               formatSevenDaysData({schedule:data?.data});
-              console.log("here we are got the formated seven days data : " ,data);
               break;
           }
           
@@ -498,19 +489,12 @@ const dispatch = useDispatch();
         return () => {
           dispatch(setActiveDaySlotIndex(null));
           socket.off("slots");
-          socket.off("doctorCalenderData");
-          //TODO remove this event future
-          socket.off("update_slot");
           socket.emit("leaveRoom",[getRoomId(leaveRoomDate)]);
         };
       }, []);
 
       function HandleSlotDataIndex(index) {
-        console.log("this is index @: ", index);
-        if (activeDaySlotIndex === index) {
-          console.log(
-            "i am emit the event that is joinRoom Date : same date click"
-            );
+        if (activeDaySlotIndex === index && activeDaySlots) {
           return;
         }
     
@@ -518,7 +502,6 @@ const dispatch = useDispatch();
           dispatch(setActiveDaySlotIndex(index));
           socket.emit("leaveRoom", [getRoomId(leaveRoomDate)]);
           const date = sevenDayData?.[index]?.date;
-          console.log("i am emit the event that is joinRoom Date : ", date);
           const key = getRoomId(date);
           joinRoomAndGetSlots(key)
           dispatch(setLeveRoomDate(date));
@@ -527,18 +510,7 @@ const dispatch = useDispatch();
         }
       }
 
-      function StringToCorrectDate(dateString) {
-        if (dateString) {
-          const [hours, minutes] = dateString.split(":");
-          return dayjs()
-            .set("hour", parseInt(hours, 10))
-            .set("minute", parseInt(minutes, 10));
-        }
-        return null;
-      }
-
       useEffect(() => {
-        //TODO : here we have to see wehen doctorCalenderEditData is change at that time we have to set data in useform
         if (
           (doctorCalenderEditData || doctorCalenderEditData == 0) &&
           Number.isInteger(doctorCalenderEditData)
@@ -566,7 +538,6 @@ const dispatch = useDispatch();
     
           // reset({ ...newData });
           setCreateTimingModal(true);
-          console.log("newData",tempData);
         }
       }, [doctorCalenderEditData]);
 
@@ -586,9 +557,6 @@ const dispatch = useDispatch();
       };
 
       const submitData = async (data) => {
-        //TODO : here we  have to change whole function
-
-        console.log("this is data i got form the form : ",data);
         const day = data.day?.value;
         let schedule = data.schedule.map((obj) => {
           return{
@@ -600,7 +568,6 @@ const dispatch = useDispatch();
             sessionDuration: obj.sessionDuration,
           }
         })
-        console.log("this is data i got form the form : 2",schedule);
         let newSchedule ;
         if(doctorCalenderEditData || doctorCalenderEditData==0){
           newSchedule = schedule.filter((obj) => obj.new);
@@ -615,12 +582,10 @@ const dispatch = useDispatch();
         }
 
         if(doctorCalenderEditData || doctorCalenderEditData==0){
-          console.log("this is schedule : ",obj.schedule,newSchedule);
           const resData = await updateDoctorSlotData({_id:obj._id,schedule:obj.schedule,newSchedule:JSON.stringify(newSchedule)});
           if(resData){
             closeTheModal();
           }
-          console.log("editing is going on : ",obj)
         } else {
           const resData = await createDoctorSlotData(obj);
           if(resData){
@@ -630,13 +595,6 @@ const dispatch = useDispatch();
         // const compareWith =
         //   sevenDayData?.commonSchedule?.[doctorCalenderEditData]?.doctorTime;
         // let tempData = {};
-        // console.log("data", data);
-        // // console.log("this is start time : ",data.startTime.$H.length < 2 ? 'babu' : "op",data.startTime.$H);
-        // console.log(
-        //   "this is left time : ",
-        //   `${data.leftTime.$H}:${data.leftTime.$m}`,
-        //   compareWith?.leftTime
-        // );
         // let MakeCombo;
         // MakeCombo = `${SetTwoMinimumLength(
         //   data.startTime.$H
@@ -672,12 +630,8 @@ const dispatch = useDispatch();
         //   date: data?.date,
         //   day: data?.day?.name,
         // };
-    
-        // console.log("tempData", tempData);
-    
         // if (doctorCalenderEditData || doctorCalenderEditData == 0) {
         //   tempData["_id"] = data._id;
-        //   console.log("this is final data : ", tempData);
         //   const resData = await updateDoctorSlotData({
         //     ...tempData,
         //     userId: doctor?._id,
@@ -701,7 +655,6 @@ const dispatch = useDispatch();
       };
     
       const TakeIndivisualBreak = async (data) => {
-        console.log("this is data TakeIndivisualBreak: ", data,leaveRoomDate);
         const tempData = {
           doctorId:doctor?._id,
           date:leaveRoomDate,
@@ -717,7 +670,6 @@ const dispatch = useDispatch();
       };
 
       const submitAllBranchInputData = (data) => {
-        console.log("this is data submit for allBranch apply : ",data);
         const obj = {
           doctorId:doctor?._id,
           date:allBranchInputModal,
@@ -739,7 +691,6 @@ const dispatch = useDispatch();
       }
 
       const submitTimeInputData = (data) => {
-        console.log("this is data submit for allBranch apply : ",data,leaveRoomDate);        
         const obj = {
           doctorId:doctor?._id,
           date:leaveRoomDate,
@@ -756,7 +707,6 @@ const dispatch = useDispatch();
             obj.endTime = data.holidayEndTime.format('HH:mm');
           }
         }
-        console.log("this is final form data : ",obj);
         multiBreakOfSlots(obj);
         closeTheModal();
       }

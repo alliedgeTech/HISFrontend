@@ -35,7 +35,6 @@ function MainSecretoryAppointment() {
 
     useEffect(() => {
         getAppointmentData(true);
-        console.log("!@# step 1 : useEffect run : ",secretoryStartDate,secretoryEndDate)
         dispatch(setSecretoryAppointmentCurrentSocketRooms({startDate:secretoryStartDate,endDate:secretoryEndDate}))
       return () => {
         dispatch(setSecretoryAppointmentCurrentSocketRooms());

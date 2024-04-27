@@ -45,7 +45,6 @@ export const useBranchData = () => {
         if(!resData.error)
         {
             let tempdata = structuredClone(branchData);
-            console.log("asdfaksdiofjsaji",data?.id)
             tempdata[data?.id] = resData.data.data;
             dispatch(setSeveDayData(null));
             dispatch(setBranchData(tempdata));

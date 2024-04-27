@@ -63,10 +63,6 @@ export const useHrMasterData = () => {
         return false;
     }
 
-    useEffect(() => {
-        console.log("this is temp data department data",departmentData)
-    },[departmentData])
-
     const updateDepartmentData = async (data,resetAll) => {
         const toastId = toast.loading("Loading...");
         setLoding(true);
@@ -77,7 +73,6 @@ export const useHrMasterData = () => {
             {
                 resetAll();
                 const tempData = structuredClone(departmentData);
-                console.log('this is temp data',data.id,tempData,tempData?.[data?.id],departmentData);
                 tempData[data?.id] = resData?.data?.data;
                 dispatch(setDepartmentData(tempData));
                 dispatch(setServiceEmptyData());

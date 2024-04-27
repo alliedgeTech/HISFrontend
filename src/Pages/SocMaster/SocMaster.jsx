@@ -94,8 +94,6 @@ function SocMaster() {
     }
   }, [bedTypeData]);
 
-  console.log("this is fields to unregister useEffect : ", getValues());
-
   function onChangeCommonCheckBoxValue(value) {
     startTransition(() => {
       let temp = JSON.parse(JSON.stringify(tempBedTypedata));
@@ -127,7 +125,6 @@ function SocMaster() {
   }
 
   function handleOpenNewPrices(bedTypeId,addOrRemove,index){
-    console.log("this is open price master : started")
       if(tempBedTypedata[index].delete) return;
       if(addOrRemove) {
         setOpenPriceMaster([...openPriceMaster, bedTypeId])
@@ -143,24 +140,13 @@ function SocMaster() {
     setTempBedTypedata(temp);
   }
 
-  useEffect(() => {
-    console.log("this is open price master : ", openPriceMaster);
-  },[openPriceMaster])
-
   const CloseModal = () => {
     setOpenModal(false);
     effectiveFormDateCount = 0;
     dispatch(setSocEditData(null));
     clearErrors();
     let unreigsterFields = [];
-    let tempLength = tempBedTypedata.length;
-    console.log(
-      "this is fields to unregister : ",
-      unreigsterFields,
-      getValues()
-    );
     unregister(unreigsterFields);
-    console.log("this is fields to unregistered after  : ", getValues());
     setTempBedTypedata(
       bedTypeData.map((item) => ({
         ...item,
@@ -181,8 +167,6 @@ function SocMaster() {
       allDoctor: true,
       doctor: null,
     });
-
-    console.log("this is fields to unregistered after  : ", getValues());
   };
 
   const onCheckBoxValueChange = (index) => {
@@ -232,13 +216,10 @@ function SocMaster() {
 
   var submitData = async (data) => {
     if (editSocData) {
-      console.log("this is form data : ", data, tempBedTypedata);
       let deletedBedType = [];
       let editedBedType = [];
       let addedBedType = [];
       let finalData = {};
-
-      console.log("this is form data : ", data);
       let editAndNewTotalLength = 0;
       let deleteLength = 0;
       //* find the first index where to start new added bedTypes
@@ -278,15 +259,12 @@ function SocMaster() {
       }
       deleteLength = deletedBedType.length;
       finalData.deletedBed = JSON.stringify(deletedBedType);
-      console.log("this is final data of filterdTempBedTypeData ", filterdTempBedTypeData);
       //* now we are start for edited data
       for (let i = 0; i < filterdTempBedTypeData.length; i++) {
         if (filterdTempBedTypeData[i].delete) continue;
 
         let tempEffectiveFromDate = new Date(data[`effectiveFromDate-${i}`]);
-        console.log("this is edited data 90 before setHours : ", tempEffectiveFromDate);
         tempEffectiveFromDate.setHours(0, 0, 0, 0);
-        console.log("this is edited data 90 after setHours : ", tempEffectiveFromDate);
         const deletedNewPrice = filterdTempBedTypeData[i].newPrice.filter((obj)=>obj.deleted);
         const deletedNewEmrPrice = filterdTempBedTypeData[i].newEmrPrice.filter((obj)=>obj.deleted);
         editedBedType.push({
@@ -303,8 +281,6 @@ function SocMaster() {
         });
       }
       editAndNewTotalLength += editedBedType.length;
-      console.log("this is final data before json stringify : ", editedBedType)
-      console.log("this is final data :  ", JSON.parse(JSON.stringify(editedBedType)));
       finalData.editedBed = JSON.stringify(editedBedType);
 
       if (editAndNewTotalLength === 0 && deleteLength > 0) {
@@ -317,8 +293,6 @@ function SocMaster() {
       finalData._id = data._id;
       finalData.id = data.id;
       finalData.todayDate = new Date().setHours(0,0,0,0);
-
-      console.log("this is final data : ", finalData);
       // return;
       let temp = await updateSocMaster(finalData);
       if (temp) {
@@ -343,7 +317,6 @@ function SocMaster() {
         delete data.allDoctor;
       }
 
-      console.log("effectFormDate :  ", data);
       let tempDate = data?.effectiveFromDate ? new Date(data.effectiveFromDate) : new Date();
       tempDate.setHours(0, 0, 0, 0);
       let temp = await createSocMaster({
@@ -366,7 +339,6 @@ function SocMaster() {
     //* get data
     const resData = await getSocMasterDataById(data._id);
     if (!resData) return;
-    console.log("this is params row : ", data);
     reset({
       id: data.id - paginationModel.page * paginationModel.pageSize - 1,
       _id: data._id,
@@ -383,7 +355,6 @@ function SocMaster() {
       return;
 
     //* this is all selected bed type data
-    console.log("@this is i want to find  : ", tempResBedTypeData);
     tempResBedTypeData = tempResBedTypeData.map((item, index) => {
       setValue(`price-${index}`, Number(item.prices.currentValue || 0));
       setValue(`emrPrice-${index}`, Number(item.emrPrices.currentValue || 0));
@@ -432,7 +403,6 @@ function SocMaster() {
       });
 
     tempResBedTypeData = tempResBedTypeData.concat(unSelectedBedTypes);
-    console.log("#this is i want to find : ", tempResBedTypeData);
     setTempBedTypedata(tempResBedTypeData);
     setOpenModal(true);
   }
@@ -933,10 +903,6 @@ function SocMaster() {
                         }}
                       />
                     </Grid>
-                    {/* {console.log(
-                      "price- ",
-                      getValues()
-                    )} */}
                     {editSocData && (
                       <Grid xs={12} sm={gridWidth}>
                         <CustomDatePickerField
@@ -1006,7 +972,6 @@ function SocMaster() {
                       }}>
                       {Array.isArray(item.newPrice) &&
                         item.newPrice.map((newPriceObj, index_newPrice) => {
-                          console.log("this is new price obj ; ", newPriceObj);
                           return (
                             <Grid
                               xs={12}
@@ -1083,7 +1048,6 @@ function SocMaster() {
                           );
                         })}
                     </Grid>
-                    {console.log("this is items : ", item)}
                   </Grid>
                 );
               })

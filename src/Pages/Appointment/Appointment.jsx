@@ -158,7 +158,6 @@ function Appointment() {
     };
 
       setRegistrationNumberFound(tempData?._id);
-      console.log("this is temp data : ", tempData);
 
       const fieldSet = [
         "pationName",
@@ -197,10 +196,6 @@ function Appointment() {
       }
     }
   };
-
-  useEffect(() => {
-    console.log("this is new count incr : but step 2",appointmentCount);
-  },[appointmentCount])
 
   function newRegistrationAddedOnNumber() {
    
@@ -269,7 +264,6 @@ function Appointment() {
   useEffect(() => {
     setValue("time",null);
     if (watchAppointmentBranch) {
-      console.log("this is i am set the appointment branch :");
       setShowSlotSelect(true);
     } else {
       setShowSlotSelect(false);
@@ -296,9 +290,7 @@ function Appointment() {
   useEffect(() => {
     let timeout;
     if (SearchValue) {
-      console.log("We calling api set timeout ");
       timeout = setTimeout(() => {
-        console.log("now api calling");
         FetchTheNewList(SearchValue);
       }, 300);
     } else if (SearchValue == "") {
@@ -356,7 +348,6 @@ function Appointment() {
     ) {
       return;
     }
-    console.log("we are seted this : ", open);
     setLeftDrawer(open);
   };
 
@@ -365,7 +356,6 @@ function Appointment() {
   };
 
   const submitData = async (data) => {
-    console.log("this is form data : ", data);
 
     const timeDateObj = {
       branch:data?.appointmentBranch?._id
@@ -399,7 +389,6 @@ function Appointment() {
     } else if (newRegistrationForm) {
       if (RegistrationNumberFound) {
         // old registration found
-        console.log("this is time : ", data.time);
         const tempData = await createAppointmentData({
           doctor: data.doctor._id,
           appointmentType: data.appointmentType,
@@ -443,14 +432,11 @@ function Appointment() {
   };
 
   const submitAppointmentReschedule = async (data) => {
-    console.log("this is reschedule slot data responce data : ", data);
    
     let tempObj = {
       appointmentId:appointmentRescheduleData._id,
       appointmentType:data.rescheduleBranchAppointmentType,
     }      
-
-    console.log("this is appointment reshceudle data : appointment type : ",data.rescheduleBranchAppointmentType)
 
     if(data.rescheduleBranchAppointmentType === 'scheduled') {
 
@@ -465,7 +451,6 @@ function Appointment() {
       tempObj.currentTime =  dayjs().format("HH:mm")
     }
 
-      console.log("this is appointment reshceudle data : ",tempObj);
       await rescheduleAppointment(tempObj);
       closeTheModal();
 
@@ -538,21 +523,18 @@ function Appointment() {
   };
 
   const responceRescheduleAppointment = async (data) => {
-    console.log("this is reschedule slot data responce data : ", data);
     if(data?.slot && data?.date) {
       let tempObj = {
         appointmentId:appointmentRescheduleData._id,
         newSlotId:data.slot,
         newSlotDate:data.date,
       }      
-      console.log('toasjkflj;lasjfdjaskf',tempObj)
       await rescheduleAppointment(tempObj);
     }
     setAppointmentRescheduleData(null);
   }
 
   const setValueFormSelectSlot = (data) => {
-    console.log("this is date @", data);
     setValue("appointmentDate", data.date);
     setValue("time", data.slot);
   };
@@ -568,7 +550,6 @@ function Appointment() {
   }, [appointmentData, appointmentListLoading]);
 
   // function setDoctorAppointmentListDoctor(data) {
-  //   console.log("this is selected doctor ", data);
   //   dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
   //   getAppintmentData(
   //     true,
@@ -582,7 +563,6 @@ function Appointment() {
   // }
 
   function GenrateJwtToken({ _id, userId, checkDate, branch }) {
-    console.log("this is id : ", _id, userId,branch,checkDate);
   
     const todayDate = new Date().toLocaleDateString("en-CA",{ timeZone:'Asia/Kolkata' });
 
@@ -597,8 +577,6 @@ function Appointment() {
 
   }
   const tempData = structuredClone(appointmentData);
-  console.log("temp Data:", tempData);
-
   const columns = [
     {
       field: "_id",
@@ -762,7 +740,6 @@ function Appointment() {
                   size="medium"
                   error={!!error}
                   onChange={(e, p) => {
-                    console.log({ e, p });
                     setSearchValue(e.target.value);
                     onChange(e, p);
                   }}
@@ -1492,7 +1469,6 @@ function Appointment() {
       />
 
       <TableMainBox customHeader={CustomHeader()}>
-        {console.log("this is time to render again")}
         {appointmentListLoading ? (
           <>
             <LinearProgress />

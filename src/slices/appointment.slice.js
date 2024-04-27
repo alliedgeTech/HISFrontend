@@ -123,7 +123,6 @@ const appointmentSlice = createSlice({
       if (Array.isArray(state.appointmentJwtData)) {
           state.appointmentJwtData = state.appointmentJwtData.map((data) => {
           const findUpdatedAppointment = action.payload.find((updatedData)=> updatedData._id == data._id );
-          console.log("this is updated the appointment :  ",findUpdatedAppointment);
           if(findUpdatedAppointment) {
              data = { ...data, ...findUpdatedAppointment };
           }
@@ -153,7 +152,6 @@ const appointmentSlice = createSlice({
       }
     },
     setAppointmentCurrentSocketRooms: (state, action) => {
-        console.log("i am start to leave the room : ", state.appointmentCurrentSocketRooms)
       if (
         Array.isArray(state.appointmentCurrentSocketRooms) &&
         state.appointmentCurrentSocketRooms.length > 0

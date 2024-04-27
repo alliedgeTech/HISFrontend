@@ -86,7 +86,6 @@ const handleCheck = (checked, roleInfo) => {
   };
 
   var submitData = async(data) => {
-    console.log('this is how we data get when user submit the form : ',data);
     data =  { ...data,panNo:data.panNo.toUpperCase(),branches:JSON.stringify(data.branches.map((obj)=>obj._id)),designation:data.designation._id,speciality:data.speciality._id,department:data.department._id,city:data.city._id,employeeCategory:data.employeeCategory._id,gender:data.gender.gender,title:data.title._id,virtualConsultation:data.virtualConsultation.value};
     
     delete data.role;
@@ -281,8 +280,6 @@ const handleCheck = (checked, roleInfo) => {
 
 
 const onPaginationChange = async({page,pageSize}) => {
-  console.log('called')
-  console.log("%% this is resData",pageSize);
     if(page!==paginationModel.page || pageSize !== paginationModel.pageSize )
     {
       const recentData = JSON.parse(JSON.stringify(paginationModel));

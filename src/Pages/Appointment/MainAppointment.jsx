@@ -60,7 +60,6 @@ function MainAppointment() {
     },[])
 
     function setDoctorAppointmentListDoctor(data) {
-        console.log("this is selected doctor ", data);
         dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
         dispatch(setAppointmentBranch(data.branch))
         getAppintmentData(

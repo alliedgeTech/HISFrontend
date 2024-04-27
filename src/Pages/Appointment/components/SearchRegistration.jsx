@@ -47,10 +47,8 @@ function SearchRegistration({
     );
 
     if (!data.error) {
-      console.log("this is data of search registration ", data?.data?.data);
       setRegistrationOptions(data?.data?.data);
     } else {
-      console.log("error while search registration ", errors?.message);
     }
     setLoading(false);
   };
@@ -64,7 +62,6 @@ function SearchRegistration({
     );
 
     if (!data.error) {
-      console.log("this is data of search registration ", data?.data?.data);
       setRegistrationOptions(data?.data?.data);
     }
     setLoading(false);
@@ -77,7 +74,6 @@ function SearchRegistration({
     );
 
     if (!data.error) {
-      console.log("this is data of search registration ", data?.data?.data);
       setRegistrationOptions(data?.data?.data);
     }
     setLoading(false);
@@ -91,12 +87,12 @@ function SearchRegistration({
           searchRegistration();
         }, 800);
       } 
-      console.log("this is watchSearchBy : ", watchSearchBy);
+      
       return () => {
         clearTimeout(timeoutId);
       };
     } else if (watchSearchBy === "mobileNo") {
-      console.log("this is run with the mobile no")
+      
       if (SearchRegistrationTempValue?.length > 2) {
         mobileTimeout = setTimeout(() => {
           searchRegistrationByMobileNo();
@@ -130,7 +126,7 @@ function SearchRegistration({
 
   const submitSearchData = async (data) => {
     setFormDataBySearch(data?.searchValue?._id);
-    console.log("this is data searched : ", data);
+    
     setSomeSearchDataInForm({
       doctor: { ...data.searchValue.doctor },
       mobileNo: data?.searchValue?.mobileNo,
@@ -225,13 +221,11 @@ function SearchRegistration({
                     // onBlur={onBlur}
                     onChange={(e, s) => {
                       onChange(e);
-                      console.log("this is op Selected Option:", e, s);
                       setValue("searchValue", s);
                     }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        
                         sx={{
                           "& label.Mui-focused": {
                             color: error ? "" : "#25396f",
@@ -249,14 +243,14 @@ function SearchRegistration({
                         }
                         inputRef={ref}
                         onChange={(e) => {
-                          console.log('bkl me chal raha hu')
+                          
                           setSearchRegistrationTempValue(e.target.value);
                         }}
                         error={!!error}
                       />
                     )}
                     isOptionEqualToValue={(option, value) => {
-                      console.log("this is op", option, "and value : ", value);
+                      
                       return option?.id === value?.id;
                     }}
                     getOptionLabel={(op) =>

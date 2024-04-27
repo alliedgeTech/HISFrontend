@@ -20,11 +20,8 @@ export const useAppointmentData = () => {
         doctor=D,
         val,
         branch=appointmentBranch) => {
-        // console.log("this is with loading : ",withLoading)
         withLoading && dispatch(setAppointmentListLoading(true));
         
-        console.log("this is page : ",page ," this is pageSize : ",pageSize," this is startDate : ",startDate," this is endDate : ",endDate," this is doctor : ",doctor," this is val : ",val," this is branch : ",branch);
-
         let url = `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}&branch=${branch._id}`
 
         
@@ -32,11 +29,7 @@ export const useAppointmentData = () => {
            url = url.concat(`&searchValue=${val}`)
         }
 
-        console.log("this is our url ",val);
-
         const data = await ApiManager.get(url);
-
-        console.log("this is data :",data);
 
         if(!data.error) 
         {

@@ -158,7 +158,6 @@ const {  createService, getServiceData, updateServiceData } =
   };
 
   var submitData = async (data) => {
-    console.log(" form data", data);
     data.department = data.department?._id;
     data.serviceType = data.serviceType?._id;
     if (editServiceData) {

@@ -49,7 +49,6 @@ function AppointmentSwiper2() {
     });
 
     // socket.on("appointment_jwt", (data) => {
-    //     console.log("appointment_jwt", data);
     //     dispatch(setAppointmentJwtData(data));
     //     setLoading(false);
     // });
@@ -59,7 +58,6 @@ function AppointmentSwiper2() {
       if(!data || !data.data ) return;
       switch (data.type) {
         case "add":
-          console.log("i am dispatching the new data : ",data.data);
           dispatch(setNewDataAppointmentJwtData(data.data));
           break;
         case "update":

@@ -122,18 +122,14 @@ export const useDoctorMasterData = () => {
                 if(element.index < pivotDayIndex ){
                     firstIndexShouldRemove ++;
                 } else {
-                    console.log("this is run why index is seted : ", element.index === pivotDayIndex && activeDaySlotIndex === null);
                     element.index === pivotDayIndex && activeDaySlotIndex === null && dispatch(setActiveDaySlotIndex(0));
                     return;
                 }
             });
 
-            console.log("this is first index should remove : ",firstIndexShouldRemove)
-
             const spliceData = schedule.splice(0,firstIndexShouldRemove);
 
             schedule = [...schedule,...spliceData];
-            console.log("this is processed data : ",schedule);
             dispatch(setSeveDayData(schedule));
             dispatch(setRemainingDays(filterdTempData));
 
@@ -155,7 +151,6 @@ export const useDoctorMasterData = () => {
     }
 
     const BreakDoctorSlotData = async (data) => {
-        console.log("this is break data ",data);
         const resData = await ApiManager.patch("admin/calender/doctor/break",data);
         if(!resData.error) {
             toast.success("your break successfull");

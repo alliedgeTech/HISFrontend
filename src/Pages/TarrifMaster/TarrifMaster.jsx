@@ -2,7 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { useTarrifData } from '../../services/Add Master/TarrifMaster';
 import CommonMaster from '../CommonMaster/CommonMaster';
-import { setTarrifEditData, setTarrifPagination } from '../../slices/tarrif.slice';
+import { setTarrifEditData, setTarrifPagination, setTarrifWithServicePagination } from '../../slices/tarrif.slice';
 
 function TarrifMaster() {
     const  { createTarrifData,getTarrifData,updateTarrifData } = useTarrifData();
@@ -20,7 +20,7 @@ function TarrifMaster() {
         update={updateTarrifData}
         tableData={tarrifData}
         paginationModel={paginationModel}
-        setPaginationModal={(data)=>console.log("data that is data",data)}
+        setPaginationModal={(data)=>dispatch(setTarrifWithServicePagination(data))}
         editData={editTarrifData}
         setEditData={(data) => dispatch(setTarrifEditData(data))}
         FieldHeaderName={"Tarrif"}

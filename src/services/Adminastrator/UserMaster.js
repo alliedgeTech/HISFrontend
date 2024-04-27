@@ -149,9 +149,7 @@ export const useUserData = () => {
         dispatch(setUserLoading(true));
         const toastId = toast.loading("Loading...");
         let userData = UserData[data?.userId-1];
-        console.log("this is real problem : ",userData,data,UserData);
         const resData = await ApiManager.post(`admin/roleMaster/assignrole/roleId/${data?.roleId}/userId/${userData._id}`,{value:data?.value});
-        console.log("this is res data",resData.data);
         if(!resData.error)
         {
             let temp = structuredClone(UserData);

@@ -150,9 +150,6 @@ function CountryMaster() {
         }
     } 
 
-    console.log("this is count : ",countryCount);
-       
-      
     const IOSSwitch = styled((props) => (
         <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
       ))(({ theme }) => ({

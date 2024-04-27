@@ -44,7 +44,6 @@ export const useRegionData = () => {
         const resData = await ApiManager.get(`admin/regionMaster/country?page=${page}&pageSize=${pageSize}`);
         if(!resData?.error)
         {
-            console.log('this is count : resData',resData)
             dispatch(setCountryData(resData?.data?.data));
             dispatch(setCountryCount(resData?.data?.count));
             if(withLoading) {dispatch(setCountryListLoading(false))};
@@ -188,7 +187,6 @@ export const useRegionData = () => {
 
     const createCity = async (data) => {
         dispatch(setCityLoading(true));
-        console.log("for create city : ",data);
         const tempdata = {
             cityName : data?.cityName,
             isActive : data?.isActive,
@@ -216,7 +214,6 @@ export const useRegionData = () => {
         dispatch(setCityLoading(true));
         let tempData = cityData[cityEditData-1];
         let formData = {};
-        console.log('this is temp data',tempData,data)
         if(tempData?.cityName!==data?.cityName)
         {
             formData = {
@@ -300,7 +297,6 @@ export const useRegionData = () => {
                 break;
             case 'city' :
                 dispatch(setCityLoading(true));
-                console.log('this is city id:',id);
                 const resData2 = await ApiManager.patch(`admin/regionMaster/city`,{isActive:value,cityId:id});
                 if(!resData2?.error)
                 {
@@ -314,7 +310,7 @@ export const useRegionData = () => {
                 dispatch(setCityLoading(false));
                 break;
             default:
-                console.log("Please enter valid type");
+                break;
         }
 
     } 

@@ -41,7 +41,6 @@ function CommonMaster({MainValue,Loading,ListLoading,add,update,get,tableData,pa
     {
       tempData["id"]=data.id;
       tempData["_id"]=data._id;
-      console.log("step 1 : ",paginationModel);
       update(tempData,resetAll,paginationModel.page,paginationModel.pageSize);
     } else {
       add(tempData,resetAll,paginationModel.page,paginationModel.pageSize);
@@ -109,7 +108,6 @@ const onPaginationChange = async({page,pageSize}) => {
     if(page!==recentData.page)
     {
         // change the page
-        console.log("this is data i am getting pagination new i am sending page",page,pageSize);
           const resData = await get(true,page,pageSize);
           if(!resData)
           {
@@ -189,7 +187,7 @@ const onPaginationChange = async({page,pageSize}) => {
       { field: "isActive", headerName: "Is Active", flex:1, minWidth:100,
        renderCell: (params) => (
       
-        <IOSSwitch checked={params.row.isActive} onChange={(e)=>{update({ _id:params.row._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1},resetAll);console.log('@this is real pagination : ',params.row.id)}} />
+        <IOSSwitch checked={params.row.isActive} onChange={(e)=>{update({ _id:params.row._id,isActive:e.target.checked,id:params.row.id-(paginationModel.page*paginationModel.pageSize)-1},resetAll)}} />
       ) 
       },
       ]
@@ -263,7 +261,6 @@ const onPaginationChange = async({page,pageSize}) => {
             buttonText={`Add ${FieldHeaderName}`}
             onClick={() => {setModalOpen(true);clearErrors();}}
             >
-            { console.log("this is render again") }
            { ListLoading ? <><LinearProgress /><TableSkeleton/></>: Array.isArray(rowData) && rowData.length > 0 ? (
             <CommonTable paginationModel={paginationModel} customHeight={customHeight} columns={columns} count={tableDataCount} rowData={rowData} onPaginationChange={onPaginationChange}  />
                 ) : (

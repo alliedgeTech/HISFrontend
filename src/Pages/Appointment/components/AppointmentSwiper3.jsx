@@ -31,7 +31,6 @@ function AppointmentSwiper3() {
     socket.emit("joinRoom", [doctorAppointmentList?._id+"_"+GetTodayDate()+"_"+branch._id+"_appointmentOutTime"]);
 
     socket.emit("appointmentOutTime",{ key: doctorAppointmentList?._id+"_"+GetTodayDate()+"_"+branch._id , type:'get' },(data) => {
-        console.log("appointmentOutTime", data);
         dispatch(setAppointmentOutTimeData(data));
         setLoading(false);
     });
@@ -140,7 +139,7 @@ function AppointmentSwiper3() {
         email:element?.registration?.email,
         mobileNo: element?.registration?.mobileNo,
         jwt:element?.jwt,
-        startTime:element?.time?.startTime,
+        startTime: element?.time?.startTime || element?.currentTime,
         inTime:element?.inTime,
         outTime:element?.outTime
       };

@@ -66,7 +66,6 @@ export const useServiceTypeData = () => {
         const resData = await ApiManager.post("admin/serviceTypeMaster",data);
         if(!resData.error)
         {
-            console.log('this is we are done the work',Number.isNaN(serviceTypeData?.length),page*pageSize+pageSize > serviceTypeData?.length)
             if( Number.isNaN(serviceTypeData?.length) || page*pageSize+pageSize > serviceTypeData?.length) {
                 getServiceTypeData(false,page,pageSize);
             } else {

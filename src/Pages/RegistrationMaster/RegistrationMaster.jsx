@@ -257,7 +257,6 @@ function RegistrationMaster() {
     },[registrationEditData]);
 
     useEffect(() => {
-      console.log("this is count: ",registrationCount);
     },[registrationCount])
 
     const IOSSwitch = styled((props) => (
@@ -373,7 +372,6 @@ function RegistrationMaster() {
       const setImageOfWebcam = (image) => {
         setPreviewUrl(image);
         let temp = dataURLtoFile(image,"image.png");      
-        console.log("temp ",temp);
         setFile(temp);
         setWebCamOpen(false);
       }
@@ -435,7 +433,6 @@ function RegistrationMaster() {
           <Webcam 
           minScreenshotHeight={400}
           minScreenshotWidth={500}
-          onUserMedia={(e)=>console.log(e)}
           ref={webcamRef}
           onUserMediaError={()=>{toast.error("Please give webcam permission");setWebCamOpen(false)}}
           />

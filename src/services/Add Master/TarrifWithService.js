@@ -56,9 +56,7 @@ export const useTarrifWithServiceData = () => {
         if(!resData.error)
         {
             const temp = structuredClone(tarrifWithServiceData);
-            console.log("this is tmep #",data?.id,data);
             temp[data?.id] = resData.data.data;
-            console.log("this is temp #",temp)
             dispatch(setTarrifWithServiceData(temp));
             toast.success("tarrif with service created successfully");
             dispatch(setTarrifWithServiceLoading(false));

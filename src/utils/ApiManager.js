@@ -29,7 +29,6 @@ export default class APIManager {
         message:data.message,
       }
     }
-    console.log("this is real data : ", data);
     return {
       data: data,
       error: !data.success,
@@ -62,7 +61,6 @@ export default class APIManager {
     if (this.checkInternet()) {
       let response, data;
       try {
-        console.log("this is i am get the base url : ",baseUrl);
         response = await fetch(`${baseUrl}${endpoint}`, {
           method: method,
           headers: {

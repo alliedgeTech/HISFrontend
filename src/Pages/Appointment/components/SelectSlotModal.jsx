@@ -71,7 +71,6 @@ function SlotSBoxRender({
   _id,
 }) {
 
-  console.log("this is setSlotValue " ,setSlotValue);
   if (slotBreak) {
     return <BreakSlot _id={_id} time={startTime} />;
   }
@@ -103,7 +102,6 @@ function SelectSlotModal({
   defaultValue,
   buttonText="Select Slot"
 }) {
-  console.log('this i am get the default : ',doctor)
 
   const [slotsData, setSlotsData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -118,7 +116,6 @@ function SelectSlotModal({
     });
 
   const setSlotValue = (id) => {
-    console.log("this is function  : ",id);
     setValue("slot", id);
   };
 
@@ -133,7 +130,6 @@ function SelectSlotModal({
   };
 
   const submitData = (data) => {
-    console.log("this is data : ", data);
     if (!data?.slot) {
       toast.error("Please select slot from avaliable slots");
       return;
@@ -145,14 +141,13 @@ function SelectSlotModal({
     };
 
     setSlotsData(null);
-    console.log("this is date", tempData);
     setValueFormSelectSlot(tempData);
     closeTheModal();
   };
 
   function addSlots(slotsNewData){
 
-    if(!slotsNewData || !Array.isArray(slotsData)) return console.log("please provide the data for the add the slots");
+    if(!slotsNewData || !Array.isArray(slotsData)) return ;
     const { uid,at,data } = slotsNewData;
 
     let oldData = JSON.parse(JSON.stringify(slotsData));
@@ -180,15 +175,13 @@ function SelectSlotModal({
   function deleteSlots(slotsDelete){
     
     if(!slotsDelete && !Array.isArray(slotsData)) {
-      return console.log("Please provide the data for the delete the slots either slotsdata is not an array");
+      return ;
     }
 
     const { uid,data } = slotsDelete;
     let oldData = JSON.parse(JSON.stringify(slotsData));
     oldData = oldData.map((obj) => {
       if(obj?.allSlots?.uid == uid && Array.isArray(obj?.allSlots?.slots)) {
-          console.log("is this is mapping and uid also match : ",obj.allSlots,obj.allSlots.slots);
-
           obj.allSlots.slots = obj.allSlots.slots.filter((slot) => !data.includes(slot._id))
       } else {
           return obj;
@@ -202,7 +195,7 @@ function SelectSlotModal({
   function updateSlots(updateSlots){
 
     if(!updateSlots && !Array.isArray(slotsData)) {
-      return console.log("Please provide the data for the update the slots either slotsdata is not an array");
+      return ;
     }
 
     const { uid,data } = updateSlots;
@@ -213,7 +206,6 @@ function SelectSlotModal({
       if(obj?.allSlots?.uid == uid && Array.isArray(obj.allSlots?.slots)){
           obj.allSlots.slots = obj.allSlots.slots.map((item)=>{
               const findSlotInData = data.find((updatedData)=> updatedData._id == item._id );;
-              console.log(findSlotInData,"this i am found the slots :")
               if(findSlotInData){
                   item = {...item,...findSlotInData};
               }
@@ -243,10 +235,6 @@ function SelectSlotModal({
     
   }
 
-  useEffect(() => {
-    console.log("this is all steps previous date show: ",previousJoinRoomDate);
-  },[previousJoinRoomDate])
-
   const watchDate = watch("date");
   const watchSlot = watch("slot");
 
@@ -264,17 +252,14 @@ function SelectSlotModal({
           case 'add':
             // uid and data and at place we have to add
             addSlots(data);
-            console.log("please add this slots : ",data);
             break;
   
           case 'delete':
             deleteSlots(data);
-            console.log("please delete this slots : ",data);
             break;
           
           case 'update':
             updateSlots(data);
-            console.log("please update this slots : ",data);
             break;
   
         }
@@ -292,8 +277,6 @@ function SelectSlotModal({
       if (watchDate && doctor && defaultValue.branch) {
 
         const key = `${doctor?._id}_${dayjs(watchDate).format("YYYY-MM-DD")}_${defaultValue.branch?._id}`
-  
-        console.log("this is real value of getValues of the date :  ",getValues("date"))
   
         if (previousJoinRoomDate) {
           socket.emit("leaveRoom", [previousJoinRoomDate]);
@@ -317,11 +300,6 @@ function SelectSlotModal({
     }
   }, [watchDate,open]);
 
-  useEffect(() => {
-    console.log("this is slots data : ",slotsData);
-  },[slotsData])
-
-  
   return (
     <AddEditModal
       maxWidth="lg"

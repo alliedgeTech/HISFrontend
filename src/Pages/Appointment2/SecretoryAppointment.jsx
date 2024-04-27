@@ -129,8 +129,6 @@ function SecretoryAppointment() {
       };
 
       setRegistrationNumberFound(tempData?._id);
-      console.log("this is temp data : ", tempData);
-
       const fieldSet = [
         "pationName",
         "title",
@@ -207,7 +205,6 @@ function SecretoryAppointment() {
           break;
         case "remove":
           if(tempData) {
-            console.log("this is temp data for remove the slot : ", tempData)
             dispatch(setRemoveSecretoryAppointmentData({data:tempData,getAppointmentData}))
           }
           break;
@@ -247,9 +244,7 @@ function SecretoryAppointment() {
   useEffect(() => {
     let timeout;
     if (SearchValue) {
-      console.log("We calling api set timeout ");
       timeout = setTimeout(() => {
-        console.log("now api calling");
         FetchTheNewList(SearchValue);
       }, 300);
     } else if (SearchValue == "") {
@@ -309,7 +304,6 @@ function SecretoryAppointment() {
   };
 
   const submitData = async (data) => {
-    console.log("this is form data : ", data);
 
     if (!data.time && !data.appointmentDate) {
       toast.error("Please select the slot");
@@ -330,7 +324,6 @@ function SecretoryAppointment() {
     } else if (newRegistrationForm) {
       if (RegistrationNumberFound) {
         // old registration found
-        console.log("this is time : ", data.time);
         const tempData = await createAppointmentData({
           doctor: data.doctor._id,
           appointmentType: data.appointmentType,
@@ -429,14 +422,12 @@ function SecretoryAppointment() {
         newSlotId:data.slot,
         newSlotDate:data.date,
       }      
-      console.log("this is reschedule slot data responce data : ", data,tempObj);
       await rescheduleAppointment(tempObj);
     }
     setAppointmentRescheduleData(null);
   }
 
   const setValueFormSelectSlot = (data) => {
-    console.log("this is date @", data);
     setValue("appointmentDate", data.date);
     setValue("time", data.slot);
   };
@@ -452,12 +443,6 @@ function SecretoryAppointment() {
   }, [secretoryAppointmentData, secretoryAppointmentListLoading]);
 
   function GenrateJwtToken({ _id, userId, checkDate }) {
-    console.log("this is id : ", _id, userId);
-    console.log(
-      "this is check date : ",
-      checkDate,
-      dayjs().format("YYYY-MM-DD")
-    );
     if (checkDate?.slice(0, 10) != dayjs().format("YYYY-MM-DD")) {
       toast.error("You can only generate token for today's appointment");
       return;
@@ -466,7 +451,6 @@ function SecretoryAppointment() {
   }
 
   const tempData = structuredClone(secretoryAppointmentData);
-  console.log("temp Data:", tempData);
 
   const columns = [
     {
@@ -702,7 +686,6 @@ function SecretoryAppointment() {
           toast.error("please select end date bigger then start date");
           return;
         }
-        console.log("this is date i am sending tot he backend : ", newStartDate, newEndDate);
         dispatch(setSecretoryStartDate(newStartDate));
         dispatch(setSecretoryEndDate(newEndDate));
         dispatch(setDoctorSecretoryAppointmentList(data.doctorAppointmentList));
@@ -1208,7 +1191,6 @@ function SecretoryAppointment() {
       />
 
       <TableMainBox customHeader={CustomHeader()}>
-        {console.log("this is time to render again")}
         {secretoryAppointmentListLoading ? (
           <>
             <LinearProgress />

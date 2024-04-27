@@ -55,9 +55,6 @@ const doctorCalenderSlice = createSlice({
                     if(obj?.allSlots?.uid == uid && Array.isArray(obj.allSlots?.slots)){
                         obj.allSlots.slots = obj.allSlots.slots.map((item)=>{
                             const findSlotInData = data.find((updatedData)=> updatedData._id == item._id );
-
-                            console.log('this is got slots for update : ',findSlotInData);
-
                             if(findSlotInData){
                                 item = {...item,...findSlotInData};
                             }
@@ -73,8 +70,6 @@ const doctorCalenderSlice = createSlice({
         setAddedNewSlots:(state,action)=>{
             let slots = state.activeDaySlots;
             const { uid,at,data } = action.payload;
-
-            console.log("this data we have to add : ",data);
 
             if(Array.isArray(slots)){
                 slots = slots.map((obj) => {
@@ -101,23 +96,16 @@ const doctorCalenderSlice = createSlice({
             if(Array.isArray(slots)){
                 slots = slots.map((obj) => {
 
-                    console.log("is this allSlots  : ",obj);
                     if(obj?.allSlots?.uid == uid && Array.isArray(obj?.allSlots?.slots)) {
-                        console.log("is this is mapping and uid also match : ",obj.allSlots,obj.allSlots.slots);
-
                         obj.allSlots.slots = obj.allSlots.slots.filter((slot) => !data.includes(slot._id))
                     } else {
                         return obj;
                     }
                 })
-
-                console.log("this is done the process");
-
             //    state.activeDaySlots = state.activeDaySlots.filter((obj) => obj?.allSlots?.slots?.length > 0);
             }
         },
         setActiveDaySlotIndex: (state,action) => {
-            console.log('hello ji i am setted the index : ',action.payload);
             state.activeDaySlotIndex = action.payload
         },
         setLeveRoomDate: (state,action) => {

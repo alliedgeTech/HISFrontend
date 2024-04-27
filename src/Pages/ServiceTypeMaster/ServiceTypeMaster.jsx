@@ -144,8 +144,6 @@ function ServiceTypeMaster() {
   };
 
   var submitData = async (data) => {
-    console.log(" form data", data);
-
     if (editServiceTypeData) {
       let temp = await updateServiceTypeData(
         data,

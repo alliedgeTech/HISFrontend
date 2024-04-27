@@ -22,7 +22,6 @@ const {
     let url = searchBy==='date' ? `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&searchBy=${searchBy}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}` : `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&searchBy=${searchBy}&startDate=${startDate}&endDate=${endDate}&doctor=${doctor?._id}&val=${val}`
 
     const data = await ApiManager.get(url);
-        console.log("this is data majboot secretory hook :",data);
         if(!data.error) 
         {
             dispatch(setSecretoryAppointmentData(data?.data?.data));

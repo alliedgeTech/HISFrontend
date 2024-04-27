@@ -18,7 +18,6 @@ export const getDateArrayWithStartDateAndEndDateWithDoctorId = async (startDate,
             currentDate.setDate(currentDate.getDate() + 1);
         }
     }
-    console.log("this is date array : ",dateArray);
     return dateArray;
 
 }

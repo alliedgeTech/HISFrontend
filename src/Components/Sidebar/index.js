@@ -10,7 +10,6 @@ import * as MuiIcons from "@material-ui/icons";
 import SearchIcon from '@mui/icons-material/Search';
 
 function SidebarMenuItems({data}){
-  console.log({data})
   return (
     <>
 
