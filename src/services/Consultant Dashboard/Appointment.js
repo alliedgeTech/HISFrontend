@@ -3,12 +3,16 @@ import { setAppointmentCount, setAppointmentData, setAppointmentListLoading, set
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
+import { setSecretoryAppointmentCount, setSecretoryAppointmentData, setSecretoryAppointmentListLoading } from "../../slices/secretoryAppointment.slice";
 
 const ApiManager = new APIManager();
 
 export const useAppointmentData = () => {
 
         const { appointmentPagination,appointmentData,startDate:sD,endDate:eD,doctorAppointmentList:D,appointmentListLoading,branch:appointmentBranch } = useSelector(state => state.appointment);
+
+        const { appointmentPagination:secretoryAppointmentPagination,appointmentData:secretoryAppointmentData,startDate:secretorySD,endDate:secretoryED,doctorAppointmentList:secretoryD,appointmentListLoading:secretoryAppointmentListLoading,branch:secretoryAppointmentBranch } = useSelector(state => state.secretoryAppointment);
+
         const dispatch = useDispatch();
 
     const getAppintmentData = async (
@@ -43,6 +47,40 @@ export const useAppointmentData = () => {
         return false;
     }
 
+    const getSecretoryAppintmentData = async (
+        withLoading=false,
+        page=secretoryAppointmentPagination.page,
+        pageSize=secretoryAppointmentPagination.pageSize,
+        startDate=secretorySD,
+        endDate=secretoryED,
+        doctor=secretoryD,
+        val,
+        branch=secretoryAppointmentBranch) => {
+        withLoading && dispatch(setSecretoryAppointmentListLoading(true));
+        
+        let url = `admin/consultant/appointment?page=${page}&pageSize=${pageSize}&startDate=${startDate}&endDate=${endDate}&branch=${branch._id}`
+
+        if(doctor){
+            url = url.concat(`&doctor=${doctor?._id}`);
+        }
+        
+        if(val){
+           url = url.concat(`&searchValue=${val}`)
+        }
+
+        const data = await ApiManager.get(url);
+
+        if(!data.error) 
+        {
+            dispatch(setSecretoryAppointmentData(data?.data?.data));
+            dispatch(setSecretoryAppointmentCount(data?.data?.count));
+            withLoading && dispatch(setSecretoryAppointmentListLoading(false));
+        return true;
+        }
+
+        withLoading && dispatch(setSecretoryAppointmentListLoading(false));
+        return false;
+    }
 
     const updateAppointmentData = async (data) => {
         dispatch(setAppointmentLoading(true));
@@ -113,6 +151,7 @@ export const useAppointmentData = () => {
     return {
         appointmentListLoading,
         getAppintmentData,
+        getSecretoryAppintmentData,
         updateAppointmentData,
         createAppointmentData,
         cancelAppointment,

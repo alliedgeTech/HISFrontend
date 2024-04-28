@@ -1,19 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setAppointmentBranch,
-  setAppointmentCurrentSocketRooms,
-  setAppointmentData,
-  setAppointmentEditData,
-  setAppointmentUpdatedData,
-  setAppointmentpagination,
-  setEndDate,
-  setNewAppointmentData,
-  setRemoveAppointmentData,
-  setRemovedAppointmentJwtData,
-  setShowDoctorAppointment,
-  setStartDate,
-} from "../../slices/appointment.slice";
 import { useAppointmentData } from "../../services/Consultant Dashboard/Appointment";
 import CustomIconButton from "../../Components/CustomeIcons/CustomEditIcons";
 import AddEditModal from "../../Components/AddEditModal/AddEditModal";
@@ -25,7 +11,6 @@ import EmptyData from "../../Components/NoData/EmptyData";
 import { useForm, Controller } from "react-hook-form";
 import { Box, LinearProgress, Typography } from "@mui/material";
 import CustomDatePickerField from "../../Components/InputsFilelds/CustomDatePickerField";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Grid from "@mui/material/Unstable_Grid2";
 import APIManager from "../../utils/ApiManager";
 import { useFrontOfficeRegistration } from "../../services/FrontOffice/Registration";
@@ -38,7 +23,6 @@ import AlarmOutlinedIcon from "@mui/icons-material/AlarmOutlined";
 import toast from "react-hot-toast";
 import TableClasses from "../../Components/TableMainBox/TableMainBox.module.css";
 import CustomAddIcons from "../../Components/CustomeIcons/CustomAddIcons";
-import HandleStepOneClasses from "../DoctorCalender/components/handleStepOne.module.css";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import Divider from "@mui/material/Divider";
@@ -50,10 +34,11 @@ import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import { VisitTypeData } from "../../Constants/index.constant";
 import AddIcon from '@mui/icons-material/Add';
 import socket from "../../socket";
+import { setSecretoryAppointmentBranch, setSecretoryAppointmentCurrentSocketRooms, setSecretoryAppointmentEditData, setSecretoryAppointmentpagination, setSecretoryAppointmentUpdatedData, setSecretoryEndDate, setSecretoryNewAppointmentData, setSecretoryRemoveAppointmentData, setSecretoryShowDoctorAppointment, setSecretoryStartDate } from "../../slices/secretoryAppointment.slice";
 
 const ApiManager = new APIManager();
 
-function Appointment() {
+function SecretoryAppointment() {
   const dispatch = useDispatch();
   const {
     appointmentData,
@@ -65,7 +50,7 @@ function Appointment() {
     startDate,
     endDate,
     doctorAppointmentList,
-  } = useSelector((state) => state.appointment);
+  } = useSelector((state) => state.secretoryAppointment);
   var {
     handleSubmit,
     formState: { errors },
@@ -125,7 +110,7 @@ function Appointment() {
   const {
     appointmentListLoading,
     createAppointmentData,
-    getAppintmentData,
+    getSecretoryAppintmentData,
     updateAppointmentData,
     cancelAppointment,
     rescheduleAppointment
@@ -170,7 +155,6 @@ function Appointment() {
         "otherRemarks",
         "email",
         "mobileNo",
-        // "doctor",
       ];
       clearErrors();
       for (let i of fieldSet) {
@@ -225,21 +209,20 @@ function Appointment() {
       switch(data.type) {
         case "update":
           if(tempData) {
-            dispatch(setAppointmentUpdatedData(tempData));
+            dispatch(setSecretoryAppointmentUpdatedData(tempData));
           }
           break;
         case "add":
           if(tempData) {
-            dispatch(setNewAppointmentData(tempData))
+            dispatch(setSecretoryNewAppointmentData(tempData))
           }
           break;
         case "remove":
           if(tempData) {
-            dispatch(setRemoveAppointmentData({data:tempData,getAppintmentData}))
+            dispatch(setSecretoryRemoveAppointmentData({data:tempData,getAppintmentData: getSecretoryAppintmentData}))
           }
           break;
       }
-      
     })
     
     return () => {
@@ -262,6 +245,10 @@ function Appointment() {
   }, [DoctorWatch]);
 
   useEffect(() => {
+    getSecretoryAppintmentData();
+  },[]);
+
+  useEffect(() => {
     setValue("time",null);
     if (watchAppointmentBranch) {
       setShowSlotSelect(true);
@@ -274,9 +261,9 @@ function Appointment() {
 
   function FetchTheNewList(value) {
     dispatch(
-      setAppointmentpagination({ page: 0, pageSize: paginationModel.pageSize })
+      setSecretoryAppointmentpagination({ page: 0, pageSize: paginationModel.pageSize })
     );
-    getAppintmentData(
+    getSecretoryAppintmentData(
       false,
       0,
       undefined,
@@ -294,7 +281,7 @@ function Appointment() {
         FetchTheNewList(SearchValue);
       }, 300);
     } else if (SearchValue == "") {
-      getAppintmentData(
+      getSecretoryAppintmentData(
         false,
         0,
         undefined,
@@ -307,19 +294,11 @@ function Appointment() {
     return () => clearTimeout(timeout);
   }, [SearchValue]);
 
-  useEffect(() => {
-    dispatch(setAppointmentCurrentSocketRooms({startDate,endDate,doctorId:doctorAppointmentList?._id,branch:branch._id}));
-    getAppintmentData();
-    return () => {
-      dispatch(setAppointmentCurrentSocketRooms(undefined))
-    }
-  },[]);
-
   const closeTheModal = () => {
     setModalOpen(false);
     setRegistrationNumberFound(false);
     setNewRegistrationForm(false);
-    dispatch(setAppointmentEditData(false));
+    dispatch(setSecretoryAppointmentEditData(false));
     setAppointmentReschduleForm(false);
     setAppointmentReschedule(false);
     setAppointmentRescheduleData(null);
@@ -380,8 +359,6 @@ function Appointment() {
       timeDateObj.appointmentDate = new Date().toLocaleDateString("en-CA",{ timeZone:'Asia/Kolkata' });
       timeDateObj.currentTime = dayjs().format("HH:mm");
     }
-
-    
 
     if (appointmentEditData) {
       const tempData = await updateAppointmentData({
@@ -483,18 +460,18 @@ function Appointment() {
       pageSize !== paginationModel.pageSize
     ) {
       const recentData = structuredClone(paginationModel);
-      dispatch(setAppointmentpagination({ page, pageSize }));
+      dispatch(setSecretoryAppointmentpagination({ page, pageSize }));
 
       if (page !== recentData.page) {
-        const resData = await getAppintmentData(true, page, pageSize);
+        const resData = await getSecretoryAppintmentData(true, page, pageSize);
         if (!resData) {
-          dispatch(setAppointmentpagination(recentData));
+          dispatch(setSecretoryAppointmentpagination(recentData));
         }
       } else {
-        const resData = await getAppintmentData(true, 0, pageSize);
+        const resData = await getSecretoryAppintmentData(true, 0, pageSize);
 
         if (!resData) {
-          dispatch(setAppointmentpagination(recentData));
+          dispatch(setSecretoryAppointmentpagination(recentData));
         }
       }
     }
@@ -556,19 +533,6 @@ function Appointment() {
       return setRows(appointmentData);
     }
   }, [appointmentData, appointmentListLoading]);
-
-  // function setDoctorAppointmentListDoctor(data) {
-  //   dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
-  //   getAppintmentData(
-  //     true,
-  //     undefined,
-  //     undefined,
-  //     undefined,
-  //     undefined,
-  //     undefined,
-  //     data.doctorAppointmentList
-  //   );
-  // }
 
   function GenrateJwtToken({ _id, userId, checkDate, branch }) {
   
@@ -633,7 +597,7 @@ function Appointment() {
             style={{marginLeft:"20px",cursor:"pointer"}}
             onClick={() => {setAppointmentReschduleForm(true);setAppointmentRescheduleData(params.row)}} >
             <CustomIconButton iconName="R" />
-          </div>
+            </div>
           }
         </>
       ),
@@ -815,7 +779,6 @@ function Appointment() {
         dataChanged = true;
       } else if(branch?._id != data.filterAppointmentBranch?._id) {
         dataChanged = true;
-
       }
 
       if (dataChanged) {
@@ -824,19 +787,18 @@ function Appointment() {
           return;
         }
 
-        dispatch(setStartDate(newStartDate));
-        dispatch(setEndDate(newEndDate));
-        dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
-        dispatch(setAppointmentBranch(data.filterAppointmentBranch));
-        dispatch(
-          setAppointmentpagination({
+        dispatch(setSecretoryStartDate(newStartDate));
+        dispatch(setSecretoryEndDate(newEndDate));
+        dispatch(setSecretoryShowDoctorAppointment(data.doctorAppointmentList));
+        dispatch(setSecretoryAppointmentBranch(data.filterAppointmentBranch));
+        dispatch(setSecretoryAppointmentpagination({
             page: 0,
             pageSize: paginationModel.pageSize,
           })
         );
-        dispatch(setAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data.doctorAppointmentList._id,branch:data.filterAppointmentBranch._id}));
+        dispatch(setSecretoryAppointmentCurrentSocketRooms({startDate:newStartDate,endDate:newEndDate,doctorId:data.doctorAppointmentList._id,branch:data.filterAppointmentBranch._id}));
 
-        const innerResData = await getAppintmentData(
+        const innerResData = await getSecretoryAppintmentData(
           true,
           0,
           undefined,
@@ -913,9 +875,9 @@ function Appointment() {
                       lable={"Select Branch"}
                       value={value}
                       onBlur={onBlur}
-                      getOptionLabel={(option)=> option.location }
+                      getOptionLabel={(option)=> option.location}
                       filterOnActive={true}
-                      url={watchDoctor ? `admin/locationMaster/location/doctor/${watchDoctor?._id}` : ""}
+                      url={watchDoctor ? `admin/locationMaster/location/doctor/${watchDoctor?._id}` : "admin/locationMaster/getlocation"}
                       inputRef={ref}
                       hasError={error}
                     />
@@ -951,55 +913,6 @@ function Appointment() {
       </Box>
     );
   }, [doctorAppointmentList, control, appointmentListLoading,startDate,endDate]);
-
-  // if (!doctorAppointmentList) {
-  //   return (
-  //     <div className={HandleStepOneClasses.container}>
-  //       <div className={HandleStepOneClasses.Box}>
-  //         <Typography className={HandleStepOneClasses.cusTypogrphy}>
-  //           Select Doctor
-  //         </Typography>
-  //         <Box
-  //           width={"100%"}
-  //           component="form"
-  //           onSubmit={handleSubmit(setDoctorAppointmentListDoctor)}
-  //           p={1}>
-  //           <Grid
-  //             container
-  //             width={"100%"}
-  //             // columns={{ xs: 4, sm: 8, md: 12 }}
-  //             justifyContent="center"
-  //             alignItems="center">
-  //             <Grid sm={12}>
-  //               <Controller
-  //                 name="doctorAppointmentList"
-  //                 control={control}
-  //                 render={({ field, fieldState: { error } }) => {
-  //                   const { onChange, value, ref } = field;
-  //                   return (
-  //                     <CustomAutoCompelete
-  //                       onChange={onChange}
-  //                       lable={"Select Doctor"}
-  //                       value={value}
-  //                       getOptionLabel={(option) =>
-  //                         ` ${option?.userName} / ${option?.speciality?.speciality}`
-  //                       }
-  //                       url={`admin/userMaster/user/doctor`}
-  //                       inputRef={ref}
-  //                       hasError={error}
-  //                     />
-  //                   );
-  //                 }}></Controller>
-  //             </Grid>
-  //           </Grid>
-  //           <div className={HandleStepOneClasses.btnContainer}>
-  //             <CustomButton buttonText={"Next"} type={"submit"} />
-  //           </div>
-  //         </Box>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <>
@@ -1500,4 +1413,4 @@ function Appointment() {
   );
 }
 
-export default Appointment;
+export default SecretoryAppointment;

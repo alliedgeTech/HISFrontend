@@ -296,7 +296,6 @@ const onPaginationChange = async({page,pageSize}) => {
       } else {
           // change the pageSize
           const resData = await getUserData(true,0,pageSize);
-          console.log('%% this is resData : ',resData);
           if(!resData)
           {
             dispatch(setUserPagination(recentData))

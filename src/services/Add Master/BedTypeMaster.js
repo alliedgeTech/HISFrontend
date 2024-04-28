@@ -59,7 +59,6 @@ export const useBedType = () => {
   }
 
   const updateBedType = async (data,resetAll) => {
-    console.log("come here",data);
     dispatch(setBedTypeLoading(true));
     const toastId = toast.loading("Updating...");
     const resData = await ApiManager.patch(`admin/addMaster/bedtype/${data._id}`,data);

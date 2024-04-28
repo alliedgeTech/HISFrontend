@@ -19,35 +19,35 @@ const initialState = {
 };
 
 const appointmentSlice = createSlice({
-  name: "appointment",
+  name: "secretoryAppointment",
   initialState,
   reducers: {
-    setAppointmentData: (state, action) => {
+    setSecretoryAppointmentData: (state, action) => {
       state.appointmentData = action.payload;
     },
-    setAppointmentLoading: (state, action) => {
+    setSecretoryAppointmentLoading: (state, action) => {
       state.appointmentLoading = action.payload;
     },
-    setAppointmentEditData: (state, action) => {
+    setSecretoryAppointmentEditData: (state, action) => {
       state.appointmentEditData = action.payload;
     },
-    setAppointmentCount: (state, action) => {
+    setSecretoryAppointmentCount: (state, action) => {
       state.appointmentCount = action.payload;
     },
-    setAppointmentpagination: (state, action) => {
+    setSecretoryAppointmentpagination: (state, action) => {
       state.appointmentPagination.page = action.payload.page;
       state.appointmentPagination.pageSize = action.payload.pageSize;
     },
-    setAppointmentBranch: (state,action) => {
+    setSecretoryAppointmentBranch: (state,action) => {
       state.branch = action.payload;
     },
-    setStartDate: (state, action) => {
+    setSecretoryStartDate: (state, action) => {
       state.startDate = action.payload;
     },
-    setEndDate: (state, action) => {
+    setSecretoryEndDate: (state, action) => {
       state.endDate = action.payload;
     },
-    setNewAppointmentData: (state, action) => {
+    setSecretoryNewAppointmentData: (state, action) => {
         if(Array.isArray(state.appointmentData)) {
              if( state.appointmentData.length < state.appointmentPagination.pageSize ){
                 if(state.appointmentData.findIndex((obj) => obj._id === action.payload._id) === -1) {
@@ -63,7 +63,7 @@ const appointmentSlice = createSlice({
             state.appointmentCount = 1;
         }     
     },
-    setRemoveAppointmentData: (state, action) => {
+    setSecretoryRemoveAppointmentData: (state, action) => {
       if(Array.isArray(state.appointmentData) && state.appointmentData.length > 0) {
         state.appointmentData = state.appointmentData.filter((obj) => !action.payload.data.find((app_id) => app_id == obj._id));
       } 
@@ -80,22 +80,22 @@ const appointmentSlice = createSlice({
         state.appointmentCount -= 1;
       }
     },
-    setShowDoctorAppointment: (state, action) => {
+    setSecretoryShowDoctorAppointment: (state, action) => {
       state.doctorAppointmentList = action.payload;
     },
-    setAppointmentStep: (state, action) => {
+    setSecretoryAppointmentStep: (state, action) => {
       state.appointmentStep = action.payload;
     },
-    setAppointmentJwtData: (state, action) => {
+    setSecretoryAppointmentJwtData: (state, action) => {
       state.appointmentJwtData = action.payload;
     },
-    setAppointmentOutTimeData: (state, action) => {
+    setSecretoryAppointmentOutTimeData: (state, action) => {
       state.appointmentOutTimeData = action.payload;
     },
-    setAppointmentListLoading: (state, action) => {
+    setSecretoryAppointmentListLoading: (state, action) => {
       state.appointmentListLoading = action.payload;
     },
-    setAppointmentUpdatedData: (state, action) => {
+    setSecretoryAppointmentUpdatedData: (state, action) => {
       let newData = action.payload;
       
       if (Array.isArray(state.appointmentData)) {
@@ -110,7 +110,7 @@ const appointmentSlice = createSlice({
         );
       }
     },
-    setNewDataAppointmentJwtData: (state, action) => {
+    setSecretoryNewDataAppointmentJwtData: (state, action) => {
       if (Array.isArray(state.appointmentJwtData)) {
         !state.appointmentJwtData.find(
           (data) => data._id === action.payload._id
@@ -119,7 +119,7 @@ const appointmentSlice = createSlice({
         state.appointmentJwtData = [action.payload];
       }
     },
-    setUpdatedAppointmentJwtData: (state, action) => {
+    setSecretoryUpdatedAppointmentJwtData: (state, action) => {
       if (Array.isArray(state.appointmentJwtData)) {
           state.appointmentJwtData = state.appointmentJwtData.map((data) => {
           const findUpdatedAppointment = action.payload.find((updatedData)=> updatedData._id == data._id );
@@ -130,7 +130,7 @@ const appointmentSlice = createSlice({
         });
       }
     },
-    setRemovedAppointmentJwtData: (state, action) => {
+    setSecretoryRemovedAppointmentJwtData: (state, action) => {
       if (Array.isArray(state.appointmentJwtData)) {
         state.appointmentJwtData = state.appointmentJwtData.filter((currentAppointment) =>
            !action.payload.find((filteredAppointment)=> filteredAppointment == currentAppointment._id)
@@ -142,7 +142,7 @@ const appointmentSlice = createSlice({
         }
       }
     },
-    setNewAppointmentOutTimeData: (state, action) => {
+    setSecretoryNewAppointmentOutTimeData: (state, action) => {
       if (action.payload && Array.isArray(state.appointmentOutTimeData)) {
         !state.appointmentOutTimeData.find(
           (obj) => obj._id === action.payload._id
@@ -151,19 +151,22 @@ const appointmentSlice = createSlice({
         state.appointmentOutTimeData = [action.payload];
       }
     },
-    setAppointmentCurrentSocketRooms: (state, action) => {
+    setSecretoryAppointmentCurrentSocketRooms: (state, action) => {
       if (
         Array.isArray(state.appointmentCurrentSocketRooms) &&
         state.appointmentCurrentSocketRooms.length > 0
       ) {
         socket.emit("leaveRoom", state.appointmentCurrentSocketRooms);
       }
+
       let startDate = action.payload?.startDate;
       let endDate = action.payload?.endDate;
       let doctorId = action.payload?.doctorId;
       let branchId = action.payload?.branch;
 
-      if(startDate && endDate && doctorId && branchId) {
+      console.log("this is startTime : ",startDate, "this is end date : ",endDate," this is doctorId : ",doctorId," this is branchId : ",branchId);
+
+      if(startDate && endDate && branchId) {
         const dateArray = [];
 
         // Convert startDate and endDate to Date objects
@@ -172,18 +175,19 @@ const appointmentSlice = createSlice({
   
         // Include startDate and endDate in the array
         if (startDate.getTime() === endDate.getTime()) {
-          dateArray.push(doctorId + "_" + new Date(startDate).toLocaleDateString("en-CA") + "_" + branchId + "_" + "appointment"); // Push doctorId prefix + startDate as a string
+            const key = doctorId ? doctorId + "_" + new Date(startDate).toLocaleDateString("en-CA") + "_" + branchId + "_" + "appointment" : "_" + new Date(startDate).toLocaleDateString("en-CA") + "_" + branchId + "_" + "appointment";
+            dateArray.push(key); 
         } else {
           // Loop through dates from startDate to endDate
           const currentDate = new Date(startDate);
           while (currentDate <= endDate) {
-            dateArray.push(
-              doctorId + "_" + currentDate.toLocaleDateString("en-CA") + "_" + branchId + "_" + "appointment"
-            ); // Push doctorId prefix + current date as a string
+            const key = doctorId ? doctorId + "_" + currentDate.toLocaleDateString("en-CA") + "_" + branchId + "_" + "appointment" : "_" + currentDate.toLocaleDateString("en-CA") + "_" + branchId + "_" + "appointment" ;
+            dateArray.push(key); 
             currentDate.setDate(currentDate.getDate() + 1);
           }
         }
         state.appointmentCurrentSocketRooms = dateArray;
+        console.log("this is joinroom date : ",dateArray);
         socket.emit("joinRoom", dateArray);
       }
     },
@@ -191,27 +195,27 @@ const appointmentSlice = createSlice({
 });
 
 export const {
-  setAppointmentCount,
-  setAppointmentData,
-  setAppointmentEditData,
-  setAppointmentLoading,
-  setAppointmentpagination,
-  setRemoveAppointmentData,
-  setAppointmentBranch,
-  setStartDate,
-  setEndDate,
-  setShowDoctorAppointment,
-  setAppointmentJwtData,
-  setAppointmentOutTimeData,
-  setAppointmentStep,
-  setAppointmentListLoading,
-  setAppointmentUpdatedData,
-  setNewDataAppointmentJwtData,
-  setUpdatedAppointmentJwtData,
-  setRemovedAppointmentJwtData,
-  setNewAppointmentOutTimeData,
-  setAppointmentCurrentSocketRooms,
-  setNewAppointmentData,
+  setSecretoryAppointmentCount,
+  setSecretoryAppointmentData,
+  setSecretoryAppointmentEditData,
+  setSecretoryAppointmentLoading,
+  setSecretoryAppointmentpagination,
+  setSecretoryRemoveAppointmentData,
+  setSecretoryAppointmentBranch,
+  setSecretoryStartDate,
+  setSecretoryEndDate,
+  setSecretoryShowDoctorAppointment,
+  setSecretoryAppointmentJwtData,
+  setSecretoryAppointmentOutTimeData,
+  setSecretoryAppointmentStep,
+  setSecretoryAppointmentListLoading,
+  setSecretoryAppointmentUpdatedData,
+  setSecretoryNewDataAppointmentJwtData,
+  setSecretoryUpdatedAppointmentJwtData,
+  setSecretoryRemovedAppointmentJwtData,
+  setSecretoryNewAppointmentOutTimeData,
+  setSecretoryAppointmentCurrentSocketRooms,
+  setSecretoryNewAppointmentData
 } = appointmentSlice.actions;
 
 export default appointmentSlice.reducer;

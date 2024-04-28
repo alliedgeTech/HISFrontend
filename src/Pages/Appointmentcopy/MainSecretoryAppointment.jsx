@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import Appointment from './Appointment';
 import { useDispatch, useSelector } from "react-redux";
 import HandleStepOneClasses from "../DoctorCalender/components/handleStepOne.module.css";
 import { Typography, Box, Grid, Tab, Tabs, AppBar } from "@mui/material";
 import { useAppointmentData } from '../../services/Consultant Dashboard/Appointment';
-import { setAppointmentBranch, setAppointmentCurrentSocketRooms, setAppointmentStep, setShowDoctorAppointment } from '../../slices/appointment.slice';
 import CustomButton from '../../Components/Button/Button';
 import { useForm,Controller } from 'react-hook-form';
 import CustomAutoCompelete from '../../Components/CustomAutoCompelete/CustomAutoCompelete';
-import AppointmentSwiper2 from './components/AppointmentSwiper2';
-import AppointmentSwiper3 from './components/AppointmentSwiper3';
 import { useTheme } from '@emotion/react';
 import SwipeableViews from "react-swipeable-views";
-import TableSkeleton from '../../Skeleton/TableSkeleton';
 import { useDeferredValue } from 'react';
+import SecretoryAppointment from './SecretoryAppointment';
+import { setSecretoryAppointmentBranch, setSecretoryAppointmentCurrentSocketRooms, setSecretoryAppointmentStep, setSecretoryShowDoctorAppointment } from '../../slices/secretoryAppointment.slice';
+import SecretoryAppointmentSwiper2 from './components/SecretoryAppointmentSwiper2';
+import SecretoryAppointmentSwiper3 from './components/SecretoryAppointmentSwiper3';
 
 
 function TabPanel(props) {
@@ -35,9 +34,9 @@ function TabPanel(props) {
   );
 }
 
-function MainAppointment() {
-    const { appointmentStep,doctorAppointmentList,startDate,endDate } = useSelector(state=>state.appointment);
-    const { getAppintmentData } = useAppointmentData();
+function MainSecretoryAppointment() {
+    const { appointmentStep,startDate,endDate,branch } = useSelector(state=>state.secretoryAppointment);
+    const { getSecretoryAppintmentData } = useAppointmentData();
     const theme = useTheme();
     const dispatch = useDispatch();
     const {  handleSubmit,control,watch } = useForm({
@@ -50,22 +49,31 @@ function MainAppointment() {
     const doctorwatch = watch('doctorAppointmentList');
     const doctorDefferedValue = useDeferredValue(doctorwatch);
 
+
+
+    useEffect(() => {
+      return () => {
+        dispatch(setSecretoryAppointmentCurrentSocketRooms(undefined));
+      }
+    },[])
+
     function setDoctorAppointmentListDoctor(data) {
-        dispatch(setShowDoctorAppointment(data.doctorAppointmentList));
-        dispatch(setAppointmentBranch(data.branch))
-        getAppintmentData(
+        dispatch(setSecretoryShowDoctorAppointment(data?.doctorAppointmentList));
+        dispatch(setSecretoryAppointmentBranch(data?.branch))
+        getSecretoryAppintmentData(
           true,
           undefined,
           undefined,
           undefined,
           undefined,
-          data.doctorAppointmentList,
+          data?.doctorAppointmentList,
           undefined,
           data.branch
         );
+        dispatch(setSecretoryAppointmentCurrentSocketRooms({startDate,endDate,doctorId:data.doctorAppointmentList?._id,branch:data.branch._id}));
       }
 
-    if (!doctorAppointmentList) {
+    if (!branch) {
         return (
           <div className={HandleStepOneClasses.container}>
             <div className={HandleStepOneClasses.Box}>
@@ -83,7 +91,6 @@ function MainAppointment() {
                   // columns={{ xs: 4, sm: 8, md: 12 }}
                   justifyContent="space-evenly"
                   alignItems="center">
-
                   <Grid sm={4}>
                     <Controller
                       name="doctorAppointmentList"
@@ -109,6 +116,7 @@ function MainAppointment() {
                   <Grid sm={4}>
                     <Controller
                       name="branch"
+                      rules={{ required: "Branch is required" }}
                       control={control}
                       render={({ field, fieldState: { error } }) => {
                         const { onChange, value, ref, onBlur } = field;
@@ -116,12 +124,12 @@ function MainAppointment() {
                           <CustomAutoCompelete
                             onChange={onChange}
                             lable={"Select Branch"}
-                            disable={!doctorDefferedValue}
                             value={value}
                             onBlur={onBlur}
-                            getOptionLabel={(option)=> option.location }
+                            getOptionLabel={(option)=> option.location}
+                            isOptionEqualToValue={(option, value) => option?._id === value?._id}
                             filterOnActive={true}
-                            url={`admin/locationMaster/location/doctor/${doctorDefferedValue?._id}`}
+                            url={ doctorDefferedValue ? `admin/locationMaster/location/doctor/${doctorDefferedValue?._id}` : `admin/locationMaster/getlocation`}
                             inputRef={ref}
                             hasError={error}
                           />
@@ -139,7 +147,7 @@ function MainAppointment() {
       }
       
       const handleChangeIndex = (index) => {
-        dispatch(setAppointmentStep(index));
+        dispatch(setSecretoryAppointmentStep(index));
       };  
 
       const handleChange = (event, newValue) => {
@@ -174,17 +182,17 @@ function MainAppointment() {
     onChangeIndex={handleChangeIndex}
   >
     <TabPanel value={appointmentStep} index={0} dir={theme.direction}>
-      <Appointment />
+      <SecretoryAppointment />
     </TabPanel>
     <TabPanel value={appointmentStep} index={1} dir={theme.direction}>
-     <AppointmentSwiper2 />
+     <SecretoryAppointmentSwiper2 />
     </TabPanel>
     <TabPanel value={appointmentStep} index={2} dir={theme.direction}>
-      <AppointmentSwiper3 />
+      <SecretoryAppointmentSwiper3 />
     </TabPanel>
   </SwipeableViews>
     </Box>
   )
 }
 
-export default MainAppointment
+export default MainSecretoryAppointment;

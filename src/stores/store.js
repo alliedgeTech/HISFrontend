@@ -17,7 +17,7 @@ import tarrifSlice from "../slices/tarrif.slice";
 import bedtypeSlice from "../slices/bedtype.slice";
 import userTitleSlice from "../slices/userTitle.slice";
 import socSlice from "../slices/soc.slice";
-import secretoryappointmentSlice from "../slices/secretoryappointment.slice";
+import secretoryAppointmentSlice from "../slices/secretoryAppointment.slice";
 
 export const store = configureStore({
     reducer:{
@@ -31,7 +31,7 @@ export const store = configureStore({
         registration:registrationSlice,
         sidebar:sidebarSlice,
         appointment:appointmentSlice,
-        secretoryAppointment: secretoryappointmentSlice,
+        secretoryAppointment: secretoryAppointmentSlice,
         doctorCalender:doctorCalenderSlice,
         socket:socketSlice,
         serviceType:servicetypeSlice,

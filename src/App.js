@@ -22,14 +22,13 @@ import UserTitleMaster from './Pages/UserTitleMaster/UserTitleMaster';
 import TarrifWithService from './Pages/TarrifWithService/TarrifWithService';
 import MainTarrif from './Pages/MainTarrif/MainTarrifMaster';
 import SocMaster from './Pages/SocMaster/SocMaster';
-import MainSecretoryAppointment from './Pages/Appointment2/MainSecretoryAppointment';
+import MainSecretoryAppointment from './Pages/Appointmentcopy/MainSecretoryAppointment';
 
 function App() {
   return (
     <NavigationScroll>
       <Routes>
-        <Route path='/' element={<MainLayout/>} >
-          {/* <Route path='/' element={<MainSecretoryAppointment />} /> */}
+        <Route path='/' element={<MainLayout/>}>
           <Route path='/rolemaster' element={<RoleMaster/>} />
           <Route path='/usermaster' element={<UserMaster/>} />
           <Route path='/locationmaster' element={<BranchMaster/>} />
@@ -42,6 +41,7 @@ function App() {
           <Route path='/bedtypemaster' element={<BedTypeMaster/>} />
           <Route path='/usertitlemaster' element={<UserTitleMaster/>} />
           <Route path='/front-office/registration' element={<RegistrationMaster/>} />
+          <Route path='/front-office/secretorydashboard' element={<MainSecretoryAppointment/>} />
           <Route path='/consultantdashboard/appointment' element={<MainAppointment/>} />
           <Route path='/calender/doctor' element={<DoctorCalender/>} />
           <Route path='/billing/servicemaster' element={<ServiceMaster/>} />
