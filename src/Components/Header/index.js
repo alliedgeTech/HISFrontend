@@ -1,6 +1,6 @@
 import React from 'react'
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
-import logo from '../../logo.svg';
+import logo from '../../Assets/img/logo1_HIS.png';
 import { useSelector,useDispatch } from 'react-redux';
 import './header.css';
 import { setCollapsed } from '../../slices/sidebar.slice';
@@ -13,8 +13,7 @@ export default  function() {
   return (
     <div className='main-header'>
        <div className='logo-text'>
-            <img src= {logo} width={60}/>
-            <div className='text'>HIS.In</div>
+            <div className='text'>eAarogyam</div>
         </div> 
 
         <div className='btn-bg' onClick={()=>dispatch(setCollapsed(!collapsed))}>

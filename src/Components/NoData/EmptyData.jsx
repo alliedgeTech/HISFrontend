@@ -3,7 +3,7 @@ import noData from '../../Assets/no-data.svg'
 import './EmptyData.css'
 function EmptyData() {
   return (
-    <img
+           <img
               className={`withPagination__img empty-image-css`}
               src={noData}
               alt="No data image"

@@ -5,6 +5,7 @@ import Home from './Pages/Home';
 import NavigationScroll from './Components/Layouts/MinimalLayout';
 import MainLayout from './Components/Layouts/MainLayout';
 import CircularProgress from '@mui/material/CircularProgress';
+import Page404 from './Pages/404Page/Page404';
 
 // Lazy loaded components
 const RoleMaster = lazy(() => import(/* webpackChunkName: "RoleMaster" */ './Pages/RoleMaster/RoleMaster'));
@@ -29,26 +30,28 @@ function App() {
   return (
     <NavigationScroll>
         <Routes>
-          <Route path='/' element={<MainLayout/>}>
-            <Route path='/rolemaster' element={<Suspense fallback={<CircularProgress/>}><RoleMaster/></Suspense>} />
-            <Route path='/usermaster' element={<Suspense fallback={<CircularProgress/>}><UserMaster/></Suspense>} />
-            <Route path='/locationmaster' element={<Suspense fallback={<CircularProgress/>}><BranchMaster/></Suspense>} />
-            <Route path='/categorymaster' element={<Suspense fallback={<CircularProgress/>}><CategoryMaster/></Suspense>} />
-            <Route path='/regionmaster' element={<Suspense fallback={<CircularProgress/>}><RegionMaster/></Suspense>} />
-            <Route path='/facilitymaster' element={<Suspense fallback={<CircularProgress/>}><FacilityMaster/></Suspense>} />
-            <Route path='/servicetypemaster' element={<Suspense fallback={<CircularProgress/>}><ServiceTypeMaster/></Suspense>} />
-            <Route path='/tarrifmaster' element={<Suspense fallback={<CircularProgress/>}><MainTarrif/></Suspense>} />
-            <Route path='/hrmaster' element={<Suspense fallback={<CircularProgress/>}><HrMaster/></Suspense>} />
-            <Route path='/bedtypemaster' element={<Suspense fallback={<CircularProgress/>}><BedTypeMaster/></Suspense>} />
-            <Route path='/usertitlemaster' element={<Suspense fallback={<CircularProgress/>}><UserTitleMaster/></Suspense>} />
-            <Route path='/front-office/registration' element={<Suspense fallback={<CircularProgress/>}><RegistrationMaster/></Suspense>} />
-            <Route path='/front-office/secretorydashboard' element={<Suspense fallback={<CircularProgress/>}><MainSecretoryAppointment/></Suspense>} />
-            <Route path='/consultantdashboard/appointment' element={<Suspense fallback={<CircularProgress/>}><MainAppointment/></Suspense>} />
-            <Route path='/calender/doctor' element={<Suspense fallback={<CircularProgress/>}><DoctorCalender/></Suspense>} />
-            <Route path='/billing/servicemaster' element={<Suspense fallback={<CircularProgress/>}><ServiceMaster/></Suspense>} />
-            <Route path='/billing/socmaster' element={<Suspense fallback={<CircularProgress/>}><SocMaster/></Suspense>} />
-            <Route path='*' element={<Home/>} />
+          <Route path='/' element={<Home/>} />
+          <Route path='/his' element={<MainLayout/>}>
+            <Route path='/his/rolemaster' element={<Suspense fallback={<CircularProgress/>}><RoleMaster/></Suspense>} />
+            <Route path='/his/usermaster' element={<Suspense fallback={<CircularProgress/>}><UserMaster/></Suspense>} />
+            <Route path='/his/locationmaster' element={<Suspense fallback={<CircularProgress/>}><BranchMaster/></Suspense>} />
+            <Route path='/his/categorymaster' element={<Suspense fallback={<CircularProgress/>}><CategoryMaster/></Suspense>} />
+            <Route path='/his/regionmaster' element={<Suspense fallback={<CircularProgress/>}><RegionMaster/></Suspense>} />
+            <Route path='/his/facilitymaster' element={<Suspense fallback={<CircularProgress/>}><FacilityMaster/></Suspense>} />
+            <Route path='/his/servicetypemaster' element={<Suspense fallback={<CircularProgress/>}><ServiceTypeMaster/></Suspense>} />
+            <Route path='/his/tarrifmaster' element={<Suspense fallback={<CircularProgress/>}><MainTarrif/></Suspense>} />
+            <Route path='/his/hrmaster' element={<Suspense fallback={<CircularProgress/>}><HrMaster/></Suspense>} />
+            <Route path='/his/bedtypemaster' element={<Suspense fallback={<CircularProgress/>}><BedTypeMaster/></Suspense>} />
+            <Route path='/his/usertitlemaster' element={<Suspense fallback={<CircularProgress/>}><UserTitleMaster/></Suspense>} />
+            <Route path='/his/front-office/registration' element={<Suspense fallback={<CircularProgress/>}><RegistrationMaster/></Suspense>} />
+            <Route path='/his/front-office/secretorydashboard' element={<Suspense fallback={<CircularProgress/>}><MainSecretoryAppointment/></Suspense>} />
+            <Route path='/his/consultantdashboard/appointment' element={<Suspense fallback={<CircularProgress/>}><MainAppointment/></Suspense>} />
+            <Route path='/his/calender/doctor' element={<Suspense fallback={<CircularProgress/>}><DoctorCalender/></Suspense>} />
+            <Route path='/his/billing/servicemaster' element={<Suspense fallback={<CircularProgress/>}><ServiceMaster/></Suspense>} />
+            <Route path='/his/billing/socmaster' element={<Suspense fallback={<CircularProgress/>}><SocMaster/></Suspense>} />
           </Route>  
+            <Route path='*' element={<Page404/>} />
+          
         </Routes>   
     </NavigationScroll>
   );
