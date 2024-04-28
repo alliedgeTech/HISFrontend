@@ -32,6 +32,7 @@
 
 .main-height{
     height: 100vh;
+    background-color: white;
 }
 
 .inactive-row {
