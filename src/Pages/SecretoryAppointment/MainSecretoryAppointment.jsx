@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import HandleStepOneClasses from "../DoctorCalender/components/handleStepOne.module.css";
 import { Typography, Box, Grid, Tab, Tabs, AppBar } from "@mui/material";
