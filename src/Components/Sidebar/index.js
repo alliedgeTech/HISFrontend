@@ -13,8 +13,7 @@ function SidebarMenuItems({data}){
   return (
     <>
 
-    <MenuItem><SearchIcon className={menuItemClasses.searchicon}/></MenuItem>
-
+    {/* <MenuItem><SearchIcon className={menuItemClasses.searchicon}/></MenuItem> */}
     <MenuItem style={{background:"#25396f",color:"white",borderRadius:"10px"}} component={<NavLink to={`/`}></NavLink>} icon={createElement(MuiIcons["HomeOutlined"])} className={menuItemClasses.op} > Dashboard </MenuItem>
       {
         data.map((navData,index) =>
@@ -56,10 +55,8 @@ export default function () {
   },[])
   return (
     <div className={`${menuItemClasses.sidebar_height}` } style={{ width: collapsed ? 'fit-content' : '285px' }}>
-
     <Sidebar
     collapsed={collapsed}
-    
     collapsedWidth='90px'
     rootStyles={{
         [`.${sidebarClasses.container}`]: {
