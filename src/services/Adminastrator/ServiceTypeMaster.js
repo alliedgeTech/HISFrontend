@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
 import { setServiceListLoading, setServiceTypeCount, setServiceTypeCountIncByOne, setServiceTypeData, setServiceTypeLoading } from "../../slices/servicetype.slice";
 import toast from 'react-hot-toast'
-import { setServiceData, setServiceEmptyData } from "../../slices/service.slice";
+import { setServiceEmptyData } from "../../slices/service.slice";
 
 const ApiManager = new APIManager();
 

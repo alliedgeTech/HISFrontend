@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setBedTypeCount, setBedTypeCountIncByOne, setBedTypeData, setBedTypeListLoading, setBedTypeLoading } from "../../slices/bedtype.slice";
 import APIManager from "../../utils/ApiManager";

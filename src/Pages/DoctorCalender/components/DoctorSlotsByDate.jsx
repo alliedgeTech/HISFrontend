@@ -1,17 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setSocketConnected } from "../../../slices/socket.slice";
 import {
   setActiveDaySlotIndex,
   setActiveDaySlots,
   setActiveDaySlotsUpdate,
   setAddedNewSlots,
   setDoctorCalenderEditData,
-  setDoctorCalenderLoading,
   setLeveRoomDate,
-  setRemainingDays,
   setRemoveSlots,
-  setSeveDayData,
 } from "../../../slices/doctorCalender.slice";
 import BoxCalsses from "./handleStepOne.module.css";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -38,8 +34,6 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import socket from "../../../socket";
 import CustomButton from "../../../Components/Button/Button";
 import CustomIconButton from "../../../Components/CustomeIcons/CustomEditIcons";
-import { CheckBox, HolidayVillage } from "@mui/icons-material";
-
 
 const dataColorSow = [
   {

@@ -20,19 +20,15 @@ import { useFrontOfficeRegistration } from '../../services/FrontOffice/Registrat
 import { setRegistrationEditData, setRegistrationPagination } from '../../slices/registration.slice';
 import { CustomTextInputField } from '../../Components/InputsFilelds/CustomTextInputField';
 import CustomDatePickerField from '../../Components/InputsFilelds/CustomDatePickerField';
-import CustomDateTimePickerField from '../../Components/InputsFilelds/CustomDateTimePickerField';
 import CustomAutoCompelete from '../../Components/CustomAutoCompelete/CustomAutoCompelete';
 import TableMainBox from '../../Components/TableMainBox/TableMainBox';
 import TableSkeleton from '../../Skeleton/TableSkeleton';
-import { DataGrid,GridToolbar } from '@mui/x-data-grid';
 import CustomButton from '../../Components/Button/Button';
 import AddEditModal from '../../Components/AddEditModal/AddEditModal';
 import EmptyData from '../../Components/NoData/EmptyData';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CustomIconButton from '../../Components/CustomeIcons/CustomEditIcons';
-import dayjs from 'dayjs';
 import CommonTable from '../../Components/CommonTable/CommonTable';
-import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
 import { getYearsOrBirthDate } from '../../utils/Common';
 
 

@@ -2,7 +2,7 @@ import { setUserTitleCount, setUserTitleCountIncByOne, setUserTitleData, setUser
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";
 import toast from 'react-hot-toast'
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { setRegistrationEmptyData } from "../../slices/registration.slice";
 
 const ApiManager = new APIManager();

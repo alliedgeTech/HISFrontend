@@ -1,5 +1,5 @@
 import APIManager from "../../utils/ApiManager"
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from 'react-hot-toast'
 import { setFacilityCount, setFacilityCountIncByOne, setFacilityData, setFacilityListLoading, setFacilityLoading } from "../../slices/facility.slice";

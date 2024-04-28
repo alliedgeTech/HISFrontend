@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import EmptyData from '../../../Components/NoData/EmptyData';
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { setAppointmentJwtData, setNewDataAppointmentJwtData, setRemovedAppointmentJwtData, setUpdatedAppointmentJwtData } from '../../../slices/appointment.slice';
 import TableSkeleton from '../../../Skeleton/TableSkeleton';
 import { LinearProgress } from '@mui/material';
 import TableClasses from '../../../Components/TableMainBox/TableMainBox.module.css'

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { setAppointmentCount, setAppointmentData, setAppointmentListLoading, setAppointmentLoading } from "../../slices/appointment.slice";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";

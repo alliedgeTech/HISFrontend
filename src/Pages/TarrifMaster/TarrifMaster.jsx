@@ -2,7 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { useTarrifData } from '../../services/Add Master/TarrifMaster';
 import CommonMaster from '../CommonMaster/CommonMaster';
-import { setTarrifEditData, setTarrifPagination, setTarrifWithServicePagination } from '../../slices/tarrif.slice';
+import { setTarrifEditData, setTarrifWithServicePagination } from '../../slices/tarrif.slice';
 
 function TarrifMaster() {
     const  { createTarrifData,getTarrifData,updateTarrifData } = useTarrifData();

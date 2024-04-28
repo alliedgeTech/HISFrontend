@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setTarrifWithServiceCount, setTarrifWithServiceCountIncByOne, setTarrifWithServiceData, setTarrifWithServiceListLoading, setTarrifWithServiceLoading } from "../../slices/tarrif.slice";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import APIManager from "../../utils/ApiManager";
 import toast from 'react-hot-toast';
 

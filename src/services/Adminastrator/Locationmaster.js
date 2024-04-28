@@ -3,7 +3,6 @@ import APIManager from "../../utils/ApiManager"
 import { setBranchCount, setBranchCountIncByOne, setBranchData, setBranchListLoading, setBranchLoading } from "../../slices/branch.slice";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { useState } from "react";
 import { setSeveDayData } from "../../slices/doctorCalender.slice";
 
 const ApiManager = new APIManager();

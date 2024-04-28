@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Hclasses from "./handleStepOne.module.css"
 import { useDispatch, useSelector } from "react-redux";
 import { useForm,Controller } from 'react-hook-form';
@@ -6,7 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { Box,Typography } from '@mui/material';
 import CustomAutoCompelete from '../../../Components/CustomAutoCompelete/CustomAutoCompelete';
 import CustomButton from '../../../Components/Button/Button';
-import { setDoctor, setLocation, setStep } from '../../../slices/doctorCalender.slice';
+import { setDoctor, setStep } from '../../../slices/doctorCalender.slice';
 
 function HandleStepOne() {
     const { doctor } = useSelector(state=>state.doctorCalender);

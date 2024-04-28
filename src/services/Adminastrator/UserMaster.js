@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import APIManager from "../../utils/ApiManager";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserCount, setUserCountIncByOne, setUserData, setUserListLoading, setUserLoading } from "../../slices/user.slice";
 import { setRegistrationEmptyData } from "../../slices/registration.slice";

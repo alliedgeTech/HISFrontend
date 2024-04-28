@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setRegistrationCount, setRegistrationCountIncByOne, setRegistrationData, setRegistrationListLoading, setRegistrationLoading } from "../../slices/registration.slice";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 import APIManager from "../../utils/ApiManager";
 

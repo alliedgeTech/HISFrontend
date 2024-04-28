@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { setTarrifCount, setTarrifCountIncByOne, setTarrifData, setTarrifListLoading, setTarrifLoading } from "../../slices/tarrif.slice";
 import APIManager from "../../utils/ApiManager";
 import { useDispatch, useSelector } from "react-redux";

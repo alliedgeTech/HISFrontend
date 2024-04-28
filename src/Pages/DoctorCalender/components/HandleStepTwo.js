@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import { setDoctor, setLocation, setStep } from '../../../slices/doctorCalender.slice';
+import { setLocation, setStep } from '../../../slices/doctorCalender.slice';
 import { useForm,Controller } from 'react-hook-form';
 import CustomAutoCompelete from '../../../Components/CustomAutoCompelete/CustomAutoCompelete';
 import Hclasses from "./handleStepOne.module.css"

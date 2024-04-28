@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Appointment from './Appointment';
 import { useDispatch, useSelector } from "react-redux";
 import HandleStepOneClasses from "../DoctorCalender/components/handleStepOne.module.css";
 import { Typography, Box, Grid, Tab, Tabs, AppBar } from "@mui/material";
 import { useAppointmentData } from '../../services/Consultant Dashboard/Appointment';
-import { setAppointmentBranch, setAppointmentCurrentSocketRooms, setAppointmentStep, setShowDoctorAppointment } from '../../slices/appointment.slice';
+import { setAppointmentBranch, setAppointmentStep, setShowDoctorAppointment } from '../../slices/appointment.slice';
 import CustomButton from '../../Components/Button/Button';
 import { useForm,Controller } from 'react-hook-form';
 import CustomAutoCompelete from '../../Components/CustomAutoCompelete/CustomAutoCompelete';
@@ -12,7 +12,6 @@ import AppointmentSwiper2 from './components/AppointmentSwiper2';
 import AppointmentSwiper3 from './components/AppointmentSwiper3';
 import { useTheme } from '@emotion/react';
 import SwipeableViews from "react-swipeable-views";
-import TableSkeleton from '../../Skeleton/TableSkeleton';
 import { useDeferredValue } from 'react';
 
 

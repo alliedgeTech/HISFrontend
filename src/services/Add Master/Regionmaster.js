@@ -1,7 +1,7 @@
 import APIManager from "../../utils/ApiManager"
 import { useDispatch, useSelector } from "react-redux";
 import { setCityCount, setCityCountIncByOne, setCityData, setCityListLoading, setCityLoading, setCountryCount, setCountryCountIncByOne, setCountryData, setCountryListLoading, setCountryLoading, setStateCount, setStateCountIncByOne, setStateData, setStateListLoading, setStateLoading } from "../../slices/region.slice";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { setUserData } from "../../slices/user.slice";
 import { setBranchData, setBranchEmptyData } from "../../slices/branch.slice";
