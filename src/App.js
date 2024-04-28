@@ -6,6 +6,7 @@ import NavigationScroll from './Components/Layouts/MinimalLayout';
 import MainLayout from './Components/Layouts/MainLayout';
 import CircularProgress from '@mui/material/CircularProgress';
 import Page404 from './Pages/404Page/Page404';
+import LoadingComponent from './Components/LoadingComponent/LoadingComponent';
 
 // Lazy loaded components
 const RoleMaster = lazy(() => import(/* webpackChunkName: "RoleMaster" */ './Pages/RoleMaster/RoleMaster'));
@@ -32,7 +33,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Home/>} />
           <Route path='/his' element={<MainLayout/>}>
-            <Route path='/his/rolemaster' element={<Suspense fallback={<CircularProgress/>}><RoleMaster/></Suspense>} />
+            <Route path='/his/rolemaster' element={<Suspense fallback={<LoadingComponent/>}><RoleMaster/></Suspense>} />
             <Route path='/his/usermaster' element={<Suspense fallback={<CircularProgress/>}><UserMaster/></Suspense>} />
             <Route path='/his/locationmaster' element={<Suspense fallback={<CircularProgress/>}><BranchMaster/></Suspense>} />
             <Route path='/his/categorymaster' element={<Suspense fallback={<CircularProgress/>}><CategoryMaster/></Suspense>} />
