@@ -71,7 +71,7 @@ function Home() {
 
         {/* Navbar & Hero End */}
         <div className="position-relative p-0" id="home">
-          <nav ref={navbarRef} className={`navbar ${ scrolled  && 'sticky-top shadow-sm' } navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0`}>
+          <nav ref={navbarRef} className={`navbar ${ scrolled  && 'sticky-top shadow-sm' } navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0`} style={{ flexWrap:"nowrap" }}>
             <a href="" className="navbar-brand p-0">
               <h1 className="m-0">eAarogyam</h1>
               {/* <img src="img/logo.png" alt="Logo"> */}
@@ -80,7 +80,7 @@ function Home() {
               className="navbar-toggler"
               type="button"
               to={"/his"}
-              style={{fontSize:'1.2rem',padding:"0.5rem 1rem",background:"rgb(37,57,111)",color:"white"}}
+              style={{fontSize:'0.8rem',padding:"0.5rem 1rem",background:"rgb(37,57,111)",color:"white"}}
               >
               Start Free Trial
             </Link>
