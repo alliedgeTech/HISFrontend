@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { emailRegex } from "../Constants/index.constant";
 import APIManager from "../utils/ApiManager";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 
 const ApiManager = new APIManager();
@@ -65,7 +66,7 @@ function Home() {
             style={{ width: "3rem", height: "3rem" }}
             role="status">
             <span className="sr-only">Loading...</span>
-          </div>
+          </div>    
         </div> */}
 
         {/* Navbar & Hero End */}
@@ -75,13 +76,14 @@ function Home() {
               <h1 className="m-0">eAarogyam</h1>
               {/* <img src="img/logo.png" alt="Logo"> */}
             </a>
-            <button
+            <Link
               className="navbar-toggler"
               type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarCollapse">
-              <span className="fa fa-bars"></span>
-            </button>
+              to={"/his"}
+              style={{fontSize:'1.2rem',padding:"0.5rem 1rem",background:"rgb(37,57,111)",color:"white"}}
+              >
+              Start Free Trial
+            </Link>
             <div className="collapse navbar-collapse" id="navbarCollapse">
               <div className="navbar-nav mx-auto py-0">
                 <a href="#home" className="nav-item nav-link active">
