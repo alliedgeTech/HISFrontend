@@ -34,22 +34,22 @@ function App() {
           <Route path='/' element={<Home/>} />
           <Route path='/his' element={<MainLayout/>}>
             <Route path='/his/rolemaster' element={<Suspense fallback={<LoadingComponent/>}><RoleMaster/></Suspense>} />
-            <Route path='/his/usermaster' element={<Suspense fallback={<CircularProgress/>}><UserMaster/></Suspense>} />
-            <Route path='/his/locationmaster' element={<Suspense fallback={<CircularProgress/>}><BranchMaster/></Suspense>} />
-            <Route path='/his/categorymaster' element={<Suspense fallback={<CircularProgress/>}><CategoryMaster/></Suspense>} />
-            <Route path='/his/regionmaster' element={<Suspense fallback={<CircularProgress/>}><RegionMaster/></Suspense>} />
-            <Route path='/his/facilitymaster' element={<Suspense fallback={<CircularProgress/>}><FacilityMaster/></Suspense>} />
-            <Route path='/his/servicetypemaster' element={<Suspense fallback={<CircularProgress/>}><ServiceTypeMaster/></Suspense>} />
-            <Route path='/his/tarrifmaster' element={<Suspense fallback={<CircularProgress/>}><MainTarrif/></Suspense>} />
-            <Route path='/his/hrmaster' element={<Suspense fallback={<CircularProgress/>}><HrMaster/></Suspense>} />
-            <Route path='/his/bedtypemaster' element={<Suspense fallback={<CircularProgress/>}><BedTypeMaster/></Suspense>} />
-            <Route path='/his/usertitlemaster' element={<Suspense fallback={<CircularProgress/>}><UserTitleMaster/></Suspense>} />
-            <Route path='/his/front-office/registration' element={<Suspense fallback={<CircularProgress/>}><RegistrationMaster/></Suspense>} />
-            <Route path='/his/front-office/secretorydashboard' element={<Suspense fallback={<CircularProgress/>}><MainSecretoryAppointment/></Suspense>} />
-            <Route path='/his/consultantdashboard/appointment' element={<Suspense fallback={<CircularProgress/>}><MainAppointment/></Suspense>} />
-            <Route path='/his/calender/doctor' element={<Suspense fallback={<CircularProgress/>}><DoctorCalender/></Suspense>} />
-            <Route path='/his/billing/servicemaster' element={<Suspense fallback={<CircularProgress/>}><ServiceMaster/></Suspense>} />
-            <Route path='/his/billing/socmaster' element={<Suspense fallback={<CircularProgress/>}><SocMaster/></Suspense>} />
+            <Route path='/his/usermaster' element={<Suspense fallback={<LoadingComponent/>}><UserMaster/></Suspense>} />
+            <Route path='/his/locationmaster' element={<Suspense fallback={<LoadingComponent/>}><BranchMaster/></Suspense>} />
+            <Route path='/his/categorymaster' element={<Suspense fallback={<LoadingComponent/>}><CategoryMaster/></Suspense>} />
+            <Route path='/his/regionmaster' element={<Suspense fallback={<LoadingComponent/>}><RegionMaster/></Suspense>} />
+            <Route path='/his/facilitymaster' element={<Suspense fallback={<LoadingComponent/>}><FacilityMaster/></Suspense>} />
+            <Route path='/his/servicetypemaster' element={<Suspense fallback={<LoadingComponent/>}><ServiceTypeMaster/></Suspense>} />
+            <Route path='/his/tarrifmaster' element={<Suspense fallback={<LoadingComponent/>}><MainTarrif/></Suspense>} />
+            <Route path='/his/hrmaster' element={<Suspense fallback={<LoadingComponent/>}><HrMaster/></Suspense>} />
+            <Route path='/his/bedtypemaster' element={<Suspense fallback={<LoadingComponent/>}><BedTypeMaster/></Suspense>} />
+            <Route path='/his/usertitlemaster' element={<Suspense fallback={<LoadingComponent/>}><UserTitleMaster/></Suspense>} />
+            <Route path='/his/front-office/registration' element={<Suspense fallback={<LoadingComponent/>}><RegistrationMaster/></Suspense>} />
+            <Route path='/his/front-office/secretorydashboard' element={<Suspense fallback={<LoadingComponent/>}><MainSecretoryAppointment/></Suspense>} />
+            <Route path='/his/consultantdashboard/appointment' element={<Suspense fallback={<LoadingComponent/>}><MainAppointment/></Suspense>} />
+            <Route path='/his/calender/doctor' element={<Suspense fallback={<LoadingComponent/>}><DoctorCalender/></Suspense>} />
+            <Route path='/his/billing/servicemaster' element={<Suspense fallback={<LoadingComponent/>}><ServiceMaster/></Suspense>} />
+            <Route path='/his/billing/socmaster' element={<Suspense fallback={<LoadingComponent/>}><SocMaster/></Suspense>} />
           </Route>  
             <Route path='*' element={<Page404/>} />
           
