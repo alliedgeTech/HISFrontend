@@ -8,5 +8,4 @@ function LoadingComponent() {
     </div>
   )
 }
-
 export default LoadingComponent
